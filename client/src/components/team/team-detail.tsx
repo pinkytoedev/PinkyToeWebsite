@@ -6,6 +6,7 @@ import { formatDate } from "@/lib/utils";
 import { Skeleton } from "@/components/ui/skeleton";
 import { X } from "lucide-react";
 import { Link } from "wouter";
+import { getImageUrl, getPhotoUrl } from "@/lib/image-helper";
 
 interface TeamDetailProps {
   teamMemberId: string;
@@ -103,6 +104,9 @@ export function TeamDetail({ teamMemberId, onClose }: TeamDetailProps) {
     );
   }
 
+  // Get the member image URL
+  const memberImageUrl = getImageUrl(teamMember.imageUrl);
+
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center" onClick={handleBackdropClick}>
       <div className="bg-white rounded-lg max-w-4xl w-full max-h-screen overflow-y-auto mx-4" onClick={e => e.stopPropagation()}>
@@ -116,7 +120,7 @@ export function TeamDetail({ teamMemberId, onClose }: TeamDetailProps) {
           <div className="md:flex">
             <div className="md:w-1/3 mb-6 md:mb-0 md:pr-6">
               <img 
-                src={teamMember.imageUrl} 
+                src={memberImageUrl} 
                 alt={`${teamMember.name} photo`} 
                 className="w-full rounded-lg" 
               />
@@ -146,23 +150,31 @@ export function TeamDetail({ teamMemberId, onClose }: TeamDetailProps) {
                         <Skeleton className="h-16 w-full" />
                       </div>
                     ) : (
-                      articles.map((article) => (
-                        <div key={article.id} className="flex border-b border-gray-200 pb-3">
-                          <img 
-                            src={article.imageUrl} 
-                            alt={article.title} 
-                            className="w-20 h-20 object-cover rounded mr-4" 
-                          />
-                          <div>
-                            <Link href={`/articles/${article.id}`}>
-                              <a onClick={onClose} className="font-quicksand font-semibold text-pinky-dark hover:text-primary transition-colors">
-                                {article.title}
-                              </a>
-                            </Link>
-                            <p className="text-gray-500 text-sm">{formatDate(article.publishedAt)}</p>
+                      articles.map((article) => {
+                        // Get article image URL
+                        const articleImageUrl = article.imageUrl ? getImageUrl(article.imageUrl) : getPhotoUrl(article.photo);
+                        
+                        return (
+                          <div key={article.id} className="flex border-b border-gray-200 pb-3">
+                            <img 
+                              src={articleImageUrl} 
+                              alt={article.title} 
+                              className="w-20 h-20 object-cover rounded mr-4" 
+                            />
+                            <div>
+                              <Link href={`/articles/${article.id}`}>
+                                <div 
+                                  onClick={onClose} 
+                                  className="font-quicksand font-semibold text-pinky-dark hover:text-primary transition-colors cursor-pointer"
+                                >
+                                  {article.title}
+                                </div>
+                              </Link>
+                              <p className="text-gray-500 text-sm">{formatDate(article.publishedAt)}</p>
+                            </div>
                           </div>
-                        </div>
-                      ))
+                        );
+                      })
                     )}
                   </div>
                 </div>
