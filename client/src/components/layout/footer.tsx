@@ -18,17 +18,17 @@ export function Footer() {
               <ul className="space-y-2">
                 <li>
                   <Link href={ROUTES.HOME}>
-                    <a className="text-gray-600 hover:text-primary transition-colors">Home</a>
+                    <div className="text-gray-600 hover:text-primary transition-colors cursor-pointer">Home</div>
                   </Link>
                 </li>
                 <li>
                   <Link href={ROUTES.ARTICLES}>
-                    <a className="text-gray-600 hover:text-primary transition-colors">Articles</a>
+                    <div className="text-gray-600 hover:text-primary transition-colors cursor-pointer">Articles</div>
                   </Link>
                 </li>
                 <li>
                   <Link href={ROUTES.TEAM}>
-                    <a className="text-gray-600 hover:text-primary transition-colors">Team</a>
+                    <div className="text-gray-600 hover:text-primary transition-colors cursor-pointer">Team</div>
                   </Link>
                 </li>
               </ul>
