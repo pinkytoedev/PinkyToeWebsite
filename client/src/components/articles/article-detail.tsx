@@ -158,16 +158,18 @@ export function ArticleDetail({ articleId, onClose }: ArticleDetailProps) {
         .replace(/Photo by /i, '')  // Remove "Photo by " with case insensitivity
         .replace(/Photo credit:/i, '') // Remove "Photo credit:" with case insensitivity
         .trim();
-    } else if (Array.isArray(article.name_photo) && article.name_photo.length > 0) {
-      // If it's an array, take the first item
-      const photoCredit = article.name_photo[0];
-      if (typeof photoCredit === 'string') {
-        photoName = photoCredit
-          .replace(/Photo by /i, '')
-          .replace(/Photo credit:/i, '')
-          .trim();
-      } else {
-        console.log('Photo credit is not a string or array of strings:', article.name_photo);
+    } else if (Array.isArray(article.name_photo)) {
+      // If it's an array and has items, take the first item
+      if (article.name_photo.length > 0) {
+        const photoCredit = article.name_photo[0];
+        if (typeof photoCredit === 'string') {
+          photoName = photoCredit
+            .replace(/Photo by /i, '')
+            .replace(/Photo credit:/i, '')
+            .trim();
+        } else {
+          console.log('Photo credit item is not a string:', photoCredit);
+        }
       }
     } else {
       console.log('Photo credit is not in an expected format:', article.name_photo);
