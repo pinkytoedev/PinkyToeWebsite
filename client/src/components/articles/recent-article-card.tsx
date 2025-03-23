@@ -19,6 +19,10 @@ export function RecentArticleCard({ article }: RecentArticleCardProps) {
             src={imageSource} 
             alt={article.title} 
             className="w-16 h-16 object-cover rounded"
+            onError={(e) => {
+              const target = e.target as HTMLImageElement;
+              target.src = 'https://via.placeholder.com/100x100?text=NA';
+            }}
           />
           <div>
             <h3 className="font-quicksand font-bold text-sm text-pinky-dark">

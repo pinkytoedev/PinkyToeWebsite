@@ -14,14 +14,18 @@ export function ArticleCard({ article }: ArticleCardProps) {
   const imageSource = article.imageUrl ? getImageUrl(article.imageUrl) : getPhotoUrl(article.photo);
 
   return (
-    <div className="article-card bg-white rounded-lg shadow-lg overflow-hidden flex flex-col h-full">
+    <div className="article-card bg-white rounded-lg shadow-lg overflow-hidden flex flex-col h-full group">
       <div className="relative">
         <img 
           src={imageSource} 
           alt={article.title} 
           className="h-48 w-full object-cover"
+          onError={(e) => {
+            const target = e.target as HTMLImageElement;
+            target.src = 'https://via.placeholder.com/400x300?text=Image+Not+Available';
+          }}
         />
-        <div className="article-overlay absolute inset-0 bg-primary bg-opacity-40 opacity-0 flex items-center justify-center transition-opacity duration-300">
+        <div className="article-overlay absolute inset-0 bg-primary bg-opacity-40 opacity-0 flex items-center justify-center transition-opacity duration-300 group-hover:opacity-100">
           <div>
             <Link href={`/articles/${article.id}`}>
               <Button 
