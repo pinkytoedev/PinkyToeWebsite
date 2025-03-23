@@ -83,13 +83,31 @@ imagesRouter.get('/:id', async (req: Request, res: Response) => {
     
     // Handle Airtable record IDs (starting with 'rec')
     if (decodedId.startsWith('rec')) {
+      // First, check if we have a cached version for this Airtable record
+      const cachedFileName = path.join(UPLOADS_DIR, `${fileHash}.jpg`);
+      if (fs.existsSync(cachedFileName)) {
+        // We have a cached version, serve it
+        console.log(`Serving cached Airtable image: ${decodedId}`);
+        res.setHeader('Content-Type', 'image/jpeg');
+        res.setHeader('Cache-Control', 'public, max-age=86400');
+        fs.createReadStream(cachedFileName).pipe(res);
+        return;
+      }
+      
+      // We don't have a cached version from a previous run, create an informative SVG
       try {
-        // For Airtable record IDs, we need to return a placeholder
-        // since we don't have direct access to the image
-        const svg = `<svg width="400" height="300" xmlns="http://www.w3.org/2000/svg">
-          <rect width="400" height="300" fill="#f8f9fa" />
-          <text x="50%" y="50%" font-family="Arial" font-size="16" text-anchor="middle" fill="#343a40">
-            Airtable Image (ID: ${decodedId})
+        const width = 400;
+        const height = 300;
+        const svg = `<svg width="${width}" height="${height}" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" style="stop-color:#f3d9e9;stop-opacity:1" />
+              <stop offset="100%" style="stop-color:#dba6c5;stop-opacity:1" />
+            </linearGradient>
+          </defs>
+          <rect width="${width}" height="${height}" fill="url(#grad)" />
+          <text x="50%" y="50%" font-family="Arial" font-size="16" text-anchor="middle" fill="#7c3864" font-weight="bold">
+            Airtable Image (ID: ${decodedId.substring(0, 8)}...)
           </text>
         </svg>`;
         
