@@ -146,11 +146,11 @@ export default function ArticleDetail() {
           </div>
         ) : article ? (
           <div className="bg-white rounded-lg shadow-lg overflow-hidden">
-            <div className="flex justify-center bg-gray-50 py-4">
+            <div className="flex justify-center bg-gray-50 py-6">
               <img 
                 src={imageSource} 
                 alt={article.title} 
-                className="max-w-full max-h-[500px] object-contain"
+                className="max-w-full max-h-[650px] object-contain"
                 onError={(e) => {
                   const target = e.target as HTMLImageElement;
                   console.error(`Failed to load image: ${target.src}`);
