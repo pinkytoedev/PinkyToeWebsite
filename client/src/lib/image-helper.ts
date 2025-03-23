@@ -2,6 +2,9 @@
  * Helper functions for handling image URLs
  */
 
+// Local fallback image path instead of external placeholder URL
+const LOCAL_FALLBACK_IMAGE = '/assets/placeholder-image.svg';
+
 /**
  * Gets a usable image URL that handles different image source types
  * - Handles empty or undefined imageUrl
@@ -9,16 +12,16 @@
  * - Returns a default placeholder if no image is available
  */
 export function getImageUrl(imageUrl: string | undefined | null | any[]): string {
-  // If empty/undefined, use a placeholder
+  // If empty/undefined, use a local fallback
   if (!imageUrl) {
-    return 'https://via.placeholder.com/400x300?text=Image+Not+Available';
+    return LOCAL_FALLBACK_IMAGE;
   }
 
   // If it's an array (e.g., Airtable returns an array for some fields), use the first item
   if (Array.isArray(imageUrl)) {
-    // If the array is empty or undefined, use a placeholder
+    // If the array is empty or undefined, use a local fallback
     if (!imageUrl.length) {
-      return 'https://via.placeholder.com/400x300?text=Image+Not+Available';
+      return LOCAL_FALLBACK_IMAGE;
     }
     
     // If the array contains objects with URL properties (Airtable attachments)
