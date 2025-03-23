@@ -115,20 +115,31 @@ export function ArticleDetail({ articleId, onClose }: ArticleDetailProps) {
   // Use photo if imageUrl is not available
   const imageSource = article.imageUrl ? getImageUrl(article.imageUrl) : getPhotoUrl(article.photo);
   
-  // Function to find team member by name
+  // Function to find team member by name with improved matching
   const findTeamMemberByName = (name: string): Team | undefined => {
-    if (!teamMembers) {
-      console.log('Team members data not available yet');
+    if (!teamMembers || !name) {
+      console.log('Team members data not available yet or name is empty');
       return undefined;
     }
-    console.log('Searching for team member with name:', name);
-    console.log('Available team members:', teamMembers);
     
-    const foundMember = teamMembers.find(member => 
-      member.name?.toLowerCase() === name?.toLowerCase()
+    // Clean up the name - trim spaces and normalize
+    const cleanName = name.trim().toLowerCase();
+    console.log('Searching for team member with cleaned name:', cleanName);
+    
+    // Try to find exact match first
+    let foundMember = teamMembers.find(member => 
+      member.name?.toLowerCase().trim() === cleanName
     );
     
-    console.log('Found team member?', foundMember ? `Yes, ID: ${foundMember.id}` : 'No match found');
+    // If no exact match, try partial match (name is contained in member name)
+    if (!foundMember) {
+      foundMember = teamMembers.find(member => 
+        member.name?.toLowerCase().includes(cleanName) || 
+        cleanName.includes(member.name?.toLowerCase().trim() || '')
+      );
+    }
+    
+    console.log('Found team member?', foundMember ? `Yes, ID: ${foundMember.id}, Name: ${foundMember.name}` : 'No match found');
     return foundMember;
   };
   
@@ -137,7 +148,17 @@ export function ArticleDetail({ articleId, onClose }: ArticleDetailProps) {
   console.log('Article photo credit:', article.name_photo);
   
   const authorTeamMember = article.name ? findTeamMemberByName(article.name) : undefined;
-  const photoTeamMember = article.name_photo ? findTeamMemberByName(article.name_photo.replace('Photo by ', '')) : undefined;
+  
+  // Better extraction of photo credit name - handle multiple formats
+  let photoName = '';
+  if (article.name_photo) {
+    photoName = article.name_photo
+      .replace(/Photo by /i, '')  // Remove "Photo by " with case insensitivity
+      .replace(/Photo credit:/i, '') // Remove "Photo credit:" with case insensitivity
+      .trim();
+  }
+  
+  const photoTeamMember = photoName ? findTeamMemberByName(photoName) : undefined;
   
   console.log('Author team member:', authorTeamMember);
   console.log('Photo credit team member:', photoTeamMember);
