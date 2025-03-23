@@ -22,11 +22,18 @@ export function ArticleDetail({ articleId, onClose }: ArticleDetailProps) {
   });
   
   // Fetch all team members to match by name
-  const { data: teamMembers } = useQuery<Team[]>({
+  const { data: teamMembers, isLoading: isLoadingTeamMembers } = useQuery<Team[]>({
     queryKey: [API_ROUTES.TEAM],
     queryFn: fetchTeamMembers,
-    enabled: !!article,
+    staleTime: 60000, // Cache for 1 minute
+    enabled: true, // Always fetch team members
   });
+  
+  useEffect(() => {
+    if (teamMembers) {
+      console.log('Team members loaded:', teamMembers.length);
+    }
+  }, [teamMembers]);
 
   useEffect(() => {
     // Prevent body scroll when modal is open
@@ -110,15 +117,30 @@ export function ArticleDetail({ articleId, onClose }: ArticleDetailProps) {
   
   // Function to find team member by name
   const findTeamMemberByName = (name: string): Team | undefined => {
-    if (!teamMembers) return undefined;
-    return teamMembers.find(member => 
+    if (!teamMembers) {
+      console.log('Team members data not available yet');
+      return undefined;
+    }
+    console.log('Searching for team member with name:', name);
+    console.log('Available team members:', teamMembers);
+    
+    const foundMember = teamMembers.find(member => 
       member.name?.toLowerCase() === name?.toLowerCase()
     );
+    
+    console.log('Found team member?', foundMember ? `Yes, ID: ${foundMember.id}` : 'No match found');
+    return foundMember;
   };
   
   // Get team member IDs if available
+  console.log('Article author name:', article.name);
+  console.log('Article photo credit:', article.name_photo);
+  
   const authorTeamMember = article.name ? findTeamMemberByName(article.name) : undefined;
   const photoTeamMember = article.name_photo ? findTeamMemberByName(article.name_photo.replace('Photo by ', '')) : undefined;
+  
+  console.log('Author team member:', authorTeamMember);
+  console.log('Photo credit team member:', photoTeamMember);
   
   // Close team member modal handler
   const handleCloseTeamDetail = () => {
@@ -154,10 +176,12 @@ export function ArticleDetail({ articleId, onClose }: ArticleDetailProps) {
                     className="text-primary font-semibold cursor-pointer hover:underline" 
                     onClick={(e) => {
                       e.stopPropagation();
+                      console.log('Clicked on author name:', article.name);
+                      console.log('Setting team member ID to:', authorTeamMember.id);
                       setSelectedTeamMemberId(authorTeamMember.id);
                     }}
                   >
-                    {article.name}
+                    {article.name} {/* Clickable author name */}
                   </p>
                 ) : (
                   <p className="text-primary font-semibold">{article.name}</p>
@@ -169,10 +193,12 @@ export function ArticleDetail({ articleId, onClose }: ArticleDetailProps) {
                       className="text-gray-500 text-xs mt-1 cursor-pointer hover:underline" 
                       onClick={(e) => {
                         e.stopPropagation();
+                        console.log('Clicked on photo credit:', article.name_photo);
+                        console.log('Setting team member ID to:', photoTeamMember.id);
                         setSelectedTeamMemberId(photoTeamMember.id);
                       }}
                     >
-                      Photo Credit: {article.name_photo}
+                      Photo Credit: {article.name_photo} {/* Clickable photo credit */}
                     </p>
                   ) : (
                     <p className="text-gray-500 text-xs mt-1">Photo Credit: {article.name_photo}</p>
