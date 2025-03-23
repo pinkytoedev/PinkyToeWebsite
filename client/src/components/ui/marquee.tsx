@@ -72,12 +72,14 @@ export function Marquee({
         ))}
       </div>
 
-      <style jsx global>{`
+      <style dangerouslySetInnerHTML={{
+        __html: `
         @keyframes marquee {
           0% { transform: translateX(0); }
           100% { transform: translateX(-${contentWidth}px); }
         }
-      `}</style>
+        `
+      }} />
     </div>
   );
 }
