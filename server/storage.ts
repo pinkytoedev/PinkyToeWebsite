@@ -56,7 +56,7 @@ export class AirtableStorage implements IStorage {
       
       // Then fetch the specific page of data
       const query = this.base('History').select({
-        sort: [{ field: 'publishedAt', direction: 'desc' }],
+        sort: [{ field: 'Date', direction: 'desc' }],
         filterByFormula: search ? filterByFormula : '',
         maxRecords: limit,
         pageSize: limit,
@@ -76,8 +76,8 @@ export class AirtableStorage implements IStorage {
   async getFeaturedArticles(): Promise<Article[]> {
     try {
       const query = this.base('History').select({
-        filterByFormula: "{featured} = 'true'",
-        sort: [{ field: 'publishedAt', direction: 'desc' }],
+        filterByFormula: "{Featured} = 'true'",
+        sort: [{ field: 'Date', direction: 'desc' }],
         maxRecords: 5
       });
       
@@ -92,7 +92,7 @@ export class AirtableStorage implements IStorage {
   async getRecentArticles(limit: number): Promise<Article[]> {
     try {
       const query = this.base('History').select({
-        sort: [{ field: 'publishedAt', direction: 'desc' }],
+        sort: [{ field: 'Date', direction: 'desc' }],
         maxRecords: limit
       });
       
@@ -122,8 +122,8 @@ export class AirtableStorage implements IStorage {
       
       // Find all articles by this author
       const query = this.base('History').select({
-        filterByFormula: `{author} = '${teamMember.name.replace(/'/g, "\\'")}'`,
-        sort: [{ field: 'publishedAt', direction: 'desc' }],
+        filterByFormula: `{Author} = '${teamMember.name.replace(/'/g, "\\'")}'`,
+        sort: [{ field: 'Date', direction: 'desc' }],
         maxRecords: 10
       });
       
@@ -138,7 +138,7 @@ export class AirtableStorage implements IStorage {
   async getTeamMembers(): Promise<Team[]> {
     try {
       const query = this.base('Teams').select({
-        sort: [{ field: 'name', direction: 'asc' }]
+        sort: [{ field: 'Name', direction: 'asc' }]
       });
       
       const records = await query.all();
@@ -173,8 +173,8 @@ export class AirtableStorage implements IStorage {
       
       this.quotes = records.map((record, index) => ({
         id: index + 1,
-        carousel: record.get('carousel') as string || 'main',
-        quote: record.get('quote') as string || ''
+        carousel: record.get('Carousel') as string || record.get('carousel') as string || 'main',
+        quote: record.get('Quote') as string || record.get('quote') as string || ''
       }));
       
       this.quoteLastFetched = new Date();
