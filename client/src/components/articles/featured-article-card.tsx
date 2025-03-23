@@ -2,26 +2,37 @@ import { Link } from "wouter";
 import { Article } from "@shared/schema";
 import { formatDate } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { AsyncImage } from "@/components/ui/async-image";
+import { getImageUrl, getPhotoUrl } from "@/lib/image-helper";
 
 interface FeaturedArticleCardProps {
   article: Article;
 }
 
 export function FeaturedArticleCard({ article }: FeaturedArticleCardProps) {
-  // We'll pass both imageUrl and photo to AsyncImage, which will handle the fallback logic
-  const imageSrc = article.imageUrl || article.photo;
+  // Use photo if imageUrl is not available
+  let imageSource = article.imageUrl ? getImageUrl(article.imageUrl) : getPhotoUrl(article.photo);
+  
+  // Make sure the image is going through our proxy if it's an external URL
+  if (imageSource && !imageSource.startsWith('/api/images/') && (imageSource.startsWith('http://') || imageSource.startsWith('https://'))) {
+    // Create a hash of the URL to use as an ID for the proxy
+    const encodedUrl = encodeURIComponent(imageSource);
+    imageSource = `/api/images/${encodedUrl}`;
+  }
   
   return (
     <div className="article-card bg-white rounded-lg shadow-lg overflow-hidden">
       <div className="md:flex">
         <div className="md:w-2/5">
-          <AsyncImage 
-            src={imageSrc} 
+          <img 
+            src={imageSource} 
             alt={article.title} 
             className="h-64 w-full object-cover"
-            showSkeleton={true}
-            containerClassName="h-64"
+            onError={(e) => {
+              const target = e.target as HTMLImageElement;
+              console.error(`Failed to load image: ${target.src}`);
+              // Fallback to a placeholder if image fails to load
+              target.src = 'https://via.placeholder.com/800x600?text=Image+Not+Available';
+            }}
           />
         </div>
         <div className="p-6 md:w-3/5">
