@@ -28,7 +28,7 @@ export function FeaturedArticleCard({ article }: FeaturedArticleCardProps) {
               <img 
                 src={imageSource} 
                 alt={article.title} 
-                className="absolute inset-0 w-full h-full object-cover"
+                className="absolute inset-0 w-full h-full object-cover object-center"
                 onError={(e) => {
                   const target = e.target as HTMLImageElement;
                   console.error(`Failed to load image: ${target.src}`);
