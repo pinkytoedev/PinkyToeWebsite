@@ -1,6 +1,7 @@
 <svg width="400" height="300" xmlns="http://www.w3.org/2000/svg">
-          <rect width="400" height="300" fill="#f8f9fa" />
-          <text x="50%" y="50%" font-family="Arial" font-size="16" text-anchor="middle" fill="#343a40">
-            Airtable Image (ID: recZDtJSX5KOLTgH4)
+          <rect width="400" height="300" fill="#f5f3ff" />
+          <rect width="400" height="60" y="120" fill="#8b5cf6" />
+          <text x="50%" y="160" font-family="Arial" font-size="16" text-anchor="middle" fill="#ffffff">
+            Airtable Image ID: recZDtJSX5KOLTgH4
           </text>
         </svg>
