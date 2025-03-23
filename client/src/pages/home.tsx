@@ -1,10 +1,19 @@
 import { useQuery } from "@tanstack/react-query";
+import { useState } from "react";
 import { Layout } from "@/components/layout/layout";
 import { API_ROUTES } from "@/lib/constants";
 import { FeaturedArticleCard } from "@/components/articles/featured-article-card";
 import { RecentArticleCard } from "@/components/articles/recent-article-card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Link } from "wouter";
+import { CarouselQuote } from "@shared/schema";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel";
 
 export default function Home() {
   const { data: featuredArticles = [], isLoading: featuredLoading } = useQuery<any[]>({
@@ -15,8 +24,8 @@ export default function Home() {
     queryKey: [API_ROUTES.RECENT_ARTICLES],
   });
 
-  const { data: quoteOfDay = {}, isLoading: quoteLoading } = useQuery<any>({
-    queryKey: [API_ROUTES.QUOTE_OF_DAY],
+  const { data: quotes = [], isLoading: quotesLoading } = useQuery<CarouselQuote[]>({
+    queryKey: [API_ROUTES.QUOTES],
   });
 
   return (
@@ -103,14 +112,14 @@ export default function Home() {
             </div>
           </div>
           
-          {/* Quote of the Day Section */}
+          {/* Quotes Carousel Section */}
           <div className="bg-white rounded-lg shadow-lg overflow-hidden">
             <div className="bg-primary text-white py-3 px-4">
-              <h2 className="font-quicksand font-bold text-xl">Quote of the Day</h2>
+              <h2 className="font-quicksand font-bold text-xl">Quotes</h2>
             </div>
             <div className="p-6" style={{backgroundImage: 'url("/assets/pink-toe-pattern.png")', backgroundSize: '400px'}}>
               <div className="bg-white bg-opacity-85 p-5 rounded-lg">
-                {quoteLoading ? (
+                {quotesLoading ? (
                   <div className="space-y-3">
                     <Skeleton className="h-5 w-full" />
                     <Skeleton className="h-5 w-11/12" />
@@ -119,10 +128,38 @@ export default function Home() {
                       <Skeleton className="h-4 w-40 ml-auto" />
                     </div>
                   </div>
+                ) : quotes && quotes.length > 0 ? (
+                  <div className="relative">
+                    <Carousel
+                      opts={{
+                        align: "start",
+                        loop: true,
+                      }}
+                    >
+                      <CarouselContent>
+                        {quotes.map((quote) => (
+                          <CarouselItem key={quote.id} className="pt-1 md:basis-full">
+                            <div className="py-2">
+                              <blockquote className="italic text-lg font-pacifico text-pinky-dark min-h-[6rem] flex items-center">
+                                "{quote.quote}"
+                              </blockquote>
+                              <div className="mt-3 text-right text-primary font-quicksand font-semibold">
+                                - The Pinky Toe Team
+                              </div>
+                            </div>
+                          </CarouselItem>
+                        ))}
+                      </CarouselContent>
+                      <div className="flex justify-center mt-4">
+                        <CarouselPrevious className="relative static mr-2" />
+                        <CarouselNext className="relative static ml-2" />
+                      </div>
+                    </Carousel>
+                  </div>
                 ) : (
                   <>
                     <blockquote className="italic text-lg font-pacifico text-pinky-dark">
-                      "{quoteOfDay?.quote || "In a world full of sharks, be a pinky toe - small but mighty enough to make someone curse when they least expect it."}"
+                      "In a world full of sharks, be a pinky toe - small but mighty enough to make someone curse when they least expect it."
                     </blockquote>
                     <div className="mt-3 text-right text-primary font-quicksand font-semibold">
                       - The Pinky Toe Team
