@@ -76,9 +76,9 @@ export class AirtableStorage implements IStorage {
   
   async getFeaturedArticles(): Promise<Article[]> {
     try {
-      // Try without the curly braces for field name to avoid field name case sensitivity issues
+      // Query for featured articles - checking if featured is true as a boolean
       const query = this.base('History').select({
-        filterByFormula: "featured = 'true'",
+        filterByFormula: "featured = TRUE()",
         sort: [{ field: 'Date', direction: 'desc' }],
         maxRecords: 5
       });
@@ -228,7 +228,7 @@ export class AirtableStorage implements IStorage {
       imageUrl: record.get('imageUrl') as string || record.get('Image URL') as string || '',
       imageType: record.get('imageType') as any || record.get('Image Type') as any || 'url',
       imagePath: record.get('imagePath') as string || record.get('Image Path') as string || null,
-      featured: record.get('featured') as string || record.get('Featured') as string || 'false',
+      featured: record.get('featured') === true || record.get('Featured') === true,
       publishedAt: publishDate,
       author: record.get('author') as string || record.get('Author') as string || '',
       photo: record.get('photo') as string || record.get('Photo') as string || '',
@@ -285,7 +285,7 @@ export class MemStorage implements IStorage {
   }
   
   async getFeaturedArticles(): Promise<Article[]> {
-    return this.articles.filter(article => article.featured === 'true');
+    return this.articles.filter(article => article.featured === true);
   }
   
   async getRecentArticles(limit: number): Promise<Article[]> {
@@ -390,7 +390,7 @@ The suffragette movement also employed humor effectively, using satirical cartoo
         imageUrl: 'https://images.unsplash.com/photo-1533562669260-350775484a52?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80',
         imageType: 'url',
         imagePath: null,
-        featured: 'true',
+        featured: true,
         publishedAt: new Date('2023-08-24'),
         author: 'Sarah Johnson',
         photo: 'https://images.unsplash.com/photo-1533562669260-350775484a52?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80',
@@ -406,7 +406,7 @@ The suffragette movement also employed humor effectively, using satirical cartoo
         imageUrl: 'https://images.unsplash.com/photo-1507676184212-d03ab07a01bf?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80',
         imageType: 'url',
         imagePath: null,
-        featured: 'true',
+        featured: true,
         publishedAt: new Date('2023-07-15'),
         author: 'Emily Rodriguez',
         photo: 'https://images.unsplash.com/photo-1507676184212-d03ab07a01bf?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80',
