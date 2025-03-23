@@ -45,7 +45,7 @@ export const articleSchema = z.object({
   imageUrl: z.string(),
   imageType: z.enum(["url", "file"]),
   imagePath: z.string().nullable(),
-  featured: z.string(),
+  featured: z.boolean(),
   publishedAt: z.date(),
   author: z.string(),
   photo: z.string(),
