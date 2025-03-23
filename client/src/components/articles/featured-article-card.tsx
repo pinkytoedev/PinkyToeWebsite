@@ -30,8 +30,8 @@ export function FeaturedArticleCard({ article }: FeaturedArticleCardProps) {
             onError={(e) => {
               const target = e.target as HTMLImageElement;
               console.error(`Failed to load image: ${target.src}`);
-              // Fallback to our local placeholder if image fails to load
-              target.src = '/api/images/placeholder';
+              // Fallback to a placeholder if image fails to load
+              target.src = 'https://via.placeholder.com/800x600?text=Image+Not+Available';
             }}
           />
         </div>
