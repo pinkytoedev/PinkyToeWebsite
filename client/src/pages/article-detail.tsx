@@ -68,7 +68,6 @@ export default function ArticleDetail() {
   };
 
 
-
   // Get the image URL if article is available
   const imageSource = article 
     ? (article.imageUrl ? getImageUrl(article.imageUrl) : getPhotoUrl(article.photo))
@@ -87,8 +86,9 @@ export default function ArticleDetail() {
         .trim();
     } else if (Array.isArray(article.name_photo)) {
       // If it's an array and has items, take the first item
-      if (article.name_photo.length > 0) {
-        const photoCredit = article.name_photo[0];
+      const photoArray = article.name_photo as string[];
+      if (photoArray.length > 0) {
+        const photoCredit = photoArray[0];
         if (typeof photoCredit === 'string') {
           photoName = photoCredit
             .replace(/Photo by /i, '')
@@ -177,11 +177,21 @@ export default function ArticleDetail() {
                     photoTeamMember ? (
                       <Link href={`/team/${photoTeamMember.id}`}>
                         <p className="text-gray-500 text-xs mt-1 cursor-pointer hover:underline">
-                          Photo Credit: {typeof article.name_photo === 'string' ? article.name_photo : Array.isArray(article.name_photo) ? article.name_photo[0] : ''}
+                          Photo Credit: {typeof article.name_photo === 'string' 
+                            ? article.name_photo 
+                            : Array.isArray(article.name_photo) 
+                              ? (article.name_photo as string[])[0] 
+                              : ''}
                         </p>
                       </Link>
                     ) : (
-                      <p className="text-gray-500 text-xs mt-1">Photo Credit: {typeof article.name_photo === 'string' ? article.name_photo : Array.isArray(article.name_photo) ? article.name_photo[0] : ''}</p>
+                      <p className="text-gray-500 text-xs mt-1">
+                        Photo Credit: {typeof article.name_photo === 'string' 
+                          ? article.name_photo 
+                          : Array.isArray(article.name_photo) 
+                            ? (article.name_photo as string[])[0] 
+                            : ''}
+                      </p>
                     )
                   )}
                 </div>
