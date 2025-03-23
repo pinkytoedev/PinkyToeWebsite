@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg width="1200" height="1200" viewBox="0 0 1200 1200" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <pattern id="pinky-toe-pattern" x="0" y="0" width="200" height="200" patternUnits="userSpaceOnUse">
+      <!-- Background -->
+      <rect x="0" y="0" width="200" height="200" fill="#f9e0e9"/>
+      
+      <!-- Pinky toes -->
+      <path d="M30,30 C35,25 45,25 50,30 C55,35 55,45 50,50 C45,55 35,55 30,50 C25,45 25,35 30,30" fill="#FF9AC2" stroke="#FF9AC2" stroke-width="1"/>
+      <path d="M90,60 C95,55 105,55 110,60 C115,65 115,75 110,80 C105,85 95,85 90,80 C85,75 85,65 90,60" fill="#FF9AC2" stroke="#FF9AC2" stroke-width="1"/>
+      <path d="M40,120 C45,115 55,115 60,120 C65,125 65,135 60,140 C55,145 45,145 40,140 C35,135 35,125 40,120" fill="#FF9AC2" stroke="#FF9AC2" stroke-width="1"/>
+      <path d="M140,40 C145,35 155,35 160,40 C165,45 165,55 160,60 C155,65 145,65 140,60 C135,55 135,45 140,40" fill="#FF9AC2" stroke="#FF9AC2" stroke-width="1"/>
+      <path d="M160,140 C165,135 175,135 180,140 C185,145 185,155 180,160 C175,165 165,165 160,160 C155,155 155,145 160,140" fill="#FF9AC2" stroke="#FF9AC2" stroke-width="1"/>
+      <path d="M120,110 C125,105 135,105 140,110 C145,115 145,125 140,130 C135,135 125,135 120,130 C115,125 115,115 120,110" fill="#FF9AC2" stroke="#FF9AC2" stroke-width="1"/>
+      <path d="M60,170 C65,165 75,165 80,170 C85,175 85,185 80,190 C75,195 65,195 60,190 C55,185 55,175 60,170" fill="#FF9AC2" stroke="#FF9AC2" stroke-width="1"/>
+      <path d="M170,90 C175,85 185,85 190,90 C195,95 195,105 190,110 C185,115 175,115 170,110 C165,105 165,95 170,90" fill="#FF9AC2" stroke="#FF9AC2" stroke-width="1"/>
+      <path d="M10,80 C15,75 25,75 30,80 C35,85 35,95 30,100 C25,105 15,105 10,100 C5,95 5,85 10,80" fill="#FF9AC2" stroke="#FF9AC2" stroke-width="1"/>
+      <path d="M80,10 C85,5 95,5 100,10 C105,15 105,25 100,30 C95,35 85,35 80,30 C75,25 75,15 80,10" fill="#FF9AC2" stroke="#FF9AC2" stroke-width="1"/>
+      
+      <!-- Hearts -->
+      <path d="M20,50 C23,47 27,47 30,50 C33,53 33,57 30,60 L25,65 C22,68 18,68 15,65 C12,62 12,58 15,55 L20,50" fill="#FF3580" stroke="#FF3580" stroke-width="0.5"/>
+      <path d="M150,30 C153,27 157,27 160,30 C163,33 163,37 160,40 L155,45 C152,48 148,48 145,45 C142,42 142,38 145,35 L150,30" fill="#FF3580" stroke="#FF3580" stroke-width="0.5"/>
+      <path d="M80,170 C83,167 87,167 90,170 C93,173 93,177 90,180 L85,185 C82,188 78,188 75,185 C72,182 72,178 75,175 L80,170" fill="#FF3580" stroke="#FF3580" stroke-width="0.5"/>
+      <path d="M180,120 C183,117 187,117 190,120 C193,123 193,127 190,130 L185,135 C182,138 178,138 175,135 C172,132 172,128 175,125 L180,120" fill="#FF3580" stroke="#FF3580" stroke-width="0.5"/>
+      <path d="M120,180 C123,177 127,177 130,180 C133,183 133,187 130,190 L125,195 C122,198 118,198 115,195 C112,192 112,188 115,185 L120,180" fill="#FF3580" stroke="#FF3580" stroke-width="0.5"/>
+      <path d="M60,110 C63,107 67,107 70,110 C73,113 73,117 70,120 L65,125 C62,128 58,128 55,125 C52,122 52,118 55,115 L60,110" fill="#FF3580" stroke="#FF3580" stroke-width="0.5"/>
+    </pattern>
+  </defs>
+  
+  <rect width="100%" height="100%" fill="url(#pinky-toe-pattern)"/>
+</svg>
