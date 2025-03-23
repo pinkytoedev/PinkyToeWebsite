@@ -23,5 +23,5 @@ export const API_ROUTES = {
 export const ITEMS_PER_PAGE = 6;
 
 export const SOCIAL_LINKS = {
-  INSTAGRAM: "https://instagram.com/pinkytoe",
+  INSTAGRAM: "https://instagram.com/pinkytoepaper",
 };
