@@ -48,10 +48,16 @@ export class ImageService {
 
   /**
    * Get image URL through proxy to handle Airtable's expiring URLs
-   * Format: /api/images/:id
+   * Format: /api/images/:encodedUrl
    */
-  static getProxyUrl(id: string): string {
-    return `/api/images/${id}`;
+  static getProxyUrl(url: string): string {
+    // If it's already a proxy URL, return it as is
+    if (url.startsWith('/api/images/')) {
+      return url;
+    }
+    
+    // Encode the URL to use as the ID in our proxy
+    return `/api/images/${encodeURIComponent(url)}`;
   }
 
   /**
