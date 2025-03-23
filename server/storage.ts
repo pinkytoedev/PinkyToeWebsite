@@ -249,7 +249,9 @@ export class AirtableStorage implements IStorage {
       description: record.get('description') as string || record.get('Description') as string || '',
       excerpt: record.get('excerpt') as string || record.get('Excerpt') as string || undefined,
       content: record.get('content') as string || record.get('Content') as string || record.get('Body') as string || '',
-      contentFormat: record.get('contentFormat') as any || record.get('Content Format') as any || 'plaintext',
+      contentFormat: record.get('contentFormat') as any || record.get('Content Format') as any || 
+        // If content comes from Body field, assume it's HTML
+        (record.get('Body') ? 'html' : 'plaintext'),
       imageUrl: imageUrl,
       imageType: 'url', // Always use URL type since we're proxying
       imagePath: null, // No need for local path when using proxy

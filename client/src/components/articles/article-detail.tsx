@@ -124,7 +124,7 @@ export function ArticleDetail({ articleId, onClose }: ArticleDetailProps) {
             </div>
           </div>
           
-          <div className="prose max-w-none">
+          <div className="prose prose-lg max-w-none prose-headings:text-primary prose-a:text-primary hover:prose-a:text-pinky-dark prose-hr:border-gray-300">
             {article.contentFormat === "html" ? (
               <div dangerouslySetInnerHTML={{ __html: article.content }} />
             ) : (
