@@ -60,7 +60,7 @@ export default function Team() {
       <h1 className="font-quicksand font-bold text-3xl md:text-4xl text-primary mb-6">Meet Our Team</h1>
       
       <p className="text-gray-600 mb-4 text-lg max-w-3xl">
-        We're a group of feminist writers, comedians, and thinkers who believe that humor can be a powerful tool for change. Get to know the minds behind The Pinky Toe!
+        The gays and gals that make up our beatutiful voice xoxo
       </p>
       
       {/* Role Filter UI */}

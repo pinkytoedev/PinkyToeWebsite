@@ -65,7 +65,7 @@ export function Footer() {
         
         {/* Copyright Section */}
         <div className="border-t border-gray-200 mt-3 pt-3 text-center text-gray-600 text-xs">
-          <p>&copy; {new Date().getFullYear()} The Pinky Toe. All rights reserved. | Designed with <i className="fas fa-heart text-primary pulse"></i> and feminist fury</p>
+          <p>&copy; {new Date().getFullYear()} The Pinky Toe. All rights reserved. | Designed with <i className="fas fa-heart text-primary pulse"></i> and feminist furries</p>
         </div>
       </div>
     </footer>
