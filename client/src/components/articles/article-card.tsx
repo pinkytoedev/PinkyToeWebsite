@@ -19,7 +19,7 @@ export function ArticleCard({ article }: ArticleCardProps) {
         <img 
           src={imageSource} 
           alt={article.title} 
-          className="h-48 w-full object-cover"
+          className="h-48 w-full object-contain bg-gray-50"
           onError={(e) => {
             const target = e.target as HTMLImageElement;
             console.error(`Failed to load image: ${target.src}`);
