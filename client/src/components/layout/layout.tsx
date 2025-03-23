@@ -31,7 +31,7 @@ export function Layout({ children }: LayoutProps) {
         ) : (
           <Marquee>
             {quotes?.map((quote: any) => (
-              <span key={quote.id} className="mx-8 font-pacifico text-lg">"{quote.quote}"</span>
+              <span key={quote.id} className="mx-8 font-pacifico text-lg">{quote.quote}</span>
             ))}
           </Marquee>
         )}

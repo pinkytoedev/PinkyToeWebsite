@@ -32,7 +32,7 @@ export function Marquee({
 
   // Set up the interval to change the active quote
   useEffect(() => {
-    if (childrenArray.length <= 1 || isPaused) return;
+    if (childrenArray.length <= 1) return;
     
     const intervalTime = 5000; // 5 seconds per quote
     const interval = setInterval(() => {
@@ -40,48 +40,51 @@ export function Marquee({
     }, intervalTime);
     
     return () => clearInterval(interval);
-  }, [childrenArray, isPaused]);
+  }, [childrenArray]);
+
+  const handleMouseEnter = () => {
+    if (pauseOnHover) {
+      setIsPaused(true);
+    }
+  };
+
+  const handleMouseLeave = () => {
+    if (pauseOnHover) {
+      setIsPaused(false);
+    }
+  };
+
+  // If there's only one item or none, just render it directly
+  if (childrenArray.length <= 1) {
+    return (
+      <div 
+        className={cn("flex overflow-hidden", className)}
+        ref={containerRef}
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={handleMouseLeave}
+      >
+        {children}
+      </div>
+    );
+  }
 
   return (
-    <div
+    <div 
+      className={cn("flex overflow-hidden", className)}
       ref={containerRef}
-      className={cn(
-        "overflow-hidden whitespace-nowrap",
-        className
-      )}
-      onMouseEnter={() => pauseOnHover && setIsPaused(true)}
-      onMouseLeave={() => pauseOnHover && setIsPaused(false)}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
     >
-      <div className="flex justify-center">
-        {childrenArray.length > 0 && (
-          <div 
-            className="animate-fade-in-out text-center" 
-            key={activeIndex}
-            style={{
-              animationName: "fadeInOut",
-              animationDuration: "5s",
-              animationTimingFunction: "ease-in-out",
-              animationIterationCount: "1",
-            }}
-          >
-            {childrenArray[activeIndex]}
-          </div>
-        )}
+      <div className="flex items-center justify-center w-full h-full">
+        <div 
+          className="transition-opacity duration-500"
+          style={{
+            opacity: 1,
+          }}
+        >
+          {childrenArray[activeIndex]}
+        </div>
       </div>
-
-      <style dangerouslySetInnerHTML={{
-        __html: `
-        @keyframes fadeInOut {
-          0% { opacity: 0; transform: translateX(${direction === "left" ? "10%" : "-10%"}); }
-          20% { opacity: 1; transform: translateX(0); }
-          80% { opacity: 1; transform: translateX(0); }
-          100% { opacity: 0; transform: translateX(${direction === "left" ? "-10%" : "10%"}); }
-        }
-        .animate-fade-in-out {
-          animation: fadeInOut 5s ease-in-out;
-        }
-        `
-      }} />
     </div>
   );
 }
