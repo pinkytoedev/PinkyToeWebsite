@@ -9,7 +9,7 @@
 
   body {
     @apply font-sans antialiased text-foreground;
-    background-image: url('../src/assets/pinky-toe-pattern.jpg');
+    background-image: url('/pinky-toe-pattern.jpg');
     background-repeat: repeat;
     background-size: 50%; /* Scale down to 50% */
   }
