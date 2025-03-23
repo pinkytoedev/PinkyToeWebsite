@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { useParams, useLocation } from "wouter";
-import { Article } from "@shared/schema";
+import { Article, Team } from "@shared/schema";
 import { Layout } from "@/components/layout/layout";
 import { API_ROUTES } from "@/lib/constants";
 import { formatDate } from "@/lib/utils";
@@ -8,23 +8,107 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
 import { getImageUrl, getPhotoUrl } from "@/lib/image-helper";
+import { TeamDetail } from "@/components/team/team-detail";
+import { useState, useEffect } from "react";
+import { fetchTeamMembers } from "@/lib/api";
 
 export default function ArticleDetail() {
   const { id } = useParams();
   const [, setLocation] = useLocation();
+  const [teamMembers, setTeamMembers] = useState<Team[]>([]);
+  const [selectedTeamMemberId, setSelectedTeamMemberId] = useState<string | null>(null);
 
   const { data: article, isLoading, error } = useQuery<Article>({
     queryKey: [API_ROUTES.ARTICLE_BY_ID(id || '')],
   });
 
+  // Fetch team members for linking
+  useEffect(() => {
+    const getTeamMembers = async () => {
+      try {
+        const members = await fetchTeamMembers();
+        setTeamMembers(members);
+      } catch (err) {
+        console.error("Failed to fetch team members:", err);
+      }
+    };
+    
+    getTeamMembers();
+  }, []);
+
+  // Find team member by name with partial matching
+  const findTeamMemberByName = (name: string | string[] | undefined): Team | undefined => {
+    if (!name || !teamMembers.length) {
+      console.log('Team members data not available yet or name is empty');
+      return undefined;
+    }
+    
+    // Handle array of names (take the first one)
+    const nameToMatch = Array.isArray(name) ? name[0] : name;
+    
+    if (!nameToMatch) return undefined;
+    
+    // Normalize the name for comparison (remove extra spaces, lowercase)
+    const normalizedName = nameToMatch.trim().toLowerCase();
+    
+    // First try exact match
+    const exactMatch = teamMembers.find(member => {
+      return member.name.toLowerCase() === normalizedName;
+    });
+    
+    if (exactMatch) return exactMatch;
+    
+    // If no exact match, try partial matching (if name contains member name or vice versa)
+    return teamMembers.find(member => {
+      const memberName = member.name.toLowerCase();
+      return normalizedName.includes(memberName) || memberName.includes(normalizedName);
+    });
+  };
+
   const goBack = () => {
     setLocation('/articles');
+  };
+
+  // Close team member modal handler
+  const handleCloseTeamDetail = () => {
+    setSelectedTeamMemberId(null);
   };
 
   // Get the image URL if article is available
   const imageSource = article 
     ? (article.imageUrl ? getImageUrl(article.imageUrl) : getPhotoUrl(article.photo))
     : '';
+    
+  // Get team member IDs if available
+  const authorTeamMember = article?.name ? findTeamMemberByName(article.name) : undefined;
+  
+  // Better extraction of photo credit name - handle multiple formats
+  let photoName = '';
+  if (article?.name_photo) {
+    if (typeof article.name_photo === 'string') {
+      photoName = article.name_photo
+        .replace(/Photo by /i, '')  // Remove "Photo by " with case insensitivity
+        .replace(/Photo credit:/i, '') // Remove "Photo credit:" with case insensitivity
+        .trim();
+    } else if (Array.isArray(article.name_photo)) {
+      // If it's an array and has items, take the first item
+      if (article.name_photo.length > 0) {
+        const photoCredit = article.name_photo[0];
+        if (typeof photoCredit === 'string') {
+          photoName = photoCredit
+            .replace(/Photo by /i, '')
+            .replace(/Photo credit:/i, '')
+            .trim();
+        } else {
+          console.log('Photo credit item is not a string:', photoCredit);
+        }
+      }
+    } else {
+      console.log('Photo credit is not in an expected format:', article.name_photo);
+    }
+  }
+  
+  const photoTeamMember = photoName ? findTeamMemberByName(photoName) : undefined;
 
   return (
     <Layout>
@@ -84,10 +168,38 @@ export default function ArticleDetail() {
               
               <div className="flex items-center mb-6">
                 <div className="text-sm">
-                  <p className="text-primary font-semibold">{article.name}</p>
+                  {authorTeamMember ? (
+                    <p 
+                      className="text-primary font-semibold cursor-pointer hover:underline" 
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        console.log('Clicked on author name:', article.name);
+                        console.log('Setting team member ID to:', authorTeamMember.id);
+                        setSelectedTeamMemberId(authorTeamMember.id);
+                      }}
+                    >
+                      {article.name} {/* Clickable author name */}
+                    </p>
+                  ) : (
+                    <p className="text-primary font-semibold">{article.name}</p>
+                  )}
                   <p className="text-gray-500">{formatDate(article.publishedAt)}</p>
                   {article.name_photo && (
-                    <p className="text-gray-500 text-xs mt-1">Photo Credit: {article.name_photo}</p>
+                    photoTeamMember ? (
+                      <p 
+                        className="text-gray-500 text-xs mt-1 cursor-pointer hover:underline" 
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          console.log('Clicked on photo credit:', article.name_photo);
+                          console.log('Setting team member ID to:', photoTeamMember.id);
+                          setSelectedTeamMemberId(photoTeamMember.id);
+                        }}
+                      >
+                        Photo Credit: {typeof article.name_photo === 'string' ? article.name_photo : Array.isArray(article.name_photo) ? article.name_photo[0] : ''}
+                      </p>
+                    ) : (
+                      <p className="text-gray-500 text-xs mt-1">Photo Credit: {typeof article.name_photo === 'string' ? article.name_photo : Array.isArray(article.name_photo) ? article.name_photo[0] : ''}</p>
+                    )
                   )}
                 </div>
               </div>
@@ -103,6 +215,14 @@ export default function ArticleDetail() {
           </div>
         ) : null}
       </div>
+      
+      {/* Show team member detail modal if a team member is selected */}
+      {selectedTeamMemberId && (
+        <TeamDetail 
+          teamMemberId={selectedTeamMemberId}
+          onClose={handleCloseTeamDetail}
+        />
+      )}
     </Layout>
   );
 }
