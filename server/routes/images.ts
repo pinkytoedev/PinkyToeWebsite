@@ -35,8 +35,8 @@ try {
   
   // Check if directory is writable
   fs.accessSync(UPLOADS_DIR, fs.constants.W_OK);
-} catch (error) {
-  console.error(`Error with uploads directory: ${error.message}`);
+} catch (error: any) {
+  console.error(`Error with uploads directory: ${error?.message || 'Unknown error'}`);
   // We'll continue and handle errors in the routes
 }
 
@@ -97,7 +97,7 @@ imagesRouter.get('/:id', async (req: Request, res: Response) => {
           // Save the SVG as a fallback
           const filepath = path.join(UPLOADS_DIR, `${fileHash}.svg`);
           fs.writeFileSync(filepath, svg);
-        } catch (writeError) {
+        } catch (writeError: any) {
           console.error('Failed to save SVG placeholder:', writeError);
           // Continue even if write fails
         }
@@ -105,7 +105,7 @@ imagesRouter.get('/:id', async (req: Request, res: Response) => {
         res.setHeader('Content-Type', 'image/svg+xml');
         res.setHeader('Cache-Control', 'public, max-age=86400');
         return res.send(svg);
-      } catch (svgError) {
+      } catch (svgError: any) {
         console.error('Error creating SVG placeholder:', svgError);
         return res.redirect('/api/images/placeholder');
       }
@@ -119,7 +119,7 @@ imagesRouter.get('/:id', async (req: Request, res: Response) => {
       // but wrap in try/catch to handle invalid URLs
       try {
         return await handleUrlImage(decodedId, fileHash, res);
-      } catch (urlError) {
+      } catch (urlError: any) {
         console.error('Error with URL:', urlError);
         
         // Return placeholder if URL is invalid
@@ -127,7 +127,7 @@ imagesRouter.get('/:id', async (req: Request, res: Response) => {
       }
     }
     
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error serving image:', error);
     return res.redirect('/api/images/placeholder');
   }
@@ -174,7 +174,7 @@ async function handleUrlImage(url: string, fileHash: string, res: Response) {
       try {
         const filepath = path.join(UPLOADS_DIR, `${fileHash}${ext}`);
         fs.writeFileSync(filepath, buffer);
-      } catch (writeError) {
+      } catch (writeError: any) {
         console.error('Error writing image to disk:', writeError);
         // Continue anyway to serve the image from memory
       }
@@ -183,11 +183,11 @@ async function handleUrlImage(url: string, fileHash: string, res: Response) {
       res.setHeader('Content-Type', contentType);
       res.setHeader('Cache-Control', 'public, max-age=86400'); // Cache for 24 hours
       res.end(buffer);
-    } catch (fetchError) {
+    } catch (fetchError: any) {
       console.error(`Error fetching image from URL: ${fullUrl}`, fetchError);
       return res.redirect('/api/images/placeholder');
     }
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error handling URL image:', error);
     return res.redirect('/api/images/placeholder');
   }
@@ -238,7 +238,7 @@ async function refreshImageInBackground(id: string, fileHash: string) {
     } catch (fetchError) {
       console.error(`Error fetching image: ${fullUrl}`, fetchError);
     }
-  } catch (error) {
+  } catch (error: any) {
     // Just log the error, don't interrupt the request flow
     console.error('Error refreshing image in background:', error);
   }
