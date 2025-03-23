@@ -219,6 +219,30 @@ export class AirtableStorage implements IStorage {
     const createdString = record.get('createdAt') || record.get('Created Date') || record.get('created');
     const createdDate = createdString ? new Date(createdString as string) : new Date();
     
+    // Handle image attachments
+    let imageUrl = '';
+    const imageField = record.get('Image') || record.get('image') || record.get('Banner') || record.get('banner');
+    
+    if (imageField) {
+      // Try to extract attachment data
+      const attachment = ImageService.extractAttachmentFromField(imageField);
+      if (attachment) {
+        // Get the best URL from the attachment
+        const bestUrl = ImageService.getBestAttachmentUrl(attachment);
+        // Create a proxy URL using the actual image URL
+        imageUrl = ImageService.getProxyUrl(bestUrl);
+      }
+    }
+    
+    // Fallback to URL fields if no attachment
+    if (!imageUrl) {
+      const directUrl = record.get('imageUrl') as string || record.get('Image URL') as string || '';
+      if (directUrl) {
+        // Proxy the direct URL as well
+        imageUrl = ImageService.getProxyUrl(directUrl);
+      }
+    }
+    
     return {
       id: record.id,
       title: record.get('Name') as string || record.get('title') as string || record.get('Title') as string || '',
@@ -226,9 +250,9 @@ export class AirtableStorage implements IStorage {
       excerpt: record.get('excerpt') as string || record.get('Excerpt') as string || undefined,
       content: record.get('content') as string || record.get('Content') as string || '',
       contentFormat: record.get('contentFormat') as any || record.get('Content Format') as any || 'plaintext',
-      imageUrl: record.get('imageUrl') as string || record.get('Image URL') as string || '',
-      imageType: record.get('imageType') as any || record.get('Image Type') as any || 'url',
-      imagePath: record.get('imagePath') as string || record.get('Image Path') as string || null,
+      imageUrl: imageUrl,
+      imageType: 'url', // Always use URL type since we're proxying
+      imagePath: null, // No need for local path when using proxy
       featured: record.get('featured') === true || record.get('Featured') === true,
       publishedAt: publishDate,
       author: record.get('author') as string || record.get('Author') as string || '',
@@ -241,15 +265,38 @@ export class AirtableStorage implements IStorage {
   }
   
   private mapAirtableRecordToTeamMember(record: Airtable.Record<any>): Team {
+    // Handle image attachments
+    let imageUrl = '';
+    const imageField = record.get('Image') || record.get('image') || record.get('Photo') || record.get('photo');
+    
+    if (imageField) {
+      // Try to extract attachment data
+      const attachment = ImageService.extractAttachmentFromField(imageField);
+      if (attachment) {
+        // Get the best URL from the attachment
+        const bestUrl = ImageService.getBestAttachmentUrl(attachment);
+        // Create a proxy URL using the actual image URL
+        imageUrl = ImageService.getProxyUrl(bestUrl);
+      }
+    }
+    
+    // Fallback to URL fields if no attachment
+    if (!imageUrl) {
+      const directUrl = record.get('imageUrl') as string || record.get('Image URL') as string || '';
+      if (directUrl) {
+        // Proxy the direct URL as well
+        imageUrl = ImageService.getProxyUrl(directUrl);
+      }
+    }
+    
     return {
       id: record.id,
       name: record.get('name') as string || record.get('Name') as string || '',
       role: record.get('role') as string || record.get('Role') as string || '',
       bio: record.get('bio') as string || record.get('Bio') as string || '',
-      imageUrl: record.get('imageUrl') as string || record.get('Image URL') as string || 
-              record.get('image') as string || record.get('Image') as string || '',
-      imageType: record.get('imageType') as any || record.get('Image Type') as any || 'url',
-      imagePath: record.get('imagePath') as string || record.get('Image Path') as string || null
+      imageUrl: imageUrl,
+      imageType: 'url', // Always use URL type since we're proxying
+      imagePath: null // No need for local path when using proxy
     };
   }
 }
@@ -350,7 +397,7 @@ export class MemStorage implements IStorage {
         name: 'Sarah Johnson',
         role: 'Editor-in-Chief',
         bio: 'Comedy writer and feminist scholar with a passion for empowering women through humor.',
-        imageUrl: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80',
+        imageUrl: ImageService.getProxyUrl('https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80'),
         imageType: 'url',
         imagePath: null
       },
@@ -359,7 +406,7 @@ export class MemStorage implements IStorage {
         name: 'Emily Rodriguez',
         role: 'Lead Writer',
         bio: 'Comedian and essayist focusing on intersectional feminism and representation in media.',
-        imageUrl: 'https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80',
+        imageUrl: ImageService.getProxyUrl('https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80'),
         imageType: 'url',
         imagePath: null
       },
@@ -368,7 +415,7 @@ export class MemStorage implements IStorage {
         name: 'Jessica Lee',
         role: 'Staff Writer',
         bio: 'Cultural critic and humor writer exploring gender politics through a satirical lens.',
-        imageUrl: 'https://images.unsplash.com/photo-1581992652564-44c42f5ad3ad?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80',
+        imageUrl: ImageService.getProxyUrl('https://images.unsplash.com/photo-1581992652564-44c42f5ad3ad?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80'),
         imageType: 'url',
         imagePath: null
       }
@@ -389,13 +436,13 @@ In the 19th century, writers like Jane Austen and Frances Burney used wit and ir
 
 The suffragette movement also employed humor effectively, using satirical cartoons and witty slogans to counter anti-suffrage arguments and humanize their cause. These early pioneers understood that laughter could be a disarming entry point for radical ideas.`,
         contentFormat: 'plaintext',
-        imageUrl: 'https://images.unsplash.com/photo-1533562669260-350775484a52?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80',
+        imageUrl: ImageService.getProxyUrl('https://images.unsplash.com/photo-1533562669260-350775484a52?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80'),
         imageType: 'url',
         imagePath: null,
         featured: true,
         publishedAt: new Date('2023-08-24'),
         author: 'Sarah Johnson',
-        photo: 'https://images.unsplash.com/photo-1533562669260-350775484a52?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80',
+        photo: ImageService.getProxyUrl('https://images.unsplash.com/photo-1533562669260-350775484a52?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80'),
         status: 'published',
         createdAt: new Date('2023-08-20')
       },
@@ -405,13 +452,13 @@ The suffragette movement also employed humor effectively, using satirical cartoo
         description: 'Interviews with rising female comedians who are reshaping the landscape of humor and representation.',
         content: 'Full article content here...',
         contentFormat: 'plaintext',
-        imageUrl: 'https://images.unsplash.com/photo-1507676184212-d03ab07a01bf?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80',
+        imageUrl: ImageService.getProxyUrl('https://images.unsplash.com/photo-1507676184212-d03ab07a01bf?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80'),
         imageType: 'url',
         imagePath: null,
         featured: true,
         publishedAt: new Date('2023-07-15'),
         author: 'Emily Rodriguez',
-        photo: 'https://images.unsplash.com/photo-1507676184212-d03ab07a01bf?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80',
+        photo: ImageService.getProxyUrl('https://images.unsplash.com/photo-1507676184212-d03ab07a01bf?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80'),
         status: 'published',
         createdAt: new Date('2023-07-10')
       },
@@ -421,13 +468,13 @@ The suffragette movement also employed humor effectively, using satirical cartoo
         description: 'A look at the structural barriers women face in comedy writing rooms and the trailblazers breaking through.',
         content: 'Full article content here...',
         contentFormat: 'plaintext',
-        imageUrl: 'https://images.unsplash.com/photo-1496449903678-68ddcb189a24?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80',
+        imageUrl: ImageService.getProxyUrl('https://images.unsplash.com/photo-1496449903678-68ddcb189a24?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80'),
         imageType: 'url',
         imagePath: null,
         featured: false,
         publishedAt: new Date('2023-09-05'),
         author: 'Jessica Lee',
-        photo: 'https://images.unsplash.com/photo-1496449903678-68ddcb189a24?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80',
+        photo: ImageService.getProxyUrl('https://images.unsplash.com/photo-1496449903678-68ddcb189a24?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80'),
         status: 'published',
         createdAt: new Date('2023-09-01')
       }
