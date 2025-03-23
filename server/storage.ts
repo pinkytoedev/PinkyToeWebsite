@@ -248,7 +248,7 @@ export class AirtableStorage implements IStorage {
       title: record.get('Name') as string || record.get('title') as string || record.get('Title') as string || '',
       description: record.get('description') as string || record.get('Description') as string || '',
       excerpt: record.get('excerpt') as string || record.get('Excerpt') as string || undefined,
-      content: record.get('content') as string || record.get('Content') as string || '',
+      content: record.get('content') as string || record.get('Content') as string || record.get('Body') as string || '',
       contentFormat: record.get('contentFormat') as any || record.get('Content Format') as any || 'plaintext',
       imageUrl: imageUrl,
       imageType: 'url', // Always use URL type since we're proxying
