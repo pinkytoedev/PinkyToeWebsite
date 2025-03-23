@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { useParams, useLocation } from "wouter";
+import { useParams, useLocation, Link } from "wouter";
 import { Article, Team } from "@shared/schema";
 import { Layout } from "@/components/layout/layout";
 import { API_ROUTES } from "@/lib/constants";
@@ -8,7 +8,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
 import { getImageUrl, getPhotoUrl } from "@/lib/image-helper";
-import { TeamDetail } from "@/components/team/team-detail";
+
 import { useState, useEffect } from "react";
 import { fetchTeamMembers } from "@/lib/api";
 
@@ -16,8 +16,6 @@ export default function ArticleDetail() {
   const { id } = useParams();
   const [, setLocation] = useLocation();
   const [teamMembers, setTeamMembers] = useState<Team[]>([]);
-  const [selectedTeamMemberId, setSelectedTeamMemberId] = useState<string | null>(null);
-
   const { data: article, isLoading, error } = useQuery<Article>({
     queryKey: [API_ROUTES.ARTICLE_BY_ID(id || '')],
   });
@@ -69,10 +67,7 @@ export default function ArticleDetail() {
     setLocation('/articles');
   };
 
-  // Close team member modal handler
-  const handleCloseTeamDetail = () => {
-    setSelectedTeamMemberId(null);
-  };
+
 
   // Get the image URL if article is available
   const imageSource = article 
@@ -169,34 +164,22 @@ export default function ArticleDetail() {
               <div className="flex items-center mb-6">
                 <div className="text-sm">
                   {authorTeamMember ? (
-                    <p 
-                      className="text-primary font-semibold cursor-pointer hover:underline" 
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        console.log('Clicked on author name:', article.name);
-                        console.log('Setting team member ID to:', authorTeamMember.id);
-                        setSelectedTeamMemberId(authorTeamMember.id);
-                      }}
-                    >
-                      {article.name} {/* Clickable author name */}
-                    </p>
+                    <Link href={`/team/${authorTeamMember.id}`}>
+                      <p className="text-primary font-semibold cursor-pointer hover:underline">
+                        {article.name} {/* Clickable author name */}
+                      </p>
+                    </Link>
                   ) : (
                     <p className="text-primary font-semibold">{article.name}</p>
                   )}
                   <p className="text-gray-500">{formatDate(article.publishedAt)}</p>
                   {article.name_photo && (
                     photoTeamMember ? (
-                      <p 
-                        className="text-gray-500 text-xs mt-1 cursor-pointer hover:underline" 
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          console.log('Clicked on photo credit:', article.name_photo);
-                          console.log('Setting team member ID to:', photoTeamMember.id);
-                          setSelectedTeamMemberId(photoTeamMember.id);
-                        }}
-                      >
-                        Photo Credit: {typeof article.name_photo === 'string' ? article.name_photo : Array.isArray(article.name_photo) ? article.name_photo[0] : ''}
-                      </p>
+                      <Link href={`/team/${photoTeamMember.id}`}>
+                        <p className="text-gray-500 text-xs mt-1 cursor-pointer hover:underline">
+                          Photo Credit: {typeof article.name_photo === 'string' ? article.name_photo : Array.isArray(article.name_photo) ? article.name_photo[0] : ''}
+                        </p>
+                      </Link>
                     ) : (
                       <p className="text-gray-500 text-xs mt-1">Photo Credit: {typeof article.name_photo === 'string' ? article.name_photo : Array.isArray(article.name_photo) ? article.name_photo[0] : ''}</p>
                     )
@@ -215,14 +198,6 @@ export default function ArticleDetail() {
           </div>
         ) : null}
       </div>
-      
-      {/* Show team member detail modal if a team member is selected */}
-      {selectedTeamMemberId && (
-        <TeamDetail 
-          teamMemberId={selectedTeamMemberId}
-          onClose={handleCloseTeamDetail}
-        />
-      )}
     </Layout>
   );
 }
