@@ -17,7 +17,7 @@ if (!fs.existsSync(UPLOADS_DIR)) {
  * Simple image proxy route that uses cache-then-network approach
  * Responds with cached version first, then fetches updated image in background
  */
-imagesRouter.get('/:id', async (req: Request, res: Response) => {
+imagesRouter.get('/:id', async (req: Request, res: ExpressResponse) => {
   try {
     const { id } = req.params;
     
@@ -86,7 +86,7 @@ imagesRouter.get('/:id', async (req: Request, res: Response) => {
 /**
  * Handle fetching and caching an image from a URL
  */
-async function handleUrlImage(url: string, fileHash: string, res: Response) {
+async function handleUrlImage(url: string, fileHash: string, res: ExpressResponse) {
   try {
     console.log(`Fetching image from URL: ${url.substring(0, 100)}...`);
     
@@ -96,7 +96,7 @@ async function handleUrlImage(url: string, fileHash: string, res: Response) {
     }
     
     // Fetch the image
-    let response: Response;
+    let response: FetchResponse;
     try {
       response = await fetch(url);
       if (!response.ok) {
@@ -173,7 +173,7 @@ async function refreshImageInBackground(id: string, fileHash: string) {
     
     const url = id;
     console.log(`Fetching from: ${url.substring(0, 100)}...`);
-    const response = await fetch(url);
+    const response: FetchResponse = await fetch(url);
     
     if (!response.ok) {
       console.error(`Failed to refresh image: ${response.status} ${response.statusText}`);

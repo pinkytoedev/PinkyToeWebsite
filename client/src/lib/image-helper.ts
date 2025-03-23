@@ -48,6 +48,12 @@ export function getImageUrl(imageUrl: string | undefined | null | any[]): string
   if (typeof imageUrl === 'string' && (imageUrl.startsWith('http://') || imageUrl.startsWith('https://'))) {
     return proxyExternalUrl(imageUrl);
   }
+  
+  // If it looks like an Airtable ID (e.g. "recXXXXXX"), don't try to process it
+  // Our server will return the placeholder image when it gets a non-URL ID
+  if (typeof imageUrl === 'string' && imageUrl.startsWith('rec') && imageUrl.length === 17) {
+    return LOCAL_FALLBACK_IMAGE;
+  }
 
   // If it's an object (Airtable attachment), extract the URL
   if (typeof imageUrl === 'object' && imageUrl !== null) {
