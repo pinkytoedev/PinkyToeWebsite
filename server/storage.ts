@@ -46,7 +46,7 @@ export class AirtableStorage implements IStorage {
       }
       
       // First get count of total records matching the search
-      const countQuery = this.base('Articles').select({
+      const countQuery = this.base('History').select({
         filterByFormula: search ? filterByFormula : '',
         fields: ['id'] // Only fetch id field for counting
       });
@@ -55,7 +55,7 @@ export class AirtableStorage implements IStorage {
       const total = totalRecords.length;
       
       // Then fetch the specific page of data
-      const query = this.base('Articles').select({
+      const query = this.base('History').select({
         sort: [{ field: 'publishedAt', direction: 'desc' }],
         filterByFormula: search ? filterByFormula : '',
         maxRecords: limit,
@@ -75,7 +75,7 @@ export class AirtableStorage implements IStorage {
   
   async getFeaturedArticles(): Promise<Article[]> {
     try {
-      const query = this.base('Articles').select({
+      const query = this.base('History').select({
         filterByFormula: "{featured} = 'true'",
         sort: [{ field: 'publishedAt', direction: 'desc' }],
         maxRecords: 5
