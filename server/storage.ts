@@ -76,8 +76,9 @@ export class AirtableStorage implements IStorage {
   
   async getFeaturedArticles(): Promise<Article[]> {
     try {
+      // Try without the curly braces for field name to avoid field name case sensitivity issues
       const query = this.base('History').select({
-        filterByFormula: "{featured} = 'true'",
+        filterByFormula: "featured = 'true'",
         sort: [{ field: 'Date', direction: 'desc' }],
         maxRecords: 5
       });
