@@ -47,9 +47,9 @@ export const articleSchema = z.object({
   imagePath: z.string().nullable(),
   featured: z.boolean(),
   publishedAt: z.date(),
-  name: z.string(), // Changed from author to name
+  name: z.string(), // Changed from author to "Name (from Author)"
   photo: z.string(),
-  name_photo: z.string().optional(), // Changed from photoCredit to name_photo
+  name_photo: z.string().optional(), // Changed from photoCredit to "Name (from Photo)"
   status: z.string().optional(),
   createdAt: z.date().optional(),
   hashtags: z.string().optional(),
@@ -117,9 +117,9 @@ export const articles = pgTable("articles", {
   imagePath: text("image_path"),
   featured: text("featured").notNull(),
   publishedAt: timestamp("published_at").notNull(),
-  author: text("author").notNull(),
+  author: text("author").notNull(), // Maps to "Name (from Author)" in Airtable
   photo: text("photo").notNull(),
-  photoCredit: text("photo_credit"),
+  photoCredit: text("photo_credit"), // Maps to "Name (from Photo)" in Airtable
   status: text("status"),
   createdAt: timestamp("created_at").defaultNow(),
   hashtags: text("hashtags"),
