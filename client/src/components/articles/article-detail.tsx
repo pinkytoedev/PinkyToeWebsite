@@ -200,16 +200,18 @@ export function ArticleDetail({ articleId, onClose }: ArticleDetailProps) {
           </button>
         </div>
         <div className="p-6">
-          <img 
-            src={imageSource} 
-            alt={article.title} 
-            className="w-full h-80 object-cover rounded-lg mb-6"
-            onError={(e) => {
-              const target = e.target as HTMLImageElement;
-              console.error(`Failed to load image: ${target.src}`);
-              target.src = '/api/images/placeholder';
-            }}
-          />
+          <div className="flex justify-center bg-gray-50 py-4 rounded-lg mb-6">
+            <img 
+              src={imageSource} 
+              alt={article.title} 
+              className="max-w-full max-h-[500px] object-contain"
+              onError={(e) => {
+                const target = e.target as HTMLImageElement;
+                console.error(`Failed to load image: ${target.src}`);
+                target.src = '/api/images/placeholder';
+              }}
+            />
+          </div>
           
           <div className="flex items-center mb-6">
             <div className="text-sm">
