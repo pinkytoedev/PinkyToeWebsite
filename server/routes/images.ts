@@ -85,6 +85,7 @@ imagesRouter.get('/:id', async (req: Request, res: ExpressResponse) => {
 
 /**
  * Handle fetching and caching an image from a URL
+ * Uses the enhanced ImageService that automatically updates mapping files
  */
 async function handleUrlImage(url: string, fileHash: string, res: ExpressResponse) {
   try {
@@ -95,48 +96,24 @@ async function handleUrlImage(url: string, fileHash: string, res: ExpressRespons
       fs.mkdirSync(UPLOADS_DIR, { recursive: true });
     }
     
-    // Fetch the image
-    let response: FetchResponse;
     try {
-      response = await fetch(url);
-      if (!response.ok) {
-        console.error(`Failed to fetch image: ${response.status} ${response.statusText}`);
-        return res.status(404).sendFile(path.join(process.cwd(), 'client/public/assets/placeholder-image.svg'));
-      }
-    } catch (error) {
-      console.error(`Network error fetching image: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      // Try to get content type to determine proper MIME type for response
+      const contentType = await ImageService.getContentType(url) || 'image/jpeg';
+      
+      // Use our enhanced ImageService to fetch and cache the image
+      // This handles all the file saving and mapping updates
+      const filepath = await ImageService.fetchAndCacheImage(url, fileHash);
+      
+      // Stream the file back to the client
+      res.setHeader('Content-Type', contentType);
+      res.setHeader('Cache-Control', 'public, max-age=86400'); // Cache for 24 hours
+      fs.createReadStream(filepath).pipe(res);
+      
+      console.log(`Image served successfully from: ${filepath}`);
+    } catch (fetchError) {
+      console.error(`Error fetching image: ${fetchError instanceof Error ? fetchError.message : 'Unknown error'}`);
       return res.status(404).sendFile(path.join(process.cwd(), 'client/public/assets/placeholder-image.svg'));
     }
-    
-    // Get content type and determine extension
-    const contentType = response.headers.get('content-type') || 'image/jpeg';
-    const ext = contentType.includes('png') ? '.png' : 
-                contentType.includes('gif') ? '.gif' : 
-                contentType.includes('webp') ? '.webp' : '.jpg';
-    
-    console.log(`Image content type: ${contentType}, using extension: ${ext}`);
-    
-    // Get the image data
-    const buffer = await response.buffer();
-    
-    if (!buffer || buffer.length === 0) {
-      console.error('Received empty image buffer');
-      return res.status(404).sendFile(path.join(process.cwd(), 'client/public/assets/placeholder-image.svg'));
-    }
-    
-    console.log(`Received image: ${buffer.length} bytes`);
-    
-    // Save the image to disk
-    const filepath = path.join(UPLOADS_DIR, `${fileHash}${ext}`);
-    fs.writeFileSync(filepath, buffer);
-    console.log(`Saved image to: ${filepath}`);
-    
-    // Serve the image
-    res.setHeader('Content-Type', contentType);
-    res.setHeader('Cache-Control', 'public, max-age=86400'); // Cache for 24 hours
-    res.end(buffer);
-    
-    console.log('Image served successfully');
     
   } catch (error) {
     console.error('Error handling URL image:', error);
@@ -155,6 +132,7 @@ async function handleUrlImage(url: string, fileHash: string, res: ExpressRespons
 
 /**
  * Refresh an image in the background without blocking the response
+ * Uses the enhanced ImageService for automatic mapping updates
  */
 async function refreshImageInBackground(id: string, fileHash: string) {
   try {
@@ -171,33 +149,11 @@ async function refreshImageInBackground(id: string, fileHash: string) {
       return;
     }
     
+    // Use our enhanced ImageService to refresh the image
+    // This will automatically update the URL-to-filename mapping
     const url = id;
-    console.log(`Fetching from: ${url.substring(0, 100)}...`);
-    const response: FetchResponse = await fetch(url);
-    
-    if (!response.ok) {
-      console.error(`Failed to refresh image: ${response.status} ${response.statusText}`);
-      return;
-    }
-    
-    // Get content type and determine extension
-    const contentType = response.headers.get('content-type') || 'image/jpeg';
-    const ext = contentType.includes('png') ? '.png' : 
-               contentType.includes('gif') ? '.gif' : 
-               contentType.includes('webp') ? '.webp' : '.jpg';
-    
-    // Get the image data
-    const buffer = await response.buffer();
-    
-    if (!buffer || buffer.length === 0) {
-      console.error('Received empty image buffer during refresh');
-      return;
-    }
-    
-    // Save the image to disk
-    const filepath = path.join(UPLOADS_DIR, `${fileHash}${ext}`);
-    fs.writeFileSync(filepath, buffer);
-    console.log(`Refreshed and saved image to: ${filepath}`);
+    await ImageService.fetchAndCacheImage(url, fileHash);
+    console.log(`Refreshed image successfully.`);
     
   } catch (error) {
     // Just log the error, don't interrupt the request flow
