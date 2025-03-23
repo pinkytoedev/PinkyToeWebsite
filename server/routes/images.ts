@@ -1,6 +1,6 @@
-import { Router, Request, Response } from 'express';
+import { Router, Request, Response as ExpressResponse } from 'express';
 import { ImageService } from '../services/image-service';
-import fetch from 'node-fetch';
+import fetch, { Response as FetchResponse } from 'node-fetch';
 import fs from 'fs';
 import path from 'path';
 import crypto from 'crypto';
@@ -71,8 +71,10 @@ imagesRouter.get('/:id', async (req: Request, res: Response) => {
       // ID is a URL to an external image
       return await handleUrlImage(decodedId, fileHash, res);
     } else {
-      // For other cases (unlikely now that we're using encoded URLs)
-      return await handleUrlImage(decodedId, fileHash, res);
+      // The ID is not a URL - this is likely an Airtable ID or other non-URL identifier
+      // We can't fetch this directly, so return a 404
+      console.error(`Cannot fetch non-URL image ID: ${decodedId}`);
+      return res.status(404).sendFile(path.join(process.cwd(), 'client/public/assets/placeholder-image.svg'));
     }
     
   } catch (error) {
@@ -94,10 +96,16 @@ async function handleUrlImage(url: string, fileHash: string, res: Response) {
     }
     
     // Fetch the image
-    const response = await fetch(url);
-    if (!response.ok) {
-      console.error(`Failed to fetch image: ${response.status} ${response.statusText}`);
-      return res.status(404).json({ error: `Image not found: ${response.status} ${response.statusText}` });
+    let response: Response;
+    try {
+      response = await fetch(url);
+      if (!response.ok) {
+        console.error(`Failed to fetch image: ${response.status} ${response.statusText}`);
+        return res.status(404).sendFile(path.join(process.cwd(), 'client/public/assets/placeholder-image.svg'));
+      }
+    } catch (error) {
+      console.error(`Network error fetching image: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      return res.status(404).sendFile(path.join(process.cwd(), 'client/public/assets/placeholder-image.svg'));
     }
     
     // Get content type and determine extension
@@ -113,7 +121,7 @@ async function handleUrlImage(url: string, fileHash: string, res: Response) {
     
     if (!buffer || buffer.length === 0) {
       console.error('Received empty image buffer');
-      return res.status(404).json({ error: 'Received empty image' });
+      return res.status(404).sendFile(path.join(process.cwd(), 'client/public/assets/placeholder-image.svg'));
     }
     
     console.log(`Received image: ${buffer.length} bytes`);
@@ -157,9 +165,13 @@ async function refreshImageInBackground(id: string, fileHash: string) {
       fs.mkdirSync(UPLOADS_DIR, { recursive: true });
     }
     
-    // If the ID is a URL
-    const url = id.startsWith('http') ? id : decodeURIComponent(id);
+    // Only proceed with refresh if it's a URL
+    if (!id.startsWith('http')) {
+      console.log(`Skipping refresh for non-URL ID: ${id}`);
+      return;
+    }
     
+    const url = id;
     console.log(`Fetching from: ${url.substring(0, 100)}...`);
     const response = await fetch(url);
     
