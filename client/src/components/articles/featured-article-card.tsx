@@ -2,30 +2,26 @@ import { Link } from "wouter";
 import { Article } from "@shared/schema";
 import { formatDate } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { getImageUrl, getPhotoUrl } from "@/lib/image-helper";
+import { AsyncImage } from "@/components/ui/async-image";
 
 interface FeaturedArticleCardProps {
   article: Article;
 }
 
 export function FeaturedArticleCard({ article }: FeaturedArticleCardProps) {
-  // Use photo if imageUrl is not available
-  const imageSource = article.imageUrl ? getImageUrl(article.imageUrl) : getPhotoUrl(article.photo);
+  // We'll pass both imageUrl and photo to AsyncImage, which will handle the fallback logic
+  const imageSrc = article.imageUrl || article.photo;
   
   return (
     <div className="article-card bg-white rounded-lg shadow-lg overflow-hidden">
       <div className="md:flex">
         <div className="md:w-2/5">
-          <img 
-            src={imageSource} 
+          <AsyncImage 
+            src={imageSrc} 
             alt={article.title} 
             className="h-64 w-full object-cover"
-            onError={(e) => {
-              const target = e.target as HTMLImageElement;
-              console.error(`Failed to load image: ${target.src}`);
-              // Fallback to a local placeholder if image fails to load
-              target.src = '/assets/placeholder-image.svg';
-            }}
+            showSkeleton={true}
+            containerClassName="h-64"
           />
         </div>
         <div className="p-6 md:w-3/5">
