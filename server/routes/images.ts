@@ -106,14 +106,16 @@ imagesRouter.get('/:id', async (req: Request, res: Response) => {
 
         console.log(`Processing Airtable record ID: ${decodedId}`);
         
-        // For Airtable record IDs, we need to create a placeholder
-        // In a real app, we would try to fetch the actual image from the Airtable API here
-        // For now, we'll use a better placeholder that indicates it's an Airtable image
+        // For Airtable record IDs, we fallback to a placeholder since we don't have direct access
+        // to fetch the image from Airtable's API. In production, you would implement this by
+        // using the Airtable API to fetch the actual image.
+        
+        // If this is a MainImage field Airtable record ID
         const svg = `<svg width="400" height="300" xmlns="http://www.w3.org/2000/svg">
           <rect width="400" height="300" fill="#f5f3ff" />
           <rect width="400" height="60" y="120" fill="#8b5cf6" />
           <text x="50%" y="160" font-family="Arial" font-size="16" text-anchor="middle" fill="#ffffff">
-            Airtable Image ID: ${decodedId}
+            Airtable Image: ${decodedId}
           </text>
         </svg>`;
         
@@ -130,7 +132,7 @@ imagesRouter.get('/:id', async (req: Request, res: Response) => {
         res.setHeader('Cache-Control', 'public, max-age=86400');
         return res.send(svg);
       } catch (svgError: any) {
-        console.error('Error creating SVG placeholder:', svgError);
+        console.error('Error handling Airtable record ID:', svgError);
         return res.redirect('/api/images/placeholder');
       }
     }

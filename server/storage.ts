@@ -351,6 +351,9 @@ export class AirtableStorage implements IStorage {
   }
   
   private mapAirtableRecordToArticle(record: Airtable.Record<any>): Article {
+    console.log('Processing Airtable record:', record.id);
+    console.log('Available fields:', Object.keys(record.fields));
+    
     // Get date field - try different possible field names
     const dateString = record.get('publishedAt') || record.get('Published Date') || record.get('Date') || record.get('created');
     const publishDate = dateString ? new Date(dateString as string) : new Date();
@@ -359,14 +362,22 @@ export class AirtableStorage implements IStorage {
     const createdString = record.get('createdAt') || record.get('Created Date') || record.get('created');
     const createdDate = createdString ? new Date(createdString as string) : new Date();
     
-    // Handle image attachments
+    // Check if MainImage exists and log its contents
+    if (record.get('MainImage')) {
+      console.log('MainImage field found:', record.get('MainImage'));
+    }
+    
+    // Handle image attachments - check for MainImage field first
     let imageUrl = '';
-    const imageField = record.get('Image') || record.get('image') || record.get('Banner') || record.get('banner');
+    const imageField = record.get('MainImage') || record.get('mainImage') || record.get('Image') || record.get('image') || record.get('Banner') || record.get('banner');
     
     if (imageField) {
+      console.log(`Found image field for article "${record.get('Name') || record.id}":`, typeof imageField, Array.isArray(imageField) ? 'Array' : '');
+      
       // Try to extract attachment data
       const attachment = ImageService.extractAttachmentFromField(imageField);
       if (attachment) {
+        console.log(`Found image attachment for article "${record.get('Name') || record.id}":`, attachment.url);
         // Get the best URL from the attachment
         const bestUrl = ImageService.getBestAttachmentUrl(attachment);
         // Create a proxy URL using the actual image URL
@@ -378,9 +389,16 @@ export class AirtableStorage implements IStorage {
     if (!imageUrl) {
       const directUrl = record.get('imageUrl') as string || record.get('Image URL') as string || '';
       if (directUrl) {
+        console.log(`Using direct URL for article "${record.get('Name') || record.id}":`, directUrl);
         // Proxy the direct URL as well
         imageUrl = ImageService.getProxyUrl(directUrl);
       }
+    }
+    
+    // Check photo field too
+    const photoField = record.get('photo') || record.get('Photo');
+    if (photoField) {
+      console.log(`Photo field for article "${record.get('Name') || record.id}":`, typeof photoField, Array.isArray(photoField) ? 'Array' : '');
     }
     
     return {
@@ -407,14 +425,25 @@ export class AirtableStorage implements IStorage {
   }
   
   private mapAirtableRecordToTeamMember(record: Airtable.Record<any>): Team {
-    // Handle image attachments
+    console.log('Processing Airtable team record:', record.id);
+    console.log('Available team member fields:', Object.keys(record.fields));
+    
+    // Check if MainImage exists and log its contents
+    if (record.get('MainImage')) {
+      console.log('MainImage field found for team member:', record.get('MainImage'));
+    }
+    
+    // Handle image attachments - check for MainImage field first
     let imageUrl = '';
-    const imageField = record.get('Image') || record.get('image') || record.get('Photo') || record.get('photo');
+    const imageField = record.get('MainImage') || record.get('mainImage') || record.get('Image') || record.get('image') || record.get('Photo') || record.get('photo');
     
     if (imageField) {
+      console.log(`Found image field for team member "${record.get('Name') || record.id}":`, typeof imageField, Array.isArray(imageField) ? 'Array' : '');
+      
       // Try to extract attachment data
       const attachment = ImageService.extractAttachmentFromField(imageField);
       if (attachment) {
+        console.log(`Found image attachment for team member "${record.get('Name') || record.id}":`, attachment.url);
         // Get the best URL from the attachment
         const bestUrl = ImageService.getBestAttachmentUrl(attachment);
         // Create a proxy URL using the actual image URL
@@ -426,9 +455,16 @@ export class AirtableStorage implements IStorage {
     if (!imageUrl) {
       const directUrl = record.get('imageUrl') as string || record.get('Image URL') as string || '';
       if (directUrl) {
+        console.log(`Using direct URL for team member "${record.get('Name') || record.id}":`, directUrl);
         // Proxy the direct URL as well
         imageUrl = ImageService.getProxyUrl(directUrl);
       }
+    }
+    
+    // Check photo field too
+    const photoField = record.get('photo') || record.get('Photo');
+    if (photoField) {
+      console.log(`Photo field for team member "${record.get('Name') || record.id}":`, typeof photoField, Array.isArray(photoField) ? 'Array' : '');
     }
     
     return {
