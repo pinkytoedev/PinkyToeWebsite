@@ -37,8 +37,6 @@ export class AirtableStorage implements IStorage {
   }
   
   async getArticles(page: number, limit: number, search = ""): Promise<{ articles: Article[], total: number }> {
-    const offset = (page - 1) * limit;
-    
     try {
       // Create filter formula if search term is provided
       let filterByFormula = '';
@@ -56,17 +54,21 @@ export class AirtableStorage implements IStorage {
       const totalRecords = await countQuery.all();
       const total = totalRecords.length;
       
-      // Then fetch the specific page of data
+      // Then fetch the specific page of data - we need to fetch ALL records and do pagination manually
+      // because Airtable offset doesn't work with arbitrary offset values
       const query = this.base('History').select({
         sort: [{ field: 'Date', direction: 'desc' }],
-        filterByFormula: search ? filterByFormula : '',
-        maxRecords: limit,
-        pageSize: limit,
-        offset
+        filterByFormula: search ? filterByFormula : ''
       });
       
-      const records = await query.all();
-      const articles = records.map(this.mapAirtableRecordToArticle);
+      // Get all records but manually paginate them
+      const allRecords = await query.all();
+      const start = (page - 1) * limit;
+      const end = Math.min(start + limit, allRecords.length);
+      
+      // Make sure we don't go out of bounds
+      const pageRecords = start < allRecords.length ? allRecords.slice(start, end) : [];
+      const articles = pageRecords.map(this.mapAirtableRecordToArticle);
       
       return { articles, total };
     } catch (error) {
