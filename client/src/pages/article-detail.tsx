@@ -84,10 +84,10 @@ export default function ArticleDetail() {
               
               <div className="flex items-center mb-6">
                 <div className="text-sm">
-                  <p className="text-primary font-semibold">{article.author}</p>
+                  <p className="text-primary font-semibold">{article.name}</p>
                   <p className="text-gray-500">{formatDate(article.publishedAt)}</p>
-                  {article.photoCredit && (
-                    <p className="text-gray-500 text-xs mt-1">Photo Credit: {article.photoCredit}</p>
+                  {article.name_photo && (
+                    <p className="text-gray-500 text-xs mt-1">Photo Credit: {article.name_photo}</p>
                   )}
                 </div>
               </div>

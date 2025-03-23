@@ -47,9 +47,9 @@ export const articleSchema = z.object({
   imagePath: z.string().nullable(),
   featured: z.boolean(),
   publishedAt: z.date(),
-  author: z.string(),
+  name: z.string(), // Changed from author to name
   photo: z.string(),
-  photoCredit: z.string().optional(), // Added photo credit field
+  name_photo: z.string().optional(), // Changed from photoCredit to name_photo
   status: z.string().optional(),
   createdAt: z.date().optional(),
   hashtags: z.string().optional(),

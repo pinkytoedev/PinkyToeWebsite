@@ -48,7 +48,7 @@ export function ArticleCard({ article }: ArticleCardProps) {
       </div>
       <div className="px-4 pb-4 flex justify-between items-center">
         <div className="text-xs">
-          <p className="text-primary font-semibold">{article.author}</p>
+          <p className="text-primary font-semibold">{article.name}</p>
           <p className="text-gray-500">{formatDate(article.publishedAt)}</p>
         </div>
       </div>
