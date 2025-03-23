@@ -57,6 +57,9 @@ export const articleSchema = z.object({
 
 export type Article = z.infer<typeof articleSchema>;
 
+// Make sure the inferred Article type has featured as boolean
+// This is automatically handled by z.infer but left as a comment for clarity
+
 /**
  * Carousel Quote Schema
  * Defines the structure for testimonials and quotes displayed in carousels
