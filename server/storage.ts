@@ -140,14 +140,25 @@ export class AirtableStorage implements IStorage {
   
   async getTeamMembers(): Promise<Team[]> {
     try {
+      // Check if the table exists first by trying to access it
       const query = this.base('Teams').select({
         sort: [{ field: 'Name', direction: 'asc' }]
       });
       
       const records = await query.all();
       return records.map(this.mapAirtableRecordToTeamMember);
-    } catch (error) {
+    } catch (error: any) {
+      // Log detailed error information
       console.error('Error fetching team members from Airtable:', error);
+      
+      // If we have authorization issues, log a more specific message
+      if (error.statusCode === 403) {
+        console.warn('Authorization issue detected with Airtable Teams table. Check API key permissions.');
+      } else if (error.statusCode === 404) {
+        console.warn('Teams table not found in Airtable base. Check table name and base configuration.');
+      }
+      
+      // Return empty array to avoid breaking the application
       return [];
     }
   }
@@ -156,8 +167,16 @@ export class AirtableStorage implements IStorage {
     try {
       const record = await this.base('Teams').find(id);
       return this.mapAirtableRecordToTeamMember(record);
-    } catch (error) {
+    } catch (error: any) {
       console.error(`Error fetching team member ${id} from Airtable:`, error);
+      
+      // If we have authorization issues, log a more specific message
+      if (error.statusCode === 403) {
+        console.warn(`Authorization issue detected with Airtable Teams table for ID ${id}. Check API key permissions.`);
+      } else if (error.statusCode === 404) {
+        console.warn(`Team member with ID ${id} not found in Airtable or Teams table does not exist.`);
+      }
+      
       return undefined;
     }
   }

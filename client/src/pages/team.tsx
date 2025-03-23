@@ -6,6 +6,8 @@ import { TeamDetail } from "@/components/team/team-detail";
 import { API_ROUTES } from "@/lib/constants";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useLocation } from "wouter";
+import { fetchTeamMembers } from "@/lib/api";
+import { Team as TeamType } from "@shared/schema";
 
 export default function Team() {
   const [selectedTeamMemberId, setSelectedTeamMemberId] = useState<string | null>(null);
@@ -21,8 +23,9 @@ export default function Team() {
     setSelectedTeamMemberId(urlTeamMemberId);
   }
 
-  const { data: teamMembers, isLoading } = useQuery({
+  const { data: teamMembers, isLoading, error } = useQuery<TeamType[]>({
     queryKey: [API_ROUTES.TEAM],
+    queryFn: fetchTeamMembers,
   });
 
   const handleCloseTeamDetail = () => {
@@ -53,6 +56,12 @@ export default function Team() {
               </div>
             </div>
           ))}
+        </div>
+      ) : error ? (
+        <div className="bg-white rounded-lg shadow-lg p-8 text-center">
+          <h2 className="font-quicksand font-bold text-xl text-red-500 mb-2">Unable to Load Team</h2>
+          <p className="text-gray-600 mb-3">We're having trouble connecting to our team database. Please try again later.</p>
+          <p className="text-sm text-gray-500">Error: {error instanceof Error ? error.message : 'Unknown error'}</p>
         </div>
       ) : teamMembers?.length === 0 ? (
         <div className="bg-white rounded-lg shadow-lg p-8 text-center">
