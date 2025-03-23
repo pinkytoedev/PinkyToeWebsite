@@ -1,11 +1,24 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, useLocation } from "wouter";
 import { ROUTES, SITE_NAME, SOCIAL_LINKS } from "@/lib/constants";
-import { PinkyToeWordLogo } from "@/assets/logo";
+import { PinkyToeWordLogo, PinkyToeLogo } from "@/assets/logo";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 export function Header() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [location] = useLocation();
+  const isMobile = useIsMobile();
+  const [scrolled, setScrolled] = useState(false);
+
+  // Add scroll effect for header
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 50);
+    };
+    
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   const toggleMobileMenu = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen);
@@ -20,12 +33,16 @@ export function Header() {
   };
 
   return (
-    <header className="sticky top-0 z-50 bg-white shadow-md">
-      <div className="container mx-auto px-4 py-3 flex justify-between items-center">
-        {/* Logo */}
+    <header className={`sticky top-0 z-50 bg-white shadow-md transition-all duration-300 ${scrolled ? 'shadow-lg py-1' : 'py-2'}`}>
+      <div className="container mx-auto px-4 py-2 flex justify-between items-center">
+        {/* Responsive Logo */}
         <div className="flex items-center">
-          <Link href={ROUTES.HOME} onClick={closeMobileMenu}>
-            <PinkyToeWordLogo className="h-14 md:h-16" />
+          <Link href={ROUTES.HOME} onClick={closeMobileMenu} className="hover-bounce">
+            {isMobile ? (
+              <PinkyToeLogo className="h-12 w-auto transition-transform duration-300" />
+            ) : (
+              <PinkyToeWordLogo className="h-14 md:h-16 transition-transform duration-300" />
+            )}
           </Link>
         </div>
         

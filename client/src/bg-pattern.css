@@ -4,8 +4,45 @@
 /* Tiling background pattern with pinky toes */
 @layer base {
   body {
-    background-image: url('/pinky-toe-pattern.jpg');
+    background-image: url('/pinky-toe-pattern.svg');
     background-repeat: repeat;
-    background-size: 50%; /* Scale down to 50% */
+    background-size: 400px; /* Set absolute size for better control */
+    background-attachment: fixed;
+    position: relative;
+  }
+  
+  /* Add a subtle animation to the body before content */
+  body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, rgba(255,255,255,0.4) 0%, rgba(255,255,255,0) 50%, rgba(255,255,255,0.4) 100%);
+    animation: shine 10s infinite linear;
+    pointer-events: none; /* Make sure it doesn't block interactions */
+    z-index: -1;
+  }
+  
+  @keyframes shine {
+    0% {
+      background-position: -400px -400px;
+    }
+    100% {
+      background-position: 400px 400px;
+    }
+  }
+  
+  /* Add soft overlay to improve text readability */
+  main {
+    background-color: rgba(255, 255, 255, 0.85);
+    border-radius: 1rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    transition: all 0.3s ease;
+  }
+  
+  main:hover {
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
   }
 }

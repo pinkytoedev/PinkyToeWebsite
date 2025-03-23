@@ -4,60 +4,68 @@ interface LogoProps {
   className?: string;
 }
 
+// Small logo for mobile and footer based on TransparentLogo.png
 export const PinkyToeLogo: React.FC<LogoProps> = ({ className }) => {
   return (
     <svg 
-      viewBox="0 0 400 240" 
+      viewBox="0 0 400 300" 
       xmlns="http://www.w3.org/2000/svg"
       className={className}
       aria-label="The Pinky Toe Logo"
     >
       <g>
-        <path 
-          d="M200,120 C220,100 260,100 280,120 C300,140 300,180 280,200 L240,240 C220,260 180,260 160,240 C140,220 140,180 160,160 L200,120" 
-          fill="#FF4D8D" 
-          stroke="#FF4D8D" 
-          strokeWidth="2"
-        />
+        {/* THE text */}
         <text 
-          x="80" 
-          y="80" 
+          x="60" 
+          y="60" 
           fontFamily="Pacifico, cursive" 
-          fontSize="36" 
+          fontSize="30" 
           fill="#FF4D8D" 
-          textAnchor="middle"
+          textAnchor="start"
         >
           THE
         </text>
+        
+        {/* PINKY text */}
         <text 
-          x="200" 
+          x="100" 
           y="120" 
           fontFamily="Pacifico, cursive" 
-          fontSize="64" 
+          fontSize="60" 
           fill="#FF4D8D" 
-          textAnchor="middle"
+          textAnchor="start"
         >
           Pinky
         </text>
+        
+        {/* TOE text */}
         <text 
-          x="280" 
+          x="180" 
           y="180" 
           fontFamily="Pacifico, cursive" 
-          fontSize="54" 
+          fontSize="50" 
           fill="#FFC0CB" 
-          textAnchor="middle"
+          textAnchor="start"
         >
           Toe
         </text>
         
+        {/* Foot outline */}
+        <path 
+          d="M320,130 C330,120 350,120 360,130 C370,140 370,160 360,170 L340,190 C330,200 310,200 300,190 C290,180 290,160 300,150 L320,130" 
+          fill="none" stroke="#FF4D8D" 
+          strokeWidth="2"
+        />
+        
         {/* Sparkles */}
-        <path d="M310,90 L315,85 M310,85 L315,90 M320,85 L325,90 M320,90 L325,85" stroke="#FFD700" strokeWidth="2" />
-        <path d="M330,120 L335,115 M330,115 L335,120 M340,115 L345,120 M340,120 L345,115" stroke="#FFD700" strokeWidth="2" />
+        <path d="M260,90 L265,85 M260,85 L265,90" stroke="#FFD700" strokeWidth="2" />
+        <path d="M280,100 L285,95 M280,95 L285,100" stroke="#FFD700" strokeWidth="2" />
       </g>
     </svg>
   );
 };
 
+// Full word logo for desktop based on TransparentWordLogo.png
 export const PinkyToeWordLogo: React.FC<LogoProps> = ({ className }) => {
   return (
     <svg 
@@ -67,8 +75,9 @@ export const PinkyToeWordLogo: React.FC<LogoProps> = ({ className }) => {
       aria-label="The Pinky Toe Logo with Tagline"
     >
       <g>
+        {/* THE text */}
         <text 
-          x="50" 
+          x="30" 
           y="50" 
           fontFamily="Pacifico, cursive" 
           fontSize="24" 
@@ -77,8 +86,10 @@ export const PinkyToeWordLogo: React.FC<LogoProps> = ({ className }) => {
         >
           THE
         </text>
+        
+        {/* PINKY text */}
         <text 
-          x="50" 
+          x="30" 
           y="100" 
           fontFamily="Pacifico, cursive" 
           fontSize="48" 
@@ -87,6 +98,8 @@ export const PinkyToeWordLogo: React.FC<LogoProps> = ({ className }) => {
         >
           Pinky
         </text>
+        
+        {/* TOE text */}
         <text 
           x="230" 
           y="100" 
@@ -97,8 +110,10 @@ export const PinkyToeWordLogo: React.FC<LogoProps> = ({ className }) => {
         >
           Toe
         </text>
+        
+        {/* Tagline */}
         <text 
-          x="50" 
+          x="30" 
           y="140" 
           fontFamily="Pacifico, cursive" 
           fontSize="18" 
@@ -107,14 +122,6 @@ export const PinkyToeWordLogo: React.FC<LogoProps> = ({ className }) => {
         >
           FEMINIST HUMOR, RIGHT AT YOUR FEET.
         </text>
-        
-        {/* Tiny toe shape */}
-        <path 
-          d="M320,70 C325,65 335,65 340,70 C345,75 345,85 340,90 L330,100 C325,105 315,105 310,100 C305,95 305,85 310,80 L320,70" 
-          fill="#FF4D8D" 
-          stroke="#FF4D8D" 
-          strokeWidth="1"
-        />
         
         {/* Sparkles */}
         <path d="M350,50 L355,45 M350,45 L355,50" stroke="#FFD700" strokeWidth="2" />
