@@ -96,9 +96,9 @@ export default function Home() {
             </div>
             <div className="px-4 pb-4">
               <Link href="/articles">
-                <a className="text-primary hover:text-pinky-dark text-sm font-semibold transition-colors">
+                <div className="text-primary hover:text-pinky-dark text-sm font-semibold transition-colors cursor-pointer">
                   View All Articles →
-                </a>
+                </div>
               </Link>
             </div>
           </div>
