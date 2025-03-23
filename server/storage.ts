@@ -246,74 +246,58 @@ export class AirtableStorage implements IStorage {
         console.log(Object.keys(records[0].fields));
       }
       
-      this.quotes = records.map((record, index) => {
-        // Fields in Airtable might be in different formats, so we need to check all possible cases
-        // First, try to get the type of carousel from various possible field names
-        const carouselField = 
-          record.get('Type') || 
-          record.get('type') || 
-          record.get('Carousel Type') || 
-          record.get('carousel_type') || 
-          record.get('Carousel') || 
-          record.get('carousel');
-        
-        // Convert to string and normalize case for consistent comparison
-        const carouselType = (carouselField || 'main').toString().trim();
-        
-        // For each type of carousel, try to get the quote from the corresponding field
-        let quoteText = '';
-        
-        // Try multiple possible field names for quotes
-        if (carouselType.toLowerCase() === 'main') {
-          // For banner quotes
-          quoteText = 
-            record.get('Banner Text') || 
-            record.get('banner_text') || 
-            record.get('Banner') || 
-            record.get('banner') || 
-            record.get('Main Quote') || 
-            record.get('main_quote') || 
-            record.get('Quote') || 
-            record.get('quote') || 
-            record.get('Text') || 
-            record.get('text') || 
-            '';
-        } else if (carouselType.toLowerCase() === 'philo' || carouselType.toLowerCase() === 'philosophy') {
-          // For philosophy quotes
-          quoteText = 
-            record.get('Philosophy Quote') || 
-            record.get('philosophy_quote') || 
-            record.get('Philo Quote') || 
-            record.get('philo_quote') || 
-            record.get('Philo') || 
-            record.get('philo') || 
-            record.get('Quote') || 
-            record.get('quote') || 
-            record.get('Text') || 
-            record.get('text') || 
-            '';
-        } else {
-          // For any other type, try to get the quote from generic fields
-          quoteText = 
-            record.get('Quote') || 
-            record.get('quote') || 
-            record.get('Text') || 
-            record.get('text') || 
-            '';
+      let quoteId = 1;
+      const mainQuotes: CarouselQuote[] = [];
+      const philoQuotes: CarouselQuote[] = [];
+      
+      // Process each record and create two separate quotes from it (main and philo)
+      records.forEach((record) => {
+        // Check if the record has a "main" field 
+        if ('main' in record.fields) {
+          const mainQuoteText = record.get('main');
+          if (mainQuoteText && String(mainQuoteText).trim() !== '') {
+            mainQuotes.push({
+              id: quoteId++,
+              carousel: 'main',
+              quote: String(mainQuoteText)
+            });
+            console.log(`Found main quote: "${mainQuoteText}"`);
+          } else {
+            console.log(`Record has empty "main" field`);
+            // Create main quotes with placeholder if not already present
+            // This is to ensure we have entries for "main" carousel for the UI
+            if (mainQuotes.length === 0) {
+              // Add a record with carousel type "main" with an empty quote
+              mainQuotes.push({
+                id: quoteId++,
+                carousel: 'main',
+                quote: ''
+              });
+            }
+          }
         }
         
-        // Convert to string to handle any non-string values from Airtable
-        quoteText = quoteText ? quoteText.toString() : '';
-        
-        // Log each quote for debugging
-        console.log(`Quote ${index + 1} (${carouselType}): "${quoteText}"`);
-        
-        return {
-          id: index + 1,
-          carousel: carouselType,
-          quote: quoteText
-        };
+        // Check if the record has a "Philo" field
+        if ('Philo' in record.fields) {
+          const philoQuoteText = record.get('Philo');
+          if (philoQuoteText && String(philoQuoteText).trim() !== '') {
+            philoQuotes.push({
+              id: quoteId++,
+              carousel: 'Philo',
+              quote: String(philoQuoteText)
+            });
+            console.log(`Found Philo quote: "${philoQuoteText}"`);
+          } else {
+            console.log(`Record has empty "Philo" field`);
+          }
+        }
       });
+      
+      // Combine all quotes and update the instance variable
+      this.quotes = [...mainQuotes, ...philoQuotes];
+      
+      // Log the final quotes collection
+      console.log(`Total quotes found: ${this.quotes.length} (${mainQuotes.length} main, ${philoQuotes.length} philo)`);
       
       this.quoteLastFetched = new Date();
       return this.quotes;
