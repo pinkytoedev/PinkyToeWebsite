@@ -239,11 +239,29 @@ export class AirtableStorage implements IStorage {
       const query = this.base('CarouselQuote').select();
       const records = await query.all();
       
-      this.quotes = records.map((record, index) => ({
-        id: index + 1,
-        carousel: record.get('Carousel') as string || record.get('carousel') as string || 'main',
-        quote: record.get('Quote') as string || record.get('quote') as string || ''
-      }));
+      this.quotes = records.map((record, index) => {
+        // For the Banner (carousel "main"), get the quote from the Quote field
+        // For the Quote section (carousel "Philo"), get the quote from the Philo field
+        let quoteText = '';
+        const carouselType = record.get('Carousel') as string || record.get('carousel') as string || 'main';
+        
+        if (carouselType === 'main') {
+          // Banner quotes come from the Quote field
+          quoteText = record.get('Quote') as string || record.get('quote') as string || '';
+        } else if (carouselType === 'Philo') {
+          // Philosophy quotes come from the Philo field
+          quoteText = record.get('Philo') as string || '';
+        } else {
+          // Default fallback
+          quoteText = record.get('Quote') as string || record.get('quote') as string || '';
+        }
+        
+        return {
+          id: index + 1,
+          carousel: carouselType,
+          quote: quoteText
+        };
+      });
       
       this.quoteLastFetched = new Date();
       return this.quotes;
@@ -566,6 +584,16 @@ The suffragette movement also employed humor effectively, using satirical cartoo
         id: 3,
         carousel: 'main',
         quote: 'Life is too short for boring shoes and men who don\'t get feminist jokes.'
+      },
+      {
+        id: 4,
+        carousel: 'Philo',
+        quote: 'The pinky toe may be small, but it shoulders an unfair share of furniture encounters.'
+      },
+      {
+        id: 5,
+        carousel: 'Philo',
+        quote: 'A pinky toe\'s strength isn\'t measured by its size, but by how loudly it makes you yell when it hits the coffee table.'
       }
     ];
   }
