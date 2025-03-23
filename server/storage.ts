@@ -29,23 +29,11 @@ export class AirtableStorage implements IStorage {
   private quoteLastFetched: Date | null = null;
   
   constructor() {
-    try {
-      console.log('Initializing Airtable connection...');
-      console.log(`API Key valid: ${Boolean(airtableApiKey)}`);
-      console.log(`Base ID valid: ${Boolean(airtableBaseId)}`);
-      
-      Airtable.configure({
-        apiKey: airtableApiKey,
-      });
-      
-      this.base = Airtable.base(airtableBaseId);
-      console.log('Airtable connection initialized successfully');
-    } catch (error) {
-      console.error('Failed to initialize Airtable connection:', error);
-      // Still create the base object even if there's an error
-      // to avoid null references, but operations will fail
-      this.base = Airtable.base(airtableBaseId);
-    }
+    Airtable.configure({
+      apiKey: airtableApiKey,
+    });
+    
+    this.base = Airtable.base(airtableBaseId);
   }
   
   async getArticles(page: number, limit: number, search = ""): Promise<{ articles: Article[], total: number }> {
@@ -89,49 +77,15 @@ export class AirtableStorage implements IStorage {
   
   async getFeaturedArticles(): Promise<Article[]> {
     try {
-      console.log('Getting featured articles from Airtable...');
+      // Query for featured articles - checking if featured is true as a boolean
+      const query = this.base('History').select({
+        filterByFormula: "featured = TRUE()",
+        sort: [{ field: 'Date', direction: 'desc' }],
+        maxRecords: 5
+      });
       
-      // List all tables in the base to debug
-      console.log('Attempting to access tables in Airtable base...');
-      
-      try {
-        // Query for featured articles - checking if featured is true as a boolean
-        const query = this.base('History').select({
-          filterByFormula: "featured = TRUE()",
-          sort: [{ field: 'Date', direction: 'desc' }],
-          maxRecords: 5
-        });
-        
-        console.log('Query created successfully, fetching records...');
-        const records = await query.all();
-        console.log(`Fetched ${records.length} featured articles successfully`);
-        
-        return records.map(this.mapAirtableRecordToArticle);
-      } catch (tableError) {
-        console.error('Error accessing History table:', tableError);
-        
-        // Try other possible table names
-        const possibleTables = ['Articles', 'Blog', 'Content', 'Posts'];
-        
-        for (const tableName of possibleTables) {
-          try {
-            console.log(`Trying alternative table name: ${tableName}`);
-            const query = this.base(tableName).select({
-              filterByFormula: "featured = TRUE()",
-              sort: [{ field: 'Date', direction: 'desc' }],
-              maxRecords: 5
-            });
-            
-            const records = await query.all();
-            console.log(`Success with table name ${tableName}, found ${records.length} records`);
-            return records.map(this.mapAirtableRecordToArticle);
-          } catch (altError) {
-            console.error(`Failed with table name ${tableName}:`, altError);
-          }
-        }
-        
-        throw new Error('Could not find a valid table for articles');
-      }
+      const records = await query.all();
+      return records.map(this.mapAirtableRecordToArticle);
     } catch (error) {
       console.error('Error fetching featured articles from Airtable:', error);
       return [];
@@ -140,43 +94,13 @@ export class AirtableStorage implements IStorage {
   
   async getRecentArticles(limit: number): Promise<Article[]> {
     try {
-      console.log('Getting recent articles from Airtable...');
+      const query = this.base('History').select({
+        sort: [{ field: 'Date', direction: 'desc' }],
+        maxRecords: limit
+      });
       
-      try {
-        const query = this.base('History').select({
-          sort: [{ field: 'Date', direction: 'desc' }],
-          maxRecords: limit
-        });
-        
-        console.log('Recent articles query created successfully, fetching records...');
-        const records = await query.all();
-        console.log(`Fetched ${records.length} recent articles successfully`);
-        
-        return records.map(this.mapAirtableRecordToArticle);
-      } catch (tableError) {
-        console.error('Error accessing History table for recent articles:', tableError);
-        
-        // Try other possible table names
-        const possibleTables = ['Articles', 'Blog', 'Content', 'Posts'];
-        
-        for (const tableName of possibleTables) {
-          try {
-            console.log(`Trying alternative table name for recent articles: ${tableName}`);
-            const query = this.base(tableName).select({
-              sort: [{ field: 'Date', direction: 'desc' }],
-              maxRecords: limit
-            });
-            
-            const records = await query.all();
-            console.log(`Success with table name ${tableName}, found ${records.length} records`);
-            return records.map(this.mapAirtableRecordToArticle);
-          } catch (altError) {
-            console.error(`Failed with table name ${tableName}:`, altError);
-          }
-        }
-        
-        throw new Error('Could not find a valid table for recent articles');
-      }
+      const records = await query.all();
+      return records.map(this.mapAirtableRecordToArticle);
     } catch (error) {
       console.error('Error fetching recent articles from Airtable:', error);
       return [];
@@ -300,9 +224,6 @@ export class AirtableStorage implements IStorage {
     const imageField = record.get('Image') || record.get('image') || record.get('Banner') || record.get('banner');
     
     if (imageField) {
-      // For debugging
-      console.log(`Article ${record.id}: Image field type: ${typeof imageField}`);
-      
       // Try to extract attachment data
       const attachment = ImageService.extractAttachmentFromField(imageField);
       if (attachment) {
@@ -310,30 +231,6 @@ export class AirtableStorage implements IStorage {
         const bestUrl = ImageService.getBestAttachmentUrl(attachment);
         // Create a proxy URL using the actual image URL
         imageUrl = ImageService.getProxyUrl(bestUrl);
-        console.log(`Article ${record.id}: Using attachment URL: ${bestUrl.substring(0, 30)}...`);
-      } else if (typeof imageField === 'string') {
-        // If the field is a direct URL string
-        imageUrl = ImageService.getProxyUrl(imageField);
-        console.log(`Article ${record.id}: Using direct string URL`);
-      } else if (Array.isArray(imageField) && imageField.length > 0) {
-        // If the field is an array, try the first item
-        const firstItem = imageField[0];
-        if (typeof firstItem === 'string') {
-          imageUrl = ImageService.getProxyUrl(firstItem);
-        } else if (typeof firstItem === 'object' && firstItem !== null) {
-          // If it's an object, it might be an Airtable attachment format
-          const url = firstItem.url || (firstItem.thumbnails && firstItem.thumbnails.large && firstItem.thumbnails.large.url);
-          if (url) {
-            imageUrl = ImageService.getProxyUrl(url);
-          } else {
-            // Last resort - try serializing the object
-            try {
-              imageUrl = ImageService.getProxyUrl(JSON.stringify(firstItem));
-            } catch (error) {
-              console.error('Failed to serialize image field object:', error);
-            }
-          }
-        }
       }
     }
     
@@ -343,14 +240,7 @@ export class AirtableStorage implements IStorage {
       if (directUrl) {
         // Proxy the direct URL as well
         imageUrl = ImageService.getProxyUrl(directUrl);
-        console.log(`Article ${record.id}: Using fallback URL field`);
       }
-    }
-    
-    // Final fallback - use record ID
-    if (!imageUrl) {
-      imageUrl = ImageService.getProxyUrl(record.id);
-      console.log(`Article ${record.id}: Using record ID as last resort: ${record.id}`);
     }
     
     return {
@@ -380,9 +270,6 @@ export class AirtableStorage implements IStorage {
     const imageField = record.get('Image') || record.get('image') || record.get('Photo') || record.get('photo');
     
     if (imageField) {
-      // For debugging
-      console.log(`Team member ${record.id}: Image field type: ${typeof imageField}`);
-      
       // Try to extract attachment data
       const attachment = ImageService.extractAttachmentFromField(imageField);
       if (attachment) {
@@ -390,30 +277,6 @@ export class AirtableStorage implements IStorage {
         const bestUrl = ImageService.getBestAttachmentUrl(attachment);
         // Create a proxy URL using the actual image URL
         imageUrl = ImageService.getProxyUrl(bestUrl);
-        console.log(`Team member ${record.id}: Using attachment URL: ${bestUrl.substring(0, 30)}...`);
-      } else if (typeof imageField === 'string') {
-        // If the field is a direct URL string
-        imageUrl = ImageService.getProxyUrl(imageField);
-        console.log(`Team member ${record.id}: Using direct string URL`);
-      } else if (Array.isArray(imageField) && imageField.length > 0) {
-        // If the field is an array, try the first item
-        const firstItem = imageField[0];
-        if (typeof firstItem === 'string') {
-          imageUrl = ImageService.getProxyUrl(firstItem);
-        } else if (typeof firstItem === 'object' && firstItem !== null) {
-          // If it's an object, it might be an Airtable attachment format
-          const url = firstItem.url || (firstItem.thumbnails && firstItem.thumbnails.large && firstItem.thumbnails.large.url);
-          if (url) {
-            imageUrl = ImageService.getProxyUrl(url);
-          } else {
-            // Last resort - try serializing the object
-            try {
-              imageUrl = ImageService.getProxyUrl(JSON.stringify(firstItem));
-            } catch (error) {
-              console.error('Failed to serialize image field object:', error);
-            }
-          }
-        }
       }
     }
     
@@ -423,14 +286,7 @@ export class AirtableStorage implements IStorage {
       if (directUrl) {
         // Proxy the direct URL as well
         imageUrl = ImageService.getProxyUrl(directUrl);
-        console.log(`Team member ${record.id}: Using fallback URL field`);
       }
-    }
-    
-    // Final fallback - use record ID
-    if (!imageUrl) {
-      imageUrl = ImageService.getProxyUrl(record.id);
-      console.log(`Team member ${record.id}: Using record ID as last resort: ${record.id}`);
     }
     
     return {
