@@ -23,28 +23,22 @@ export function Header() {
     <header className="sticky top-0 z-50 bg-white shadow-md">
       <div className="container mx-auto px-4 py-3 flex justify-between items-center">
         {/* Logo */}
-        <Link href={ROUTES.HOME} onClick={closeMobileMenu}>
-          <a className="flex items-center">
+        <div className="flex items-center">
+          <Link href={ROUTES.HOME} onClick={closeMobileMenu}>
             <PinkyToeWordLogo className="h-14 md:h-16" />
-          </a>
-        </Link>
+          </Link>
+        </div>
         
         {/* Desktop Navigation */}
         <nav className="hidden md:flex items-center space-x-8">
-          <Link href={ROUTES.HOME}>
-            <a className={`font-quicksand font-bold ${isActive(ROUTES.HOME) ? 'text-pinky-dark' : 'text-primary hover:text-pinky-dark'} transition-colors`}>
-              Home
-            </a>
+          <Link href={ROUTES.HOME} className={`font-quicksand font-bold ${isActive(ROUTES.HOME) ? 'text-pinky-dark' : 'text-primary hover:text-pinky-dark'} transition-colors`}>
+            Home
           </Link>
-          <Link href={ROUTES.ARTICLES}>
-            <a className={`font-quicksand font-bold ${isActive(ROUTES.ARTICLES) ? 'text-pinky-dark' : 'text-primary hover:text-pinky-dark'} transition-colors`}>
-              Articles
-            </a>
+          <Link href={ROUTES.ARTICLES} className={`font-quicksand font-bold ${isActive(ROUTES.ARTICLES) ? 'text-pinky-dark' : 'text-primary hover:text-pinky-dark'} transition-colors`}>
+            Articles
           </Link>
-          <Link href={ROUTES.TEAM}>
-            <a className={`font-quicksand font-bold ${isActive(ROUTES.TEAM) ? 'text-pinky-dark' : 'text-primary hover:text-pinky-dark'} transition-colors`}>
-              Team
-            </a>
+          <Link href={ROUTES.TEAM} className={`font-quicksand font-bold ${isActive(ROUTES.TEAM) ? 'text-pinky-dark' : 'text-primary hover:text-pinky-dark'} transition-colors`}>
+            Team
           </Link>
           <a 
             href={SOCIAL_LINKS.INSTAGRAM} 
@@ -70,29 +64,26 @@ export function Header() {
       {isMobileMenuOpen && (
         <div className="md:hidden bg-white px-4 py-3 shadow-inner">
           <div className="flex flex-col space-y-3">
-            <Link href={ROUTES.HOME}>
-              <a 
-                className={`font-quicksand font-bold ${isActive(ROUTES.HOME) ? 'text-pinky-dark' : 'text-primary hover:text-pinky-dark'} transition-colors`}
-                onClick={closeMobileMenu}
-              >
-                Home
-              </a>
+            <Link 
+              href={ROUTES.HOME}
+              className={`font-quicksand font-bold ${isActive(ROUTES.HOME) ? 'text-pinky-dark' : 'text-primary hover:text-pinky-dark'} transition-colors`}
+              onClick={closeMobileMenu}
+            >
+              Home
             </Link>
-            <Link href={ROUTES.ARTICLES}>
-              <a 
-                className={`font-quicksand font-bold ${isActive(ROUTES.ARTICLES) ? 'text-pinky-dark' : 'text-primary hover:text-pinky-dark'} transition-colors`}
-                onClick={closeMobileMenu}
-              >
-                Articles
-              </a>
+            <Link 
+              href={ROUTES.ARTICLES}
+              className={`font-quicksand font-bold ${isActive(ROUTES.ARTICLES) ? 'text-pinky-dark' : 'text-primary hover:text-pinky-dark'} transition-colors`}
+              onClick={closeMobileMenu}
+            >
+              Articles
             </Link>
-            <Link href={ROUTES.TEAM}>
-              <a 
-                className={`font-quicksand font-bold ${isActive(ROUTES.TEAM) ? 'text-pinky-dark' : 'text-primary hover:text-pinky-dark'} transition-colors`}
-                onClick={closeMobileMenu}
-              >
-                Team
-              </a>
+            <Link 
+              href={ROUTES.TEAM}
+              className={`font-quicksand font-bold ${isActive(ROUTES.TEAM) ? 'text-pinky-dark' : 'text-primary hover:text-pinky-dark'} transition-colors`}
+              onClick={closeMobileMenu}
+            >
+              Team
             </Link>
             <a 
               href={SOCIAL_LINKS.INSTAGRAM} 
