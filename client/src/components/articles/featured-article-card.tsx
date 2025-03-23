@@ -45,7 +45,7 @@ export function FeaturedArticleCard({ article }: FeaturedArticleCardProps) {
           </p>
           <div className="flex items-center">
             <div className="text-sm">
-              <p className="text-primary font-semibold">{article.author}</p>
+              <p className="text-primary font-semibold">{article.name}</p>
               <p className="text-gray-500">{formatDate(article.publishedAt)}</p>
             </div>
           </div>
