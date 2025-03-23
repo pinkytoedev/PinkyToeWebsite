@@ -21,7 +21,7 @@ export function RecentArticleCard({ article }: RecentArticleCardProps) {
             className="w-16 h-16 object-cover rounded"
             onError={(e) => {
               const target = e.target as HTMLImageElement;
-              target.src = '/api/images/placeholder';
+              target.src = 'https://via.placeholder.com/100x100?text=NA';
             }}
           />
           <div>

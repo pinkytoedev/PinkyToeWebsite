@@ -35,7 +35,7 @@ try {
   
   // Check if directory is writable
   fs.accessSync(UPLOADS_DIR, fs.constants.W_OK);
-} catch (error: any) {
+} catch (error) {
   console.error(`Error with uploads directory: ${error.message}`);
   // We'll continue and handle errors in the routes
 }
@@ -83,37 +83,13 @@ imagesRouter.get('/:id', async (req: Request, res: Response) => {
     
     // Handle Airtable record IDs (starting with 'rec')
     if (decodedId.startsWith('rec')) {
-      console.log(`Processing Airtable record ID: ${decodedId}`);
-      
-      // First, check if we have a cached version for this Airtable record
-      const cachedFileName = path.join(UPLOADS_DIR, `${fileHash}.jpg`);
-      if (fs.existsSync(cachedFileName)) {
-        // We have a cached version, serve it
-        console.log(`Serving cached Airtable image: ${decodedId}`);
-        res.setHeader('Content-Type', 'image/jpeg');
-        res.setHeader('Cache-Control', 'public, max-age=86400');
-        fs.createReadStream(cachedFileName).pipe(res);
-        return;
-      }
-      
-      // Check if storage.ts has proper implementation for getting image by record ID
-      // (This is where we would fetch the actual image from Airtable's API if we had access)
-      
-      // For now, create an informative SVG placeholder
       try {
-        console.log(`Creating SVG placeholder for Airtable record: ${decodedId}`);
-        const width = 400;
-        const height = 300;
-        const svg = `<svg width="${width}" height="${height}" xmlns="http://www.w3.org/2000/svg">
-          <defs>
-            <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" style="stop-color:#f3d9e9;stop-opacity:1" />
-              <stop offset="100%" style="stop-color:#dba6c5;stop-opacity:1" />
-            </linearGradient>
-          </defs>
-          <rect width="${width}" height="${height}" fill="url(#grad)" />
-          <text x="50%" y="50%" font-family="Arial" font-size="16" text-anchor="middle" fill="#7c3864" font-weight="bold">
-            Airtable Image (ID: ${decodedId.substring(0, 8)}...)
+        // For Airtable record IDs, we need to return a placeholder
+        // since we don't have direct access to the image
+        const svg = `<svg width="400" height="300" xmlns="http://www.w3.org/2000/svg">
+          <rect width="400" height="300" fill="#f8f9fa" />
+          <text x="50%" y="50%" font-family="Arial" font-size="16" text-anchor="middle" fill="#343a40">
+            Airtable Image (ID: ${decodedId})
           </text>
         </svg>`;
         
@@ -121,17 +97,13 @@ imagesRouter.get('/:id', async (req: Request, res: Response) => {
           // Save the SVG as a fallback
           const filepath = path.join(UPLOADS_DIR, `${fileHash}.svg`);
           fs.writeFileSync(filepath, svg);
-          console.log(`Saved SVG placeholder to: ${filepath}`);
         } catch (writeError) {
           console.error('Failed to save SVG placeholder:', writeError);
           // Continue even if write fails
         }
         
-        // Make sure we're actually sending the SVG content
-        console.log(`Sending SVG placeholder for: ${decodedId}, content length: ${svg.length}`);
         res.setHeader('Content-Type', 'image/svg+xml');
         res.setHeader('Cache-Control', 'public, max-age=86400');
-        res.status(200);
         return res.send(svg);
       } catch (svgError) {
         console.error('Error creating SVG placeholder:', svgError);
