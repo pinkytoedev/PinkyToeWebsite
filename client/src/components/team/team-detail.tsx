@@ -122,7 +122,12 @@ export function TeamDetail({ teamMemberId, onClose }: TeamDetailProps) {
               <img 
                 src={memberImageUrl} 
                 alt={`${teamMember.name} photo`} 
-                className="w-full rounded-lg" 
+                className="w-full rounded-lg"
+                onError={(e) => {
+                  const target = e.target as HTMLImageElement;
+                  console.error(`Failed to load image: ${target.src}`);
+                  target.src = '/assets/placeholder-image.svg';
+                }}
               />
               
               <div className="mt-4">
@@ -159,7 +164,12 @@ export function TeamDetail({ teamMemberId, onClose }: TeamDetailProps) {
                             <img 
                               src={articleImageUrl} 
                               alt={article.title} 
-                              className="w-20 h-20 object-cover rounded mr-4" 
+                              className="w-20 h-20 object-cover rounded mr-4"
+                              onError={(e) => {
+                                const target = e.target as HTMLImageElement;
+                                console.error(`Failed to load article thumbnail: ${target.src}`);
+                                target.src = '/assets/placeholder-image.svg';
+                              }}
                             />
                             <div>
                               <Link href={`/articles/${article.id}`}>
