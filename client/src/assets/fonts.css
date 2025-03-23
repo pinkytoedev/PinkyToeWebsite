@@ -1,0 +1,34 @@
+/* 
+ * Font styles for The Pinky Toe website
+ */
+
+/* Main font families */
+.font-lato {
+  font-family: 'Lato', sans-serif;
+}
+
+.font-quicksand {
+  font-family: 'Quicksand', sans-serif;
+}
+
+.font-pacifico {
+  font-family: 'Pacifico', cursive;
+}
+
+/* Utility font styles */
+.text-primary {
+  color: #FF4D8D;
+}
+
+.text-pinky-dark {
+  color: #D03D72;
+}
+
+/* Additional styles for specific elements */
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Quicksand', sans-serif;
+}
+
+body {
+  font-family: 'Lato', sans-serif;
+}
