@@ -40,9 +40,9 @@ export default function Home() {
           carouselRef.current.scrollNext();
         }
       }, 5000); // Change slide every 5 seconds
-      
+
       setAutoPlayInterval(interval);
-      
+
       // Clean up interval on unmount
       return () => {
         if (autoPlayInterval) {
@@ -58,7 +58,7 @@ export default function Home() {
         {/* Main Content Column (70%) */}
         <div className="lg:col-span-8">
           <h1 className="font-quicksand font-bold text-3xl md:text-4xl text-primary mb-6">Featured Articles</h1>
-          
+
           {featuredLoading ? (
             <div className="space-y-8">
               <div className="bg-white rounded-lg shadow-lg overflow-hidden">
@@ -100,7 +100,7 @@ export default function Home() {
             </div>
           )}
         </div>
-        
+
         {/* Sidebar Column (30%) */}
         <div className="lg:col-span-4">
           {/* Recent Articles Section */}
@@ -135,7 +135,7 @@ export default function Home() {
               </Link>
             </div>
           </div>
-          
+
           {/* Quotes Carousel Section */}
           <div className="bg-white rounded-lg shadow-lg overflow-hidden">
             <div className="bg-primary text-white py-3 px-4">
@@ -169,18 +169,20 @@ export default function Home() {
                       }}
                     >
                       <CarouselContent>
-                        {quotes.map((quote) => (
-                          <CarouselItem key={quote.id} className="pt-1 md:basis-full">
-                            <div className="py-2">
-                              <blockquote className="italic text-lg font-pacifico text-pinky-dark min-h-[6rem] flex items-center">
-                                "{quote.quote}"
-                              </blockquote>
-                              <div className="mt-3 text-right text-primary font-quicksand font-semibold">
-                                - The Pinky Toe Team
+                        {quotes
+                          .filter(quote => quote.carousel === "Philo")
+                          .map((quote) => (
+                            <CarouselItem key={quote.id} className="pt-1 md:basis-full">
+                              <div className="py-2">
+                                <blockquote className="italic text-lg font-pacifico text-pinky-dark min-h-[6rem] flex items-center">
+                                  "{quote.quote}"
+                                </blockquote>
+                                <div className="mt-3 text-right text-primary font-quicksand font-semibold">
+                                  - The Pinky Toe Team
+                                </div>
                               </div>
-                            </div>
-                          </CarouselItem>
-                        ))}
+                            </CarouselItem>
+                          ))}
                       </CarouselContent>
                       <div className="flex justify-center mt-4">
                         <CarouselPrevious className="relative static mr-2" />
@@ -191,7 +193,7 @@ export default function Home() {
                 ) : (
                   <>
                     <blockquote className="italic text-lg font-pacifico text-pinky-dark">
-                      "In a world full of sharks, be a pinky toe - small but mighty enough to make someone curse when they least expect it."
+                      "Philosophy is the art of questioning everything, including why your pinky toe always finds the furniture."
                     </blockquote>
                     <div className="mt-3 text-right text-primary font-quicksand font-semibold">
                       - The Pinky Toe Team

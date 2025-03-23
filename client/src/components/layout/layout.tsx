@@ -38,9 +38,12 @@ export function Layout({ children }: LayoutProps) {
           </div>
         ) : (
           <Marquee speed={35} pauseOnHover={true}>
-            {Array.isArray(quotes) && quotes.map((quote: CarouselQuote) => (
-              <span key={quote.id} className="mx-8 font-pacifico text-lg drop-shadow-sm">{quote.quote}</span>
-            ))}
+            {Array.isArray(quotes) && quotes
+              .filter((quote: CarouselQuote) => quote.carousel === 'main')
+              .map((quote: CarouselQuote) => (
+                <span key={quote.id} className="mx-8 font-pacifico text-lg drop-shadow-sm">{quote.quote}</span>
+              ))
+            }
           </Marquee>
         )}
       </div>
