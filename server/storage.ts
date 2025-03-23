@@ -1,5 +1,6 @@
 import { Article, Team, CarouselQuote } from "@shared/schema";
 import Airtable from "airtable";
+import { ImageService } from "./services/image-service";
 
 // Initialize Airtable
 const airtableApiKey = process.env.AIRTABLE_API_KEY || "";
