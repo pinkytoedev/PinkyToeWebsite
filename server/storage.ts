@@ -257,9 +257,9 @@ export class AirtableStorage implements IStorage {
       imagePath: null, // No need for local path when using proxy
       featured: record.get('featured') === true || record.get('Featured') === true,
       publishedAt: publishDate,
-      name: record.get('name') as string || record.get('Name') as string || record.get('author') as string || record.get('Author') as string || '',
+      name: record.get('Name (from Author)') as string || record.get('name') as string || record.get('Name') as string || record.get('author') as string || record.get('Author') as string || '',
       photo: record.get('photo') as string || record.get('Photo') as string || '',
-      name_photo: record.get('name_photo') as string || record.get('photoCredit') as string || record.get('Photo Credit') as string || undefined,
+      name_photo: record.get('Name (from Photo)') as string || record.get('name_photo') as string || record.get('photoCredit') as string || record.get('Photo Credit') as string || undefined,
       status: record.get('status') as string || record.get('Status') as string || undefined,
       createdAt: createdDate,
       hashtags: record.get('hashtags') as string || record.get('Hashtags') as string || undefined
