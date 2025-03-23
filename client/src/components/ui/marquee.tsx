@@ -1,3 +1,5 @@
+
+import * as React from "react";
 import { useEffect, useRef, useState } from "react";
 import { cn } from "@/lib/utils";
 
@@ -17,69 +19,72 @@ export function Marquee({
   children,
 }: MarqueeProps) {
   const containerRef = useRef<HTMLDivElement>(null);
-  const contentRef = useRef<HTMLDivElement>(null);
-  const [contentWidth, setContentWidth] = useState(0);
-  const [clones, setClones] = useState<React.ReactNode[]>([]);
+  const [activeIndex, setActiveIndex] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
+  const [childrenArray, setChildrenArray] = useState<React.ReactNode[]>([]);
 
-  // Calculate animation duration based on content width and desired speed
-  const getDuration = () => {
-    // Adjust the multiplier if you need to make it faster/slower
-    return contentWidth / speed;
-  };
-
+  // Convert children to array so we can cycle through them
   useEffect(() => {
-    if (contentRef.current) {
-      const width = contentRef.current.offsetWidth;
-      setContentWidth(width);
-      
-      // We need enough clones to fill the container width
-      // Ensure we have at least 1 clone, and protect against invalid calculations
-      const numClones = Math.max(1, Math.ceil(window.innerWidth / (width || 1)) + 1);
-      setClones(Array.from({ length: numClones }).map(() => children));
-    }
+    // Handle both array and single child case
+    const childArray = React.Children.toArray(children);
+    setChildrenArray(childArray);
   }, [children]);
 
-  return (
-    <div
-      ref={containerRef}
-      className={cn(
-        "overflow-hidden whitespace-nowrap",
-        className
-      )}
-      onMouseEnter={() => pauseOnHover && setIsPaused(true)}
-      onMouseLeave={() => pauseOnHover && setIsPaused(false)}
-    >
-      <div
-        className="inline-flex"
-        style={{
-          animationPlayState: isPaused ? "paused" : "running",
-          animationName: "marquee",
-          animationDuration: `${getDuration()}s`,
-          animationTimingFunction: "linear",
-          animationIterationCount: "infinite",
-          animationDirection: direction === "left" ? "normal" : "reverse",
-        }}
-      >
-        <div ref={contentRef} className="flex">
-          {children}
-        </div>
-        
-        {clones.map((clone, index) => (
-          <div key={index} className="flex">
-            {clone}
-          </div>
-        ))}
-      </div>
+  // Set up the interval to change the active quote
+  useEffect(() => {
+    if (childrenArray.length <= 1) return;
+    
+    const intervalTime = 5000; // 5 seconds per quote
+    const interval = setInterval(() => {
+      setActiveIndex((prevIndex) => (prevIndex + 1) % childrenArray.length);
+    }, intervalTime);
+    
+    return () => clearInterval(interval);
+  }, [childrenArray]);
 
-      <style dangerouslySetInnerHTML={{
-        __html: `
-        @keyframes marquee {
-          0% { transform: translateX(0); }
-          100% { transform: translateX(-${contentWidth}px); }
-        }
-        `
-      }} />
+  const handleMouseEnter = () => {
+    if (pauseOnHover) {
+      setIsPaused(true);
+    }
+  };
+
+  const handleMouseLeave = () => {
+    if (pauseOnHover) {
+      setIsPaused(false);
+    }
+  };
+
+  // If there's only one item or none, just render it directly
+  if (childrenArray.length <= 1) {
+    return (
+      <div 
+        className={cn("flex overflow-hidden", className)}
+        ref={containerRef}
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={handleMouseLeave}
+      >
+        {children}
+      </div>
+    );
+  }
+
+  return (
+    <div 
+      className={cn("flex overflow-hidden", className)}
+      ref={containerRef}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+    >
+      <div className="flex items-center justify-center w-full h-full">
+        <div 
+          className="transition-opacity duration-500"
+          style={{
+            opacity: 1,
+          }}
+        >
+          {childrenArray[activeIndex]}
+        </div>
+      </div>
     </div>
   );
 }

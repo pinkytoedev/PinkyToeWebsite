@@ -12,8 +12,8 @@ export default function ArticleDetail() {
   const { id } = useParams();
   const [, setLocation] = useLocation();
 
-  const { data: article, isLoading, error } = useQuery({
-    queryKey: [API_ROUTES.ARTICLE_BY_ID(id)],
+  const { data: article, isLoading, error } = useQuery<Article>({
+    queryKey: [API_ROUTES.ARTICLE_BY_ID(id || '')],
   });
 
   const goBack = () => {
@@ -86,7 +86,7 @@ export default function ArticleDetail() {
                 </div>
               </div>
               
-              <div className="prose max-w-none">
+              <div className="prose prose-lg max-w-none prose-headings:text-primary prose-a:text-primary hover:prose-a:text-pinky-dark prose-hr:border-gray-300">
                 {article.contentFormat === "html" ? (
                   <div dangerouslySetInnerHTML={{ __html: article.content }} />
                 ) : (
