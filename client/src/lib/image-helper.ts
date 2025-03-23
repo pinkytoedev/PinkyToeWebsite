@@ -16,23 +16,69 @@ export function getImageUrl(imageUrl: string | undefined | null | any[]): string
 
   // If it's an array (e.g., Airtable returns an array for some fields), use the first item
   if (Array.isArray(imageUrl)) {
-    return imageUrl[0] || 'https://via.placeholder.com/400x300?text=Image+Not+Available';
+    // If the array is empty or undefined, use a placeholder
+    if (!imageUrl.length) {
+      return 'https://via.placeholder.com/400x300?text=Image+Not+Available';
+    }
+    
+    // If the array contains objects with URL properties (Airtable attachments)
+    if (typeof imageUrl[0] === 'object' && imageUrl[0] !== null) {
+      // Try to extract URL from Airtable attachment format
+      const attachment = imageUrl[0] as any;
+      if (attachment.url) {
+        return proxyExternalUrl(attachment.url);
+      } else if (attachment.thumbnails && attachment.thumbnails.large) {
+        return proxyExternalUrl(attachment.thumbnails.large.url);
+      }
+    }
+    
+    // If it's just a string in an array
+    return proxyExternalUrl(imageUrl[0]);
   }
 
   // If the URL is already proxied or is a local path, return it as is
-  if (typeof imageUrl === 'string' && (imageUrl.startsWith('/api/images') || imageUrl.startsWith('/'))) {
+  if (typeof imageUrl === 'string' && (imageUrl.startsWith('/api/images/') || imageUrl.startsWith('/'))) {
     return imageUrl;
   }
 
-  // For external URLs, consider proxying to avoid CORS issues
+  // For external URLs, always proxy to avoid CORS issues and handle Airtable's expiring URLs
   if (typeof imageUrl === 'string' && (imageUrl.startsWith('http://') || imageUrl.startsWith('https://'))) {
-    // You can uncomment this if you have a proxy API set up
-    // return `/api/images/proxy?url=${encodeURIComponent(imageUrl)}`;
-    return imageUrl;
+    return proxyExternalUrl(imageUrl);
   }
 
-  // Return the URL as is
-  return imageUrl;
+  // If it's an object (Airtable attachment), extract the URL
+  if (typeof imageUrl === 'object' && imageUrl !== null) {
+    const attachment = imageUrl as any;
+    if (attachment.url) {
+      return proxyExternalUrl(attachment.url);
+    } else if (attachment.thumbnails && attachment.thumbnails.large) {
+      return proxyExternalUrl(attachment.thumbnails.large.url);
+    }
+  }
+
+  // Return the URL as is if we can't handle it
+  return typeof imageUrl === 'string' ? imageUrl : 'https://via.placeholder.com/400x300?text=Image+Not+Available';
+}
+
+/**
+ * Helper function to proxy external URLs through our image proxy
+ */
+function proxyExternalUrl(url: string): string {
+  if (!url || typeof url !== 'string') {
+    return 'https://via.placeholder.com/400x300?text=Image+Not+Available';
+  }
+  
+  // If it's already proxied, return it as is
+  if (url.startsWith('/api/images/')) {
+    return url;
+  }
+  
+  // Only proxy http/https URLs
+  if (url.startsWith('http://') || url.startsWith('https://')) {
+    return `/api/images/${encodeURIComponent(url)}`;
+  }
+  
+  return url;
 }
 
 export function getPhotoUrl(photo: string | undefined | null | any[]): string {

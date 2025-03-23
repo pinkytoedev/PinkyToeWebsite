@@ -10,14 +10,7 @@ interface FeaturedArticleCardProps {
 
 export function FeaturedArticleCard({ article }: FeaturedArticleCardProps) {
   // Use photo if imageUrl is not available
-  let imageSource = article.imageUrl ? getImageUrl(article.imageUrl) : getPhotoUrl(article.photo);
-  
-  // Make sure the image is going through our proxy if it's an external URL
-  if (imageSource && !imageSource.startsWith('/api/images/') && (imageSource.startsWith('http://') || imageSource.startsWith('https://'))) {
-    // Create a hash of the URL to use as an ID for the proxy
-    const encodedUrl = encodeURIComponent(imageSource);
-    imageSource = `/api/images/${encodedUrl}`;
-  }
+  const imageSource = article.imageUrl ? getImageUrl(article.imageUrl) : getPhotoUrl(article.photo);
   
   return (
     <div className="article-card bg-white rounded-lg shadow-lg overflow-hidden">
