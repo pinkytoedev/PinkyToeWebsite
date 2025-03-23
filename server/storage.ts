@@ -422,7 +422,7 @@ The suffragette movement also employed humor effectively, using satirical cartoo
         imageUrl: 'https://images.unsplash.com/photo-1496449903678-68ddcb189a24?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80',
         imageType: 'url',
         imagePath: null,
-        featured: 'false',
+        featured: false,
         publishedAt: new Date('2023-09-05'),
         author: 'Jessica Lee',
         photo: 'https://images.unsplash.com/photo-1496449903678-68ddcb189a24?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80',
