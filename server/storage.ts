@@ -42,8 +42,8 @@ export class AirtableStorage implements IStorage {
       // Create filter formula if search term is provided
       let filterByFormula = '';
       if (search) {
-        // Use Name field for searching
-        filterByFormula = `SEARCH("${search.replace(/"/g, '\\"')}", {Name})`;
+        // Search in both Name and Description fields
+        filterByFormula = `OR(SEARCH("${search.replace(/"/g, '\\"')}", {Name}), SEARCH("${search.replace(/"/g, '\\"')}", {Description}))`;
       }
       
       // First get count of total records matching the search
@@ -270,7 +270,8 @@ export class MemStorage implements IStorage {
     if (search) {
       const searchLower = search.toLowerCase();
       filteredArticles = filteredArticles.filter(article => 
-        (article.title || '').toLowerCase().includes(searchLower)
+        (article.title || '').toLowerCase().includes(searchLower) ||
+        (article.description || '').toLowerCase().includes(searchLower)
       );
     }
     
