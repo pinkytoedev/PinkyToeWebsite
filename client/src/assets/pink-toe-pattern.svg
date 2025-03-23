@@ -1,0 +1,20 @@
+<svg width="800" height="600" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <pattern id="pinkToePattern" patternUnits="userSpaceOnUse" width="200" height="200">
+      <rect width="200" height="200" fill="#FFF1F5"/>
+      
+      <!-- Pink Toe Shapes -->
+      <path d="M30,40 C35,35 45,35 50,40 C55,45 55,55 50,60 L40,70 C35,75 25,75 20,70 C15,65 15,55 20,50 L30,40" fill="#FFC0CB" stroke="#FF9DAF" stroke-width="1"/>
+      <path d="M130,140 C135,135 145,135 150,140 C155,145 155,155 150,160 L140,170 C135,175 125,175 120,170 C115,165 115,155 120,150 L130,140" fill="#FFC0CB" stroke="#FF9DAF" stroke-width="1"/>
+      <path d="M70,100 C75,95 85,95 90,100 C95,105 95,115 90,120 L80,130 C75,135 65,135 60,130 C55,125 55,115 60,110 L70,100" fill="#FFC0CB" stroke="#FF9DAF" stroke-width="1"/>
+      <path d="M150,60 C155,55 165,55 170,60 C175,65 175,75 170,80 L160,90 C155,95 145,95 140,90 C135,85 135,75 140,70 L150,60" fill="#FFC0CB" stroke="#FF9DAF" stroke-width="1"/>
+      <path d="M50,170 C55,165 65,165 70,170 C75,175 75,185 70,190 L60,200 C55,205 45,205 40,200 C35,195 35,185 40,180 L50,170" fill="#FFC0CB" stroke="#FF9DAF" stroke-width="1"/>
+      
+      <!-- Pink Hearts -->
+      <path d="M40,20 C43,15 50,15 53,20 C56,15 63,15 66,20 C70,27 66,35 53,42 C40,35 36,27 40,20" fill="#FF4D8D"/>
+      <path d="M160,110 C163,105 170,105 173,110 C176,105 183,105 186,110 C190,117 186,125 173,132 C160,125 156,117 160,110" fill="#FF4D8D"/>
+      <path d="M90,170 C93,165 100,165 103,170 C106,165 113,165 116,170 C120,177 116,185 103,192 C90,185 86,177 90,170" fill="#FF4D8D"/>
+    </pattern>
+  </defs>
+  <rect width="100%" height="100%" fill="url(#pinkToePattern)"/>
+</svg>
