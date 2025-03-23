@@ -60,7 +60,7 @@ export function getImageUrl(imageUrl: string | undefined | null | any[]): string
   }
 
   // Return the URL as is if we can't handle it
-  return typeof imageUrl === 'string' ? imageUrl : 'https://via.placeholder.com/400x300?text=Image+Not+Available';
+  return typeof imageUrl === 'string' ? imageUrl : LOCAL_FALLBACK_IMAGE;
 }
 
 /**
@@ -68,7 +68,7 @@ export function getImageUrl(imageUrl: string | undefined | null | any[]): string
  */
 function proxyExternalUrl(url: string): string {
   if (!url || typeof url !== 'string') {
-    return 'https://via.placeholder.com/400x300?text=Image+Not+Available';
+    return LOCAL_FALLBACK_IMAGE;
   }
   
   // If it's already proxied, return it as is
