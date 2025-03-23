@@ -67,14 +67,55 @@ export class ImageService {
   static extractAttachmentFromField(field: any): AirtableAttachment | null {
     if (!field) return null;
 
+    console.log('Extracting attachment from field:', typeof field, 
+      Array.isArray(field) ? `Array[${field.length}]` : 
+      typeof field === 'object' ? 'Object' : 
+      typeof field === 'string' ? `String: ${field.substring(0, 30)}...` : 
+      String(field));
+    
     // If it's an array, get the first item
     if (Array.isArray(field) && field.length > 0) {
+      console.log('Field is an array, first item type:', typeof field[0]);
       return field[0];
     }
     
     // If it's already an attachment object
-    if (typeof field === 'object' && field.url) {
-      return field;
+    if (typeof field === 'object' && field !== null) {
+      // Log object keys to help debug
+      console.log('Field is an object with keys:', Object.keys(field));
+      
+      if ('url' in field) {
+        console.log('Field has URL property:', field.url);
+        return field as AirtableAttachment;
+      }
+      
+      // Try to detect more complex objects that might have nested attachment
+      if ('fields' in field && typeof field.fields === 'object') {
+        console.log('Field has fields property, checking for image fields');
+        const fields = field.fields;
+        
+        // Look for common image field names
+        for (const key of ['image', 'photo', 'attachment', 'file']) {
+          if (key in fields && fields[key]) {
+            console.log(`Found ${key} in fields, type:`, typeof fields[key]);
+            return this.extractAttachmentFromField(fields[key]);
+          }
+        }
+      }
+    }
+    
+    // Try parsing if it's a string that might be a JSON object
+    if (typeof field === 'string' && 
+        (field.startsWith('{') || field.includes('url') || field.includes('thumbnail'))) {
+      try {
+        console.log('Attempting to parse string as JSON');
+        const parsed = JSON.parse(field);
+        if (parsed && typeof parsed === 'object') {
+          return this.extractAttachmentFromField(parsed);
+        }
+      } catch (err) {
+        console.log('Failed to parse string as JSON');
+      }
     }
     
     return null;
