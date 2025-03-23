@@ -152,10 +152,26 @@ export function ArticleDetail({ articleId, onClose }: ArticleDetailProps) {
   // Better extraction of photo credit name - handle multiple formats
   let photoName = '';
   if (article.name_photo) {
-    photoName = article.name_photo
-      .replace(/Photo by /i, '')  // Remove "Photo by " with case insensitivity
-      .replace(/Photo credit:/i, '') // Remove "Photo credit:" with case insensitivity
-      .trim();
+    // Check if name_photo is a string before calling replace
+    if (typeof article.name_photo === 'string') {
+      photoName = article.name_photo
+        .replace(/Photo by /i, '')  // Remove "Photo by " with case insensitivity
+        .replace(/Photo credit:/i, '') // Remove "Photo credit:" with case insensitivity
+        .trim();
+    } else if (Array.isArray(article.name_photo) && article.name_photo.length > 0) {
+      // If it's an array, take the first item
+      const photoCredit = article.name_photo[0];
+      if (typeof photoCredit === 'string') {
+        photoName = photoCredit
+          .replace(/Photo by /i, '')
+          .replace(/Photo credit:/i, '')
+          .trim();
+      } else {
+        console.log('Photo credit is not a string or array of strings:', article.name_photo);
+      }
+    } else {
+      console.log('Photo credit is not in an expected format:', article.name_photo);
+    }
   }
   
   const photoTeamMember = photoName ? findTeamMemberByName(photoName) : undefined;
