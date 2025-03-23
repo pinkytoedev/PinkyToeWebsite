@@ -23,11 +23,15 @@ export function FeaturedArticleCard({ article }: FeaturedArticleCardProps) {
     <div className="article-card bg-white rounded-lg shadow-lg overflow-hidden">
       <div className="md:flex">
         <div className="md:w-2/5">
-          <div className="flex items-center justify-center h-64 overflow-hidden">
+          <div className="flex items-center justify-center h-64 overflow-hidden bg-gray-50">
             <img 
               src={imageSource} 
               alt={article.title} 
-              className="w-full h-full object-contain"
+              className="w-auto h-auto max-w-full max-h-full object-contain"
+              style={{ 
+                display: 'block',
+                margin: 'auto'
+              }}
               onError={(e) => {
                 const target = e.target as HTMLImageElement;
                 console.error(`Failed to load image: ${target.src}`);
