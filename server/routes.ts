@@ -1,37 +1,9 @@
-import express, { type Express } from "express";
+import type { Express } from "express";
 import { createServer, type Server } from "http";
-import fs from "fs";
-import path from "path";
 import { storage } from "./storage";
 import { imagesRouter } from "./routes/images";
 
 export async function registerRoutes(app: Express): Promise<Server> {
-  // Serve the mapping file for client-side image optimization
-  app.get('/url-to-filename-map.json', (req, res) => {
-    const mapPath = path.join(process.cwd(), 'url-to-filename-map.json');
-    
-    try {
-      if (fs.existsSync(mapPath)) {
-        res.setHeader('Content-Type', 'application/json');
-        res.setHeader('Cache-Control', 'public, max-age=3600'); // Cache for 1 hour
-        fs.createReadStream(mapPath).pipe(res);
-      } else {
-        console.log('URL mapping file not found, returning empty map');
-        res.json({});
-      }
-    } catch (error) {
-      console.error('Error serving URL mapping file:', error);
-      res.json({});
-    }
-  });
-  
-  // Serve static files from uploads directory with caching
-  app.use('/uploads', express.static(path.join(process.cwd(), 'uploads'), {
-    maxAge: '1d', // Cache for one day
-    immutable: true,
-    lastModified: true
-  }));
-  
   // Register the images router
   app.use('/api/images', imagesRouter);
   // API routes for articles

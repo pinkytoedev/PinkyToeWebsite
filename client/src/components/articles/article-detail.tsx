@@ -110,8 +110,7 @@ export function ArticleDetail({ articleId, onClose }: ArticleDetailProps) {
             className="w-full h-80 object-cover rounded-lg mb-6"
             onError={(e) => {
               const target = e.target as HTMLImageElement;
-              console.error(`Failed to load image: ${target.src}`);
-              target.src = '/assets/placeholder-image.svg';
+              target.src = 'https://via.placeholder.com/800x600?text=Image+Not+Available';
             }}
           />
           
