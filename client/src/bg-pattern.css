@@ -5,8 +5,9 @@ body {
   background-color: #fff5f8;
   background-image: url('/attached_assets/background for pinky website.png');
   background-attachment: fixed;
-  background-size: 500px;
+  background-size: 250px;
   background-repeat: repeat;
+  background-position: center center;
 }
 
 /* Floating animation keyframes */

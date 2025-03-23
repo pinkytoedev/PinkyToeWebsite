@@ -2,10 +2,6 @@
   "name": "The Pinky Toe",
   "short_name": "Pinky Toe",
   "description": "Feminist Humor, Right at Your Feet",
-  "start_url": "/",
-  "display": "standalone",
-  "background_color": "#fff5f8",
-  "theme_color": "#FF4D8D",
   "icons": [
     {
       "src": "/attached_assets/TransparentLogo.png",
@@ -17,5 +13,9 @@
       "sizes": "512x512",
       "type": "image/png"
     }
-  ]
+  ],
+  "theme_color": "#FF4D8D",
+  "background_color": "#fff5f8",
+  "display": "standalone",
+  "orientation": "portrait"
 }
