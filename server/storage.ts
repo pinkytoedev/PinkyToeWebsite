@@ -42,13 +42,14 @@ export class AirtableStorage implements IStorage {
       // Create filter formula if search term is provided
       let filterByFormula = '';
       if (search) {
-        filterByFormula = `SEARCH("${search.replace(/"/g, '\\"')}", {title})`;
+        // Use Title (capitalized) instead of title
+        filterByFormula = `SEARCH("${search.replace(/"/g, '\\"')}", {Title})`;
       }
       
       // First get count of total records matching the search
       const countQuery = this.base('History').select({
-        filterByFormula: search ? filterByFormula : '',
-        fields: ['id'] // Only fetch id field for counting
+        filterByFormula: search ? filterByFormula : ''
+        // Remove fields parameter as 'id' is automatic in Airtable
       });
       
       const totalRecords = await countQuery.all();
@@ -76,7 +77,7 @@ export class AirtableStorage implements IStorage {
   async getFeaturedArticles(): Promise<Article[]> {
     try {
       const query = this.base('History').select({
-        filterByFormula: "{Featured} = 'true'",
+        filterByFormula: "{featured} = 'true'",
         sort: [{ field: 'Date', direction: 'desc' }],
         maxRecords: 5
       });
