@@ -108,6 +108,10 @@ export function ArticleDetail({ articleId, onClose }: ArticleDetailProps) {
             src={imageSource} 
             alt={article.title} 
             className="w-full h-80 object-cover rounded-lg mb-6"
+            onError={(e) => {
+              const target = e.target as HTMLImageElement;
+              target.src = 'https://via.placeholder.com/800x600?text=Image+Not+Available';
+            }}
           />
           
           <div className="flex items-center mb-6">

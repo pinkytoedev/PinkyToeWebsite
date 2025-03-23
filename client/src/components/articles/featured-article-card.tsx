@@ -10,7 +10,14 @@ interface FeaturedArticleCardProps {
 
 export function FeaturedArticleCard({ article }: FeaturedArticleCardProps) {
   // Use photo if imageUrl is not available
-  const imageSource = article.imageUrl ? getImageUrl(article.imageUrl) : getPhotoUrl(article.photo);
+  let imageSource = article.imageUrl ? getImageUrl(article.imageUrl) : getPhotoUrl(article.photo);
+  
+  // Make sure the image is going through our proxy if it's an external URL
+  if (imageSource && !imageSource.startsWith('/api/images/') && (imageSource.startsWith('http://') || imageSource.startsWith('https://'))) {
+    // Create a hash of the URL to use as an ID for the proxy
+    const encodedUrl = encodeURIComponent(imageSource);
+    imageSource = `/api/images/${encodedUrl}`;
+  }
   
   return (
     <div className="article-card bg-white rounded-lg shadow-lg overflow-hidden">
@@ -20,6 +27,12 @@ export function FeaturedArticleCard({ article }: FeaturedArticleCardProps) {
             src={imageSource} 
             alt={article.title} 
             className="h-64 w-full object-cover"
+            onError={(e) => {
+              const target = e.target as HTMLImageElement;
+              console.error(`Failed to load image: ${target.src}`);
+              // Fallback to a placeholder if image fails to load
+              target.src = 'https://via.placeholder.com/800x600?text=Image+Not+Available';
+            }}
           />
         </div>
         <div className="p-6 md:w-3/5">
