@@ -85,19 +85,18 @@ export default function Articles() {
       {isLoading ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
           {[...Array(ITEMS_PER_PAGE)].map((_, i) => (
-            <div key={i} className="bg-white rounded-lg shadow-lg overflow-hidden flex flex-col">
+            <div key={i} className="bg-white rounded-lg shadow-lg overflow-hidden flex flex-col h-full">
               <Skeleton className="h-48 w-full" />
               <div className="p-4 flex-grow space-y-3">
-                <Skeleton className="h-6 w-3/4" />
-                <Skeleton className="h-4 w-full" />
+                <Skeleton className="h-6 w-3/4 min-h-[3rem]" />
+                <Skeleton className="h-4 w-full min-h-[4rem]" />
                 <Skeleton className="h-4 w-full" />
               </div>
-              <div className="px-4 pb-4 flex justify-between items-center">
+              <div className="px-4 pb-4 mt-auto flex justify-between items-center">
                 <div className="space-y-1">
                   <Skeleton className="h-3 w-20" />
                   <Skeleton className="h-3 w-16" />
                 </div>
-                <Skeleton className="h-3 w-8" />
               </div>
             </div>
           ))}
@@ -123,7 +122,7 @@ export default function Articles() {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
           {articles.map((article: any) => (
-            <div key={article.id} onClick={() => handleArticleClick(article.id)}>
+            <div key={article.id} onClick={() => handleArticleClick(article.id)} className="h-full">
               <ArticleCard article={article} />
             </div>
           ))}
