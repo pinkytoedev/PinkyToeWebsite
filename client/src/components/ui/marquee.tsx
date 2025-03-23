@@ -1,3 +1,4 @@
+
 import { useEffect, useRef, useState } from "react";
 import { cn } from "@/lib/utils";
 
@@ -17,28 +18,28 @@ export function Marquee({
   children,
 }: MarqueeProps) {
   const containerRef = useRef<HTMLDivElement>(null);
-  const contentRef = useRef<HTMLDivElement>(null);
-  const [contentWidth, setContentWidth] = useState(0);
-  const [clones, setClones] = useState<React.ReactNode[]>([]);
+  const [activeIndex, setActiveIndex] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
+  const [childrenArray, setChildrenArray] = useState<React.ReactNode[]>([]);
 
-  // Calculate animation duration based on content width and desired speed
-  const getDuration = () => {
-    // Adjust the multiplier if you need to make it faster/slower
-    return contentWidth / speed;
-  };
-
+  // Convert children to array so we can cycle through them
   useEffect(() => {
-    if (contentRef.current) {
-      const width = contentRef.current.offsetWidth;
-      setContentWidth(width);
-      
-      // We need enough clones to fill the container width
-      // Ensure we have at least 1 clone, and protect against invalid calculations
-      const numClones = Math.max(1, Math.ceil(window.innerWidth / (width || 1)) + 1);
-      setClones(Array.from({ length: numClones }).map(() => children));
-    }
+    // Handle both array and single child case
+    const childArray = React.Children.toArray(children);
+    setChildrenArray(childArray);
   }, [children]);
+
+  // Set up the interval to change the active quote
+  useEffect(() => {
+    if (childrenArray.length <= 1 || isPaused) return;
+    
+    const intervalTime = 5000; // 5 seconds per quote
+    const interval = setInterval(() => {
+      setActiveIndex((prevIndex) => (prevIndex + 1) % childrenArray.length);
+    }, intervalTime);
+    
+    return () => clearInterval(interval);
+  }, [childrenArray, isPaused]);
 
   return (
     <div
@@ -50,33 +51,33 @@ export function Marquee({
       onMouseEnter={() => pauseOnHover && setIsPaused(true)}
       onMouseLeave={() => pauseOnHover && setIsPaused(false)}
     >
-      <div
-        className="inline-flex"
-        style={{
-          animationPlayState: isPaused ? "paused" : "running",
-          animationName: "marquee",
-          animationDuration: `${getDuration()}s`,
-          animationTimingFunction: "linear",
-          animationIterationCount: "infinite",
-          animationDirection: direction === "left" ? "normal" : "reverse",
-        }}
-      >
-        <div ref={contentRef} className="flex">
-          {children}
-        </div>
-        
-        {clones.map((clone, index) => (
-          <div key={index} className="flex">
-            {clone}
+      <div className="flex justify-center">
+        {childrenArray.length > 0 && (
+          <div 
+            className="animate-fade-in-out text-center" 
+            key={activeIndex}
+            style={{
+              animationName: "fadeInOut",
+              animationDuration: "5s",
+              animationTimingFunction: "ease-in-out",
+              animationIterationCount: "1",
+            }}
+          >
+            {childrenArray[activeIndex]}
           </div>
-        ))}
+        )}
       </div>
 
       <style dangerouslySetInnerHTML={{
         __html: `
-        @keyframes marquee {
-          0% { transform: translateX(0); }
-          100% { transform: translateX(-${contentWidth}px); }
+        @keyframes fadeInOut {
+          0% { opacity: 0; transform: translateX(${direction === "left" ? "10%" : "-10%"}); }
+          20% { opacity: 1; transform: translateX(0); }
+          80% { opacity: 1; transform: translateX(0); }
+          100% { opacity: 0; transform: translateX(${direction === "left" ? "-10%" : "10%"}); }
+        }
+        .animate-fade-in-out {
+          animation: fadeInOut 5s ease-in-out;
         }
         `
       }} />
