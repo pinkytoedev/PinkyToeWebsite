@@ -27,10 +27,18 @@ export class ImageService {
    * Get the best URL from an Airtable attachment
    * - For images, prefer the large thumbnail URL
    * - Fall back to the full URL if no thumbnails
+   * - If the attachment has an ID field, return the ID to use in proxy
    */
   static getBestAttachmentUrl(attachment: AirtableAttachment | string): string {
+    // If it's already a string, return it
     if (typeof attachment === 'string') {
       return attachment;
+    }
+
+    // If it has an ID and it starts with 'rec', return that ID
+    if (attachment.id && typeof attachment.id === 'string' && attachment.id.startsWith('rec')) {
+      console.log(`Using Airtable record ID for proxy: ${attachment.id}`);
+      return attachment.id;
     }
 
     // If it has thumbnails and it's an image, use the large thumbnail
