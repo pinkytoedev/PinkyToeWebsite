@@ -1,5 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { useParams, useLocation } from "wouter";
+import { Article } from "@shared/schema";
 import { Layout } from "@/components/layout/layout";
 import { API_ROUTES } from "@/lib/constants";
 import { formatDate } from "@/lib/utils";
@@ -70,6 +71,11 @@ export default function ArticleDetail() {
               src={imageSource} 
               alt={article.title} 
               className="w-full h-80 object-cover"
+              onError={(e) => {
+                const target = e.target as HTMLImageElement;
+                console.error(`Failed to load image: ${target.src}`);
+                target.src = '/api/images/placeholder';
+              }}
             />
             <div className="p-6">
               <h1 className="font-quicksand font-bold text-3xl text-primary mb-4">
