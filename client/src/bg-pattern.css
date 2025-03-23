@@ -1,48 +1,62 @@
+/* Background pattern styling for The Pinky Toe website */
 
-@tailwind base;
+:root {
+  --pattern-opacity: 0.15;
+  --pattern-scale: 400px;
+}
 
-/* Tiling background pattern with pinky toes */
-@layer base {
-  body {
-    background-image: url('/pinky-toe-pattern.svg');
-    background-repeat: repeat;
-    background-size: 400px; /* Set absolute size for better control */
-    background-attachment: fixed;
-    position: relative;
+/* Main container background with pattern overlay */
+body {
+  position: relative;
+  background-color: #fff5f8;
+  background-image: url('/pinky-toe-pattern.svg');
+  background-size: var(--pattern-scale);
+  background-repeat: repeat;
+  background-attachment: fixed;
+}
+
+/* Background pattern overlay */
+body::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: url('/attached_assets/background\ for\ pinky\ website.png');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  opacity: 0.08;
+  z-index: -1;
+  pointer-events: none;
+}
+
+/* Animation for background elements */
+@keyframes float {
+  0% {
+    transform: translateY(0) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-15px) rotate(2deg);
+  }
+  100% {
+    transform: translateY(0) rotate(0deg);
+  }
+}
+
+.floating-bg {
+  animation: float 15s ease-in-out infinite;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  :root {
+    --pattern-scale: 250px;
+    --pattern-opacity: 0.1;
   }
   
-  /* Add a subtle animation to the body before content */
   body::before {
-    content: '';
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(135deg, rgba(255,255,255,0.4) 0%, rgba(255,255,255,0) 50%, rgba(255,255,255,0.4) 100%);
-    animation: shine 10s infinite linear;
-    pointer-events: none; /* Make sure it doesn't block interactions */
-    z-index: -1;
-  }
-  
-  @keyframes shine {
-    0% {
-      background-position: -400px -400px;
-    }
-    100% {
-      background-position: 400px 400px;
-    }
-  }
-  
-  /* Add soft overlay to improve text readability */
-  main {
-    background-color: rgba(255, 255, 255, 0.85);
-    border-radius: 1rem;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-    transition: all 0.3s ease;
-  }
-  
-  main:hover {
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+    opacity: 0.05;
   }
 }
