@@ -229,8 +229,10 @@ export class AirtableStorage implements IStorage {
       if (attachment) {
         // Get the best URL from the attachment
         const bestUrl = ImageService.getBestAttachmentUrl(attachment);
-        // Create a proxy URL using the actual image URL
-        imageUrl = ImageService.getProxyUrl(bestUrl);
+        // If bestUrl is an actual URL (not an Airtable ID), create a proxy URL
+        if (bestUrl && (bestUrl.startsWith('http://') || bestUrl.startsWith('https://'))) {
+          imageUrl = ImageService.getProxyUrl(bestUrl);
+        }
       }
     }
     
@@ -238,9 +240,16 @@ export class AirtableStorage implements IStorage {
     if (!imageUrl) {
       const directUrl = record.get('imageUrl') as string || record.get('Image URL') as string || '';
       if (directUrl) {
-        // Proxy the direct URL as well
-        imageUrl = ImageService.getProxyUrl(directUrl);
+        // Only proxy if it's an actual URL, not an Airtable ID
+        if (directUrl.startsWith('http://') || directUrl.startsWith('https://')) {
+          imageUrl = ImageService.getProxyUrl(directUrl);
+        }
       }
+    }
+    
+    // If we couldn't find a valid URL, use a path to our local placeholder
+    if (!imageUrl || imageUrl.startsWith('rec')) {
+      imageUrl = '/assets/placeholder-image.svg';
     }
     
     return {
@@ -275,8 +284,10 @@ export class AirtableStorage implements IStorage {
       if (attachment) {
         // Get the best URL from the attachment
         const bestUrl = ImageService.getBestAttachmentUrl(attachment);
-        // Create a proxy URL using the actual image URL
-        imageUrl = ImageService.getProxyUrl(bestUrl);
+        // If bestUrl is an actual URL (not an Airtable ID), create a proxy URL
+        if (bestUrl && (bestUrl.startsWith('http://') || bestUrl.startsWith('https://'))) {
+          imageUrl = ImageService.getProxyUrl(bestUrl);
+        }
       }
     }
     
@@ -284,9 +295,16 @@ export class AirtableStorage implements IStorage {
     if (!imageUrl) {
       const directUrl = record.get('imageUrl') as string || record.get('Image URL') as string || '';
       if (directUrl) {
-        // Proxy the direct URL as well
-        imageUrl = ImageService.getProxyUrl(directUrl);
+        // Only proxy if it's an actual URL, not an Airtable ID
+        if (directUrl.startsWith('http://') || directUrl.startsWith('https://')) {
+          imageUrl = ImageService.getProxyUrl(directUrl);
+        }
       }
+    }
+    
+    // If we couldn't find a valid URL, use a path to our local placeholder
+    if (!imageUrl || imageUrl.startsWith('rec')) {
+      imageUrl = '/assets/placeholder-image.svg';
     }
     
     return {
