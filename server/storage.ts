@@ -236,25 +236,77 @@ export class AirtableStorage implements IStorage {
     }
     
     try {
+      console.log('Fetching quotes from Airtable...');
       const query = this.base('CarouselQuote').select();
       const records = await query.all();
       
+      // Debug: Log what fields are available in the records
+      if (records.length > 0) {
+        console.log('Available fields in Airtable CarouselQuote records:');
+        console.log(Object.keys(records[0].fields));
+      }
+      
       this.quotes = records.map((record, index) => {
-        // For the Banner (carousel "main"), get the quote from the Quote field
-        // For the Quote section (carousel "Philo"), get the quote from the Philo field
-        let quoteText = '';
-        const carouselType = record.get('Carousel') as string || record.get('carousel') as string || 'main';
+        // Fields in Airtable might be in different formats, so we need to check all possible cases
+        // First, try to get the type of carousel from various possible field names
+        const carouselField = 
+          record.get('Type') || 
+          record.get('type') || 
+          record.get('Carousel Type') || 
+          record.get('carousel_type') || 
+          record.get('Carousel') || 
+          record.get('carousel');
         
-        if (carouselType === 'main') {
-          // Banner quotes come from the Quote field
-          quoteText = record.get('Quote') as string || record.get('quote') as string || '';
-        } else if (carouselType === 'Philo') {
-          // Philosophy quotes come from the Philo field
-          quoteText = record.get('Philo') as string || '';
+        // Convert to string and normalize case for consistent comparison
+        const carouselType = (carouselField || 'main').toString().trim();
+        
+        // For each type of carousel, try to get the quote from the corresponding field
+        let quoteText = '';
+        
+        // Try multiple possible field names for quotes
+        if (carouselType.toLowerCase() === 'main') {
+          // For banner quotes
+          quoteText = 
+            record.get('Banner Text') || 
+            record.get('banner_text') || 
+            record.get('Banner') || 
+            record.get('banner') || 
+            record.get('Main Quote') || 
+            record.get('main_quote') || 
+            record.get('Quote') || 
+            record.get('quote') || 
+            record.get('Text') || 
+            record.get('text') || 
+            '';
+        } else if (carouselType.toLowerCase() === 'philo' || carouselType.toLowerCase() === 'philosophy') {
+          // For philosophy quotes
+          quoteText = 
+            record.get('Philosophy Quote') || 
+            record.get('philosophy_quote') || 
+            record.get('Philo Quote') || 
+            record.get('philo_quote') || 
+            record.get('Philo') || 
+            record.get('philo') || 
+            record.get('Quote') || 
+            record.get('quote') || 
+            record.get('Text') || 
+            record.get('text') || 
+            '';
         } else {
-          // Default fallback
-          quoteText = record.get('Quote') as string || record.get('quote') as string || '';
+          // For any other type, try to get the quote from generic fields
+          quoteText = 
+            record.get('Quote') || 
+            record.get('quote') || 
+            record.get('Text') || 
+            record.get('text') || 
+            '';
         }
+        
+        // Convert to string to handle any non-string values from Airtable
+        quoteText = quoteText ? quoteText.toString() : '';
+        
+        // Log each quote for debugging
+        console.log(`Quote ${index + 1} (${carouselType}): "${quoteText}"`);
         
         return {
           id: index + 1,
@@ -274,23 +326,44 @@ export class AirtableStorage implements IStorage {
   async getQuoteOfDay(): Promise<CarouselQuote> {
     const quotes = await this.getQuotes();
     
-    if (quotes.length === 0) {
-      return {
-        id: 0,
-        carousel: 'default',
-        quote: 'In a world full of sharks, be a pinky toe - small but mighty enough to make someone curse when they least expect it.'
-      };
+    // Filter for quotes of type "Philo" or "Philosophy" for the quote of the day
+    const philosophyQuotes = quotes.filter(quote => 
+      quote.carousel.toLowerCase() === 'philo' || 
+      quote.carousel.toLowerCase() === 'philosophy'
+    );
+    
+    if (philosophyQuotes.length === 0) {
+      console.log('No philosophy quotes found, returning any available quote');
+      
+      if (quotes.length === 0) {
+        console.log('No quotes available at all');
+        return {
+          id: 0,
+          carousel: 'default',
+          quote: ''
+        };
+      }
+      
+      // If no philosophy quotes, use any available quote
+      const today = new Date();
+      const start = new Date(today.getFullYear(), 0, 0);
+      const diff = today.getTime() - start.getTime();
+      const oneDay = 1000 * 60 * 60 * 24;
+      const dayOfYear = Math.floor(diff / oneDay);
+      
+      const quoteIndex = dayOfYear % quotes.length;
+      return quotes[quoteIndex];
     }
     
-    // Use the day of year to select a quote deterministically
+    // Use the day of year to select a quote deterministically from philosophy quotes
     const today = new Date();
     const start = new Date(today.getFullYear(), 0, 0);
     const diff = today.getTime() - start.getTime();
     const oneDay = 1000 * 60 * 60 * 24;
     const dayOfYear = Math.floor(diff / oneDay);
     
-    const quoteIndex = dayOfYear % quotes.length;
-    return quotes[quoteIndex];
+    const quoteIndex = dayOfYear % philosophyQuotes.length;
+    return philosophyQuotes[quoteIndex];
   }
   
   private mapAirtableRecordToArticle(record: Airtable.Record<any>): Article {
