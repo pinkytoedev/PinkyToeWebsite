@@ -7,10 +7,37 @@ import crypto from 'crypto';
 
 export const imagesRouter = Router();
 
+/**
+ * Placeholder image endpoint 
+ * Serves a SVG placeholder when no image is available
+ */
+imagesRouter.get('/placeholder', (req: Request, res: Response) => {
+  // Create a simple SVG placeholder
+  const svg = `<svg width="400" height="300" xmlns="http://www.w3.org/2000/svg">
+    <rect width="400" height="300" fill="#f0f0f0" />
+    <text x="50%" y="50%" font-family="Arial" font-size="20" text-anchor="middle" fill="#666">
+      Image Not Available
+    </text>
+  </svg>`;
+  
+  res.setHeader('Content-Type', 'image/svg+xml');
+  res.setHeader('Cache-Control', 'public, max-age=86400'); // Cache for 24 hours
+  res.send(svg);
+});
+
 // Create uploads directory if it doesn't exist
 const UPLOADS_DIR = path.join(process.cwd(), 'uploads');
-if (!fs.existsSync(UPLOADS_DIR)) {
-  fs.mkdirSync(UPLOADS_DIR, { recursive: true });
+try {
+  if (!fs.existsSync(UPLOADS_DIR)) {
+    fs.mkdirSync(UPLOADS_DIR, { recursive: true });
+    console.log(`Created uploads directory at ${UPLOADS_DIR}`);
+  }
+  
+  // Check if directory is writable
+  fs.accessSync(UPLOADS_DIR, fs.constants.W_OK);
+} catch (error) {
+  console.error(`Error with uploads directory: ${error.message}`);
+  // We'll continue and handle errors in the routes
 }
 
 /**
