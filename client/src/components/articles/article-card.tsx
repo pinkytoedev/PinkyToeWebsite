@@ -22,7 +22,7 @@ export function ArticleCard({ article }: ArticleCardProps) {
           className="h-48 w-full object-cover"
           onError={(e) => {
             const target = e.target as HTMLImageElement;
-            target.src = 'https://via.placeholder.com/400x300?text=Image+Not+Available';
+            target.src = '/api/images/placeholder';
           }}
         />
         <div className="article-overlay absolute inset-0 bg-primary bg-opacity-40 opacity-0 flex items-center justify-center transition-opacity duration-300 group-hover:opacity-100">

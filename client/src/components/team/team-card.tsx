@@ -18,6 +18,10 @@ export function TeamCard({ teamMember }: TeamCardProps) {
           src={imageSource} 
           alt={`${teamMember.name} photo`} 
           className="h-64 w-full object-cover"
+          onError={(e) => {
+            const target = e.target as HTMLImageElement;
+            target.src = '/api/images/placeholder';
+          }}
         />
         <div className="team-overlay absolute inset-0 bg-primary bg-opacity-40 opacity-0 flex items-center justify-center transition-opacity duration-300">
           <div>

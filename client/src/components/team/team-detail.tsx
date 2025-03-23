@@ -122,7 +122,11 @@ export function TeamDetail({ teamMemberId, onClose }: TeamDetailProps) {
               <img 
                 src={memberImageUrl} 
                 alt={`${teamMember.name} photo`} 
-                className="w-full rounded-lg" 
+                className="w-full rounded-lg"
+                onError={(e) => {
+                  const target = e.target as HTMLImageElement;
+                  target.src = '/api/images/placeholder';
+                }}
               />
               
               <div className="mt-4">
