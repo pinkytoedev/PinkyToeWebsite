@@ -91,7 +91,7 @@ export class AirtableStorage implements IStorage {
   
   async getRecentArticles(limit: number): Promise<Article[]> {
     try {
-      const query = this.base('Articles').select({
+      const query = this.base('History').select({
         sort: [{ field: 'publishedAt', direction: 'desc' }],
         maxRecords: limit
       });
@@ -106,7 +106,7 @@ export class AirtableStorage implements IStorage {
   
   async getArticleById(id: string): Promise<Article | undefined> {
     try {
-      const record = await this.base('Articles').find(id);
+      const record = await this.base('History').find(id);
       return this.mapAirtableRecordToArticle(record);
     } catch (error) {
       console.error(`Error fetching article ${id} from Airtable:`, error);
@@ -121,7 +121,7 @@ export class AirtableStorage implements IStorage {
       if (!teamMember) return [];
       
       // Find all articles by this author
-      const query = this.base('Articles').select({
+      const query = this.base('History').select({
         filterByFormula: `{author} = '${teamMember.name.replace(/'/g, "\\'")}'`,
         sort: [{ field: 'publishedAt', direction: 'desc' }],
         maxRecords: 10
@@ -137,7 +137,7 @@ export class AirtableStorage implements IStorage {
   
   async getTeamMembers(): Promise<Team[]> {
     try {
-      const query = this.base('Team').select({
+      const query = this.base('Teams').select({
         sort: [{ field: 'name', direction: 'asc' }]
       });
       
@@ -151,7 +151,7 @@ export class AirtableStorage implements IStorage {
   
   async getTeamMemberById(id: string): Promise<Team | undefined> {
     try {
-      const record = await this.base('Team').find(id);
+      const record = await this.base('Teams').find(id);
       return this.mapAirtableRecordToTeamMember(record);
     } catch (error) {
       console.error(`Error fetching team member ${id} from Airtable:`, error);
@@ -168,7 +168,7 @@ export class AirtableStorage implements IStorage {
     }
     
     try {
-      const query = this.base('Quotes').select();
+      const query = this.base('CarouselQuote').select();
       const records = await query.all();
       
       this.quotes = records.map((record, index) => ({
@@ -208,36 +208,45 @@ export class AirtableStorage implements IStorage {
   }
   
   private mapAirtableRecordToArticle(record: Airtable.Record<any>): Article {
+    // Get date field - try different possible field names
+    const dateString = record.get('publishedAt') || record.get('Published Date') || record.get('Date') || record.get('created');
+    const publishDate = dateString ? new Date(dateString as string) : new Date();
+    
+    // Get created date or fallback to published date
+    const createdString = record.get('createdAt') || record.get('Created Date') || record.get('created');
+    const createdDate = createdString ? new Date(createdString as string) : new Date();
+    
     return {
       id: record.id,
-      title: record.get('title') as string || '',
-      description: record.get('description') as string || '',
-      excerpt: record.get('excerpt') as string || undefined,
-      content: record.get('content') as string || '',
-      contentFormat: record.get('contentFormat') as any || 'plaintext',
-      imageUrl: record.get('imageUrl') as string || '',
-      imageType: record.get('imageType') as any || 'url',
-      imagePath: record.get('imagePath') as string || null,
-      featured: record.get('featured') as string || 'false',
-      publishedAt: new Date(record.get('publishedAt') as string),
-      author: record.get('author') as string || '',
-      photo: record.get('photo') as string || '',
-      photoCredit: record.get('photoCredit') as string || undefined,
-      status: record.get('status') as string || undefined,
-      createdAt: new Date(record.get('createdAt') as string || new Date()),
-      hashtags: record.get('hashtags') as string || undefined
+      title: record.get('title') as string || record.get('Title') as string || '',
+      description: record.get('description') as string || record.get('Description') as string || '',
+      excerpt: record.get('excerpt') as string || record.get('Excerpt') as string || undefined,
+      content: record.get('content') as string || record.get('Content') as string || '',
+      contentFormat: record.get('contentFormat') as any || record.get('Content Format') as any || 'plaintext',
+      imageUrl: record.get('imageUrl') as string || record.get('Image URL') as string || '',
+      imageType: record.get('imageType') as any || record.get('Image Type') as any || 'url',
+      imagePath: record.get('imagePath') as string || record.get('Image Path') as string || null,
+      featured: record.get('featured') as string || record.get('Featured') as string || 'false',
+      publishedAt: publishDate,
+      author: record.get('author') as string || record.get('Author') as string || '',
+      photo: record.get('photo') as string || record.get('Photo') as string || '',
+      photoCredit: record.get('photoCredit') as string || record.get('Photo Credit') as string || undefined,
+      status: record.get('status') as string || record.get('Status') as string || undefined,
+      createdAt: createdDate,
+      hashtags: record.get('hashtags') as string || record.get('Hashtags') as string || undefined
     };
   }
   
   private mapAirtableRecordToTeamMember(record: Airtable.Record<any>): Team {
     return {
       id: record.id,
-      name: record.get('name') as string || '',
-      role: record.get('role') as string || '',
-      bio: record.get('bio') as string || '',
-      imageUrl: record.get('imageUrl') as string || '',
-      imageType: record.get('imageType') as any || 'url',
-      imagePath: record.get('imagePath') as string || null
+      name: record.get('name') as string || record.get('Name') as string || '',
+      role: record.get('role') as string || record.get('Role') as string || '',
+      bio: record.get('bio') as string || record.get('Bio') as string || '',
+      imageUrl: record.get('imageUrl') as string || record.get('Image URL') as string || 
+              record.get('image') as string || record.get('Image') as string || '',
+      imageType: record.get('imageType') as any || record.get('Image Type') as any || 'url',
+      imagePath: record.get('imagePath') as string || record.get('Image Path') as string || null
     };
   }
 }
