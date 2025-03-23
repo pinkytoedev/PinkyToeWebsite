@@ -7,15 +7,15 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Link } from "wouter";
 
 export default function Home() {
-  const { data: featuredArticles, isLoading: featuredLoading } = useQuery({
+  const { data: featuredArticles = [], isLoading: featuredLoading } = useQuery<any[]>({
     queryKey: [API_ROUTES.FEATURED_ARTICLES],
   });
 
-  const { data: recentArticles, isLoading: recentLoading } = useQuery({
+  const { data: recentArticles = [], isLoading: recentLoading } = useQuery<any[]>({
     queryKey: [API_ROUTES.RECENT_ARTICLES],
   });
 
-  const { data: quoteOfDay, isLoading: quoteLoading } = useQuery({
+  const { data: quoteOfDay = {}, isLoading: quoteLoading } = useQuery<any>({
     queryKey: [API_ROUTES.QUOTE_OF_DAY],
   });
 

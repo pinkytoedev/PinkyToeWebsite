@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
 import { Link } from "wouter";
 import { formatDate } from "@/lib/utils";
+import { getImageUrl, getPhotoUrl } from "@/lib/image-helper";
 
 export default function TeamMemberDetail() {
   const { id } = useParams();
@@ -24,6 +25,9 @@ export default function TeamMemberDetail() {
   const goBack = () => {
     setLocation('/team');
   };
+
+  // Get the member image URL if available
+  const memberImageUrl = teamMember ? getImageUrl(teamMember.imageUrl) : '';
 
   return (
     <Layout>
@@ -67,7 +71,7 @@ export default function TeamMemberDetail() {
               <div className="md:flex">
                 <div className="md:w-1/3 mb-6 md:mb-0 md:pr-6">
                   <img 
-                    src={teamMember.imageUrl} 
+                    src={memberImageUrl} 
                     alt={`${teamMember.name} photo`} 
                     className="w-full rounded-lg" 
                   />
@@ -97,23 +101,28 @@ export default function TeamMemberDetail() {
                             <Skeleton className="h-16 w-full" />
                           </div>
                         ) : (
-                          articles.map((article: any) => (
-                            <div key={article.id} className="flex border-b border-gray-200 pb-3">
-                              <img 
-                                src={article.imageUrl} 
-                                alt={article.title} 
-                                className="w-20 h-20 object-cover rounded mr-4" 
-                              />
-                              <div>
-                                <Link href={`/articles/${article.id}`}>
-                                  <a className="font-quicksand font-semibold text-pinky-dark hover:text-primary transition-colors">
-                                    {article.title}
-                                  </a>
-                                </Link>
-                                <p className="text-gray-500 text-sm">{formatDate(article.publishedAt)}</p>
+                          articles.map((article: any) => {
+                            // Get proper image URL for article
+                            const articleImageUrl = article.imageUrl ? getImageUrl(article.imageUrl) : getPhotoUrl(article.photo);
+                            
+                            return (
+                              <div key={article.id} className="flex border-b border-gray-200 pb-3">
+                                <img 
+                                  src={articleImageUrl} 
+                                  alt={article.title} 
+                                  className="w-20 h-20 object-cover rounded mr-4" 
+                                />
+                                <div>
+                                  <Link href={`/articles/${article.id}`}>
+                                    <div className="font-quicksand font-semibold text-pinky-dark hover:text-primary transition-colors cursor-pointer">
+                                      {article.title}
+                                    </div>
+                                  </Link>
+                                  <p className="text-gray-500 text-sm">{formatDate(article.publishedAt)}</p>
+                                </div>
                               </div>
-                            </div>
-                          ))
+                            );
+                          })
                         )}
                       </div>
                     </div>

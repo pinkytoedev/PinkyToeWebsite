@@ -6,6 +6,7 @@ import { formatDate } from "@/lib/utils";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
+import { getImageUrl, getPhotoUrl } from "@/lib/image-helper";
 
 export default function ArticleDetail() {
   const { id } = useParams();
@@ -18,6 +19,11 @@ export default function ArticleDetail() {
   const goBack = () => {
     setLocation('/articles');
   };
+
+  // Get the image URL if article is available
+  const imageSource = article 
+    ? (article.imageUrl ? getImageUrl(article.imageUrl) : getPhotoUrl(article.photo))
+    : '';
 
   return (
     <Layout>
@@ -61,7 +67,7 @@ export default function ArticleDetail() {
         ) : article ? (
           <div className="bg-white rounded-lg shadow-lg overflow-hidden">
             <img 
-              src={article.imageUrl} 
+              src={imageSource} 
               alt={article.title} 
               className="w-full h-80 object-cover"
             />
