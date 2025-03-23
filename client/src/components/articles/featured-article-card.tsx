@@ -2,18 +2,22 @@ import { Link } from "wouter";
 import { Article } from "@shared/schema";
 import { formatDate } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+import { getImageUrl, getPhotoUrl } from "@/lib/image-helper";
 
 interface FeaturedArticleCardProps {
   article: Article;
 }
 
 export function FeaturedArticleCard({ article }: FeaturedArticleCardProps) {
+  // Use photo if imageUrl is not available
+  const imageSource = article.imageUrl ? getImageUrl(article.imageUrl) : getPhotoUrl(article.photo);
+  
   return (
     <div className="article-card bg-white rounded-lg shadow-lg overflow-hidden">
       <div className="md:flex">
         <div className="md:w-2/5">
           <img 
-            src={article.imageUrl} 
+            src={imageSource} 
             alt={article.title} 
             className="h-64 w-full object-cover"
           />
@@ -32,11 +36,13 @@ export function FeaturedArticleCard({ article }: FeaturedArticleCardProps) {
               <p className="text-gray-500">{formatDate(article.publishedAt)}</p>
             </div>
           </div>
-          <Link href={`/articles/${article.id}`}>
-            <Button className="mt-4 bg-primary hover:bg-pinky-dark text-white font-quicksand font-bold py-2 px-4 rounded transition-colors">
-              Read More
-            </Button>
-          </Link>
+          <div className="mt-4">
+            <Link href={`/articles/${article.id}`}>
+              <Button className="bg-primary hover:bg-pinky-dark text-white font-quicksand font-bold py-2 px-4 rounded transition-colors">
+                Read More
+              </Button>
+            </Link>
+          </div>
         </div>
       </div>
     </div>
