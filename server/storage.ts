@@ -257,9 +257,9 @@ export class AirtableStorage implements IStorage {
       imagePath: null, // No need for local path when using proxy
       featured: record.get('featured') === true || record.get('Featured') === true,
       publishedAt: publishDate,
-      author: record.get('author') as string || record.get('Author') as string || '',
+      name: record.get('name') as string || record.get('Name') as string || record.get('author') as string || record.get('Author') as string || '',
       photo: record.get('photo') as string || record.get('Photo') as string || '',
-      photoCredit: record.get('photoCredit') as string || record.get('Photo Credit') as string || undefined,
+      name_photo: record.get('name_photo') as string || record.get('photoCredit') as string || record.get('Photo Credit') as string || undefined,
       status: record.get('status') as string || record.get('Status') as string || undefined,
       createdAt: createdDate,
       hashtags: record.get('hashtags') as string || record.get('Hashtags') as string || undefined
@@ -356,7 +356,7 @@ export class MemStorage implements IStorage {
     const teamMember = await this.getTeamMemberById(authorId);
     if (!teamMember) return [];
     
-    return this.articles.filter(article => article.author === teamMember.name);
+    return this.articles.filter(article => article.name === teamMember.name);
   }
   
   async getTeamMembers(): Promise<Team[]> {
@@ -443,8 +443,9 @@ The suffragette movement also employed humor effectively, using satirical cartoo
         imagePath: null,
         featured: true,
         publishedAt: new Date('2023-08-24'),
-        author: 'Sarah Johnson',
+        name: 'Sarah Johnson',
         photo: ImageService.getProxyUrl('https://images.unsplash.com/photo-1533562669260-350775484a52?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80'),
+        name_photo: 'Photo by John Smith',
         status: 'published',
         createdAt: new Date('2023-08-20')
       },
@@ -459,8 +460,9 @@ The suffragette movement also employed humor effectively, using satirical cartoo
         imagePath: null,
         featured: true,
         publishedAt: new Date('2023-07-15'),
-        author: 'Emily Rodriguez',
+        name: 'Emily Rodriguez',
         photo: ImageService.getProxyUrl('https://images.unsplash.com/photo-1507676184212-d03ab07a01bf?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80'),
+        name_photo: 'Photo by Jane Doe',
         status: 'published',
         createdAt: new Date('2023-07-10')
       },
@@ -475,8 +477,9 @@ The suffragette movement also employed humor effectively, using satirical cartoo
         imagePath: null,
         featured: false,
         publishedAt: new Date('2023-09-05'),
-        author: 'Jessica Lee',
+        name: 'Jessica Lee',
         photo: ImageService.getProxyUrl('https://images.unsplash.com/photo-1496449903678-68ddcb189a24?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80'),
+        name_photo: 'Photo by Sam Taylor',
         status: 'published',
         createdAt: new Date('2023-09-01')
       }
