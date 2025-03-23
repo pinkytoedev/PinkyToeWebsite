@@ -1,11 +1,13 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { Article } from "@shared/schema";
+import { Article, Team } from "@shared/schema";
 import { API_ROUTES } from "@/lib/constants";
 import { formatDate } from "@/lib/utils";
 import { Skeleton } from "@/components/ui/skeleton";
 import { X } from "lucide-react";
 import { getImageUrl, getPhotoUrl } from "@/lib/image-helper";
+import { TeamDetail } from "@/components/team/team-detail";
+import { fetchTeamMembers } from "@/lib/api";
 
 interface ArticleDetailProps {
   articleId: string;
@@ -13,8 +15,17 @@ interface ArticleDetailProps {
 }
 
 export function ArticleDetail({ articleId, onClose }: ArticleDetailProps) {
+  const [selectedTeamMemberId, setSelectedTeamMemberId] = useState<string | null>(null);
+  
   const { data: article, isLoading, error } = useQuery<Article>({
     queryKey: [API_ROUTES.ARTICLE_BY_ID(articleId)],
+  });
+  
+  // Fetch all team members to match by name
+  const { data: teamMembers } = useQuery<Team[]>({
+    queryKey: [API_ROUTES.TEAM],
+    queryFn: fetchTeamMembers,
+    enabled: !!article,
   });
 
   useEffect(() => {
@@ -96,47 +107,98 @@ export function ArticleDetail({ articleId, onClose }: ArticleDetailProps) {
 
   // Use photo if imageUrl is not available
   const imageSource = article.imageUrl ? getImageUrl(article.imageUrl) : getPhotoUrl(article.photo);
+  
+  // Function to find team member by name
+  const findTeamMemberByName = (name: string): Team | undefined => {
+    if (!teamMembers) return undefined;
+    return teamMembers.find(member => 
+      member.name?.toLowerCase() === name?.toLowerCase()
+    );
+  };
+  
+  // Get team member IDs if available
+  const authorTeamMember = article.name ? findTeamMemberByName(article.name) : undefined;
+  const photoTeamMember = article.name_photo ? findTeamMemberByName(article.name_photo.replace('Photo by ', '')) : undefined;
+  
+  // Close team member modal handler
+  const handleCloseTeamDetail = () => {
+    setSelectedTeamMemberId(null);
+  };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center" onClick={handleBackdropClick}>
-      <div className="bg-white rounded-lg max-w-4xl w-full max-h-screen overflow-y-auto mx-4" onClick={e => e.stopPropagation()}>
-        <div className="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 flex justify-between items-center">
-          <h2 className="font-quicksand font-bold text-2xl text-primary">{article.title}</h2>
-          <button onClick={onClose} className="text-pinky-dark hover:text-primary text-2xl">
-            <X />
-          </button>
-        </div>
-        <div className="p-6">
-          <img 
-            src={imageSource} 
-            alt={article.title} 
-            className="w-full h-80 object-cover rounded-lg mb-6"
-            onError={(e) => {
-              const target = e.target as HTMLImageElement;
-              console.error(`Failed to load image: ${target.src}`);
-              target.src = '/api/images/placeholder';
-            }}
-          />
-          
-          <div className="flex items-center mb-6">
-            <div className="text-sm">
-              <p className="text-primary font-semibold">{article.name}</p>
-              <p className="text-gray-500">{formatDate(article.publishedAt)}</p>
-              {article.name_photo && (
-                <p className="text-gray-500 text-xs mt-1">Photo Credit: {article.name_photo}</p>
+    <>
+      <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center" onClick={handleBackdropClick}>
+        <div className="bg-white rounded-lg max-w-4xl w-full max-h-screen overflow-y-auto mx-4" onClick={e => e.stopPropagation()}>
+          <div className="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 flex justify-between items-center">
+            <h2 className="font-quicksand font-bold text-2xl text-primary">{article.title}</h2>
+            <button onClick={onClose} className="text-pinky-dark hover:text-primary text-2xl">
+              <X />
+            </button>
+          </div>
+          <div className="p-6">
+            <img 
+              src={imageSource} 
+              alt={article.title} 
+              className="w-full h-80 object-cover rounded-lg mb-6"
+              onError={(e) => {
+                const target = e.target as HTMLImageElement;
+                console.error(`Failed to load image: ${target.src}`);
+                target.src = '/api/images/placeholder';
+              }}
+            />
+            
+            <div className="flex items-center mb-6">
+              <div className="text-sm">
+                {authorTeamMember ? (
+                  <p 
+                    className="text-primary font-semibold cursor-pointer hover:underline" 
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setSelectedTeamMemberId(authorTeamMember.id);
+                    }}
+                  >
+                    {article.name}
+                  </p>
+                ) : (
+                  <p className="text-primary font-semibold">{article.name}</p>
+                )}
+                <p className="text-gray-500">{formatDate(article.publishedAt)}</p>
+                {article.name_photo && (
+                  photoTeamMember ? (
+                    <p 
+                      className="text-gray-500 text-xs mt-1 cursor-pointer hover:underline" 
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setSelectedTeamMemberId(photoTeamMember.id);
+                      }}
+                    >
+                      Photo Credit: {article.name_photo}
+                    </p>
+                  ) : (
+                    <p className="text-gray-500 text-xs mt-1">Photo Credit: {article.name_photo}</p>
+                  )
+                )}
+              </div>
+            </div>
+            
+            <div className="prose prose-lg max-w-none prose-headings:text-primary prose-a:text-primary hover:prose-a:text-pinky-dark prose-hr:border-gray-300">
+              {article.contentFormat === "html" ? (
+                <div dangerouslySetInnerHTML={{ __html: article.content }} />
+              ) : (
+                <p className="whitespace-pre-line">{article.content}</p>
               )}
             </div>
           </div>
-          
-          <div className="prose prose-lg max-w-none prose-headings:text-primary prose-a:text-primary hover:prose-a:text-pinky-dark prose-hr:border-gray-300">
-            {article.contentFormat === "html" ? (
-              <div dangerouslySetInnerHTML={{ __html: article.content }} />
-            ) : (
-              <p className="whitespace-pre-line">{article.content}</p>
-            )}
-          </div>
         </div>
       </div>
-    </div>
+      
+      {/* Show team member detail modal if a team member is selected */}
+      {selectedTeamMemberId && (
+        <TeamDetail 
+          teamMemberId={selectedTeamMemberId}
+          onClose={handleCloseTeamDetail}
+        />
+      )}
+    </>
   );
 }
