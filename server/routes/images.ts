@@ -232,10 +232,10 @@ async function refreshImageInBackground(id: string, fileHash: string) {
         const filepath = path.join(UPLOADS_DIR, `${fileHash}${ext}`);
         fs.writeFileSync(filepath, buffer);
         console.log(`Successfully refreshed image: ${fullUrl}`);
-      } catch (writeError) {
+      } catch (writeError: any) {
         console.error('Error writing refreshed image to disk:', writeError);
       }
-    } catch (fetchError) {
+    } catch (fetchError: any) {
       console.error(`Error fetching image: ${fullUrl}`, fetchError);
     }
   } catch (error: any) {
