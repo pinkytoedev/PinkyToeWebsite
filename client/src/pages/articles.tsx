@@ -137,21 +137,91 @@ export default function Articles() {
               <i className="fas fa-chevron-left"></i>
             </Button>
             
-            {[...Array(totalPages)].map((_, i) => (
-              <Button
-                key={i}
-                variant={page === i + 1 ? "default" : "ghost"}
-                className={
-                  page === i + 1 
-                    ? "font-quicksand font-bold h-8 w-8 rounded-full bg-primary text-white"
-                    : "font-quicksand font-bold h-8 w-8 rounded-full text-primary hover:bg-gray-100 mx-1"
+            {(() => {
+              const pageNumbers = [];
+              const maxVisiblePages = 5; // Show at most 5 page numbers
+              
+              let startPage = Math.max(1, page - Math.floor(maxVisiblePages / 2));
+              let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
+              
+              // Adjust start if we're near the end
+              if (endPage === totalPages) {
+                startPage = Math.max(1, endPage - maxVisiblePages + 1);
+              }
+              
+              // First page
+              if (startPage > 1) {
+                pageNumbers.push(
+                  <Button
+                    key={1}
+                    variant={page === 1 ? "default" : "ghost"}
+                    className={
+                      page === 1 
+                        ? "font-quicksand font-bold h-8 w-8 rounded-full bg-primary text-white"
+                        : "font-quicksand font-bold h-8 w-8 rounded-full text-primary hover:bg-gray-100 mx-1"
+                    }
+                    onClick={() => setPage(1)}
+                    disabled={isFetching}
+                  >
+                    1
+                  </Button>
+                );
+                
+                // Ellipsis after first page if needed
+                if (startPage > 2) {
+                  pageNumbers.push(
+                    <span key="start-ellipsis" className="mx-1 text-gray-500">...</span>
+                  );
                 }
-                onClick={() => setPage(i + 1)}
-                disabled={isFetching}
-              >
-                {i + 1}
-              </Button>
-            ))}
+              }
+              
+              // Main page numbers
+              for (let i = startPage; i <= endPage; i++) {
+                pageNumbers.push(
+                  <Button
+                    key={i}
+                    variant={page === i ? "default" : "ghost"}
+                    className={
+                      page === i 
+                        ? "font-quicksand font-bold h-8 w-8 rounded-full bg-primary text-white"
+                        : "font-quicksand font-bold h-8 w-8 rounded-full text-primary hover:bg-gray-100 mx-1"
+                    }
+                    onClick={() => setPage(i)}
+                    disabled={isFetching}
+                  >
+                    {i}
+                  </Button>
+                );
+              }
+              
+              // Last page
+              if (endPage < totalPages) {
+                // Ellipsis before last page if needed
+                if (endPage < totalPages - 1) {
+                  pageNumbers.push(
+                    <span key="end-ellipsis" className="mx-1 text-gray-500">...</span>
+                  );
+                }
+                
+                pageNumbers.push(
+                  <Button
+                    key={totalPages}
+                    variant={page === totalPages ? "default" : "ghost"}
+                    className={
+                      page === totalPages 
+                        ? "font-quicksand font-bold h-8 w-8 rounded-full bg-primary text-white"
+                        : "font-quicksand font-bold h-8 w-8 rounded-full text-primary hover:bg-gray-100 mx-1"
+                    }
+                    onClick={() => setPage(totalPages)}
+                    disabled={isFetching}
+                  >
+                    {totalPages}
+                  </Button>
+                );
+              }
+              
+              return pageNumbers;
+            })()}
             
             <Button
               variant="ghost"
