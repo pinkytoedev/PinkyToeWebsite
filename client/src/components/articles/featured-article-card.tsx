@@ -1,3 +1,4 @@
+import * as React from "react";
 import { Link } from "wouter";
 import { Article } from "@shared/schema";
 import { formatDate } from "@/lib/utils";
@@ -12,15 +13,25 @@ export function FeaturedArticleCard({ article }: FeaturedArticleCardProps) {
   // Use photo if imageUrl is not available
   const imageSource = article.imageUrl ? getImageUrl(article.imageUrl) : getPhotoUrl(article.photo);
   
+  // Add state to track image loading errors
+  const [imageError, setImageError] = React.useState(false);
+  
   return (
     <div className="article-card bg-white rounded-lg shadow-lg overflow-hidden">
       <div className="md:flex">
         <div className="md:w-2/5">
-          <img 
-            src={imageSource} 
-            alt={article.title} 
-            className="h-64 w-full object-cover"
-          />
+          {!imageError ? (
+            <img 
+              src={imageSource} 
+              alt={article.title} 
+              className="h-64 w-full object-cover"
+              onError={() => setImageError(true)}
+            />
+          ) : (
+            <div className="h-64 w-full bg-gray-200 flex items-center justify-center text-gray-500">
+              <p className="text-center px-4">Image not available</p>
+            </div>
+          )}
         </div>
         <div className="p-6 md:w-3/5">
           <div className="uppercase tracking-wide text-sm text-primary font-semibold">Featured</div>
