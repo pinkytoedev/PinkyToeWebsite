@@ -35,7 +35,7 @@ try {
   
   // Check if directory is writable
   fs.accessSync(UPLOADS_DIR, fs.constants.W_OK);
-} catch (error) {
+} catch (error: any) {
   console.error(`Error with uploads directory: ${error.message}`);
   // We'll continue and handle errors in the routes
 }
@@ -83,6 +83,8 @@ imagesRouter.get('/:id', async (req: Request, res: Response) => {
     
     // Handle Airtable record IDs (starting with 'rec')
     if (decodedId.startsWith('rec')) {
+      console.log(`Processing Airtable record ID: ${decodedId}`);
+      
       // First, check if we have a cached version for this Airtable record
       const cachedFileName = path.join(UPLOADS_DIR, `${fileHash}.jpg`);
       if (fs.existsSync(cachedFileName)) {
@@ -94,8 +96,12 @@ imagesRouter.get('/:id', async (req: Request, res: Response) => {
         return;
       }
       
-      // We don't have a cached version from a previous run, create an informative SVG
+      // Check if storage.ts has proper implementation for getting image by record ID
+      // (This is where we would fetch the actual image from Airtable's API if we had access)
+      
+      // For now, create an informative SVG placeholder
       try {
+        console.log(`Creating SVG placeholder for Airtable record: ${decodedId}`);
         const width = 400;
         const height = 300;
         const svg = `<svg width="${width}" height="${height}" xmlns="http://www.w3.org/2000/svg">
@@ -115,13 +121,17 @@ imagesRouter.get('/:id', async (req: Request, res: Response) => {
           // Save the SVG as a fallback
           const filepath = path.join(UPLOADS_DIR, `${fileHash}.svg`);
           fs.writeFileSync(filepath, svg);
+          console.log(`Saved SVG placeholder to: ${filepath}`);
         } catch (writeError) {
           console.error('Failed to save SVG placeholder:', writeError);
           // Continue even if write fails
         }
         
+        // Make sure we're actually sending the SVG content
+        console.log(`Sending SVG placeholder for: ${decodedId}, content length: ${svg.length}`);
         res.setHeader('Content-Type', 'image/svg+xml');
         res.setHeader('Cache-Control', 'public, max-age=86400');
+        res.status(200);
         return res.send(svg);
       } catch (svgError) {
         console.error('Error creating SVG placeholder:', svgError);
