@@ -12,10 +12,20 @@ export const imagesRouter = Router();
  * Serves a SVG placeholder when no image is available
  */
 imagesRouter.get('/placeholder', (req: Request, res: Response) => {
-  // Create a simple SVG placeholder
+  // Create a nicer branded SVG placeholder with Pinky Toe branding
   const svg = `<svg width="400" height="300" xmlns="http://www.w3.org/2000/svg">
-    <rect width="400" height="300" fill="#f0f0f0" />
-    <text x="50%" y="50%" font-family="Arial" font-size="20" text-anchor="middle" fill="#666">
+    <defs>
+      <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" style="stop-color:#FF6B6B;stop-opacity:1" />
+        <stop offset="100%" style="stop-color:#FF8E8E;stop-opacity:1" />
+      </linearGradient>
+    </defs>
+    <rect width="400" height="300" fill="url(#grad)" />
+    <rect x="120" y="110" width="160" height="80" rx="10" fill="white" opacity="0.8" />
+    <text x="50%" y="150" font-family="Arial" font-size="20" font-weight="bold" text-anchor="middle" fill="#FF6B6B">
+      The Pinky Toe
+    </text>
+    <text x="50%" y="180" font-family="Arial" font-size="14" text-anchor="middle" fill="#666">
       Image Not Available
     </text>
   </svg>`;
@@ -91,11 +101,24 @@ imagesRouter.get('/:id', async (req: Request, res: Response) => {
         console.log(`Processing Airtable record ID: ${decodedId}`);
         
         // For now, as we don't have a direct way to fetch from Airtable API by ID,
-        // we use a special placeholder for record IDs
+        // we use our branded placeholder for record IDs
         const svg = `<svg width="400" height="300" xmlns="http://www.w3.org/2000/svg">
-          <rect width="400" height="300" fill="#f8f9fa" />
-          <text x="50%" y="50%" font-family="Arial" font-size="16" text-anchor="middle" fill="#343a40">
-            ${decodedId}
+          <defs>
+            <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" style="stop-color:#FF6B6B;stop-opacity:1" />
+              <stop offset="100%" style="stop-color:#FF8E8E;stop-opacity:1" />
+            </linearGradient>
+          </defs>
+          <rect width="400" height="300" fill="url(#grad)" />
+          <rect x="100" y="110" width="200" height="100" rx="10" fill="white" opacity="0.8" />
+          <text x="50%" y="145" font-family="Arial" font-size="20" font-weight="bold" text-anchor="middle" fill="#FF6B6B">
+            The Pinky Toe
+          </text>
+          <text x="50%" y="170" font-family="Arial" font-size="12" text-anchor="middle" fill="#666">
+            Image from Airtable
+          </text>
+          <text x="50%" y="190" font-family="Arial" font-size="10" text-anchor="middle" fill="#999">
+            ID: ${decodedId}
           </text>
         </svg>`;
         
