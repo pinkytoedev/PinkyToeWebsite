@@ -457,6 +457,34 @@ async function cacheAllAirtableImages() {
           // Generic processing for other tables
           records.forEach(record => {
             const urls = extractAttachmentUrls(record);
+            
+            // If we found image URLs, add this record to the mapping
+            if (urls.length > 0) {
+              const id = record.id;
+              
+              // Create a record entry if it doesn't exist
+              if (!recordImageMap.has(id)) {
+                recordImageMap.set(id, {
+                  id,
+                  table: tableName,
+                  title: record.fields.title || record.fields.name || 
+                        record.fields.fullName || record.fields.description || 
+                        `${tableName} record`,
+                  images: []
+                });
+              }
+              
+              // Add image URLs to the record's image list
+              urls.forEach((url, index) => {
+                recordImageMap.get(id).images.push({
+                  url,
+                  type: 'attachment',
+                  index
+                });
+              });
+            }
+            
+            // Add all found URLs to the allImageUrls set
             urls.forEach(url => allImageUrls.add(url));
           });
         }
@@ -478,11 +506,50 @@ async function cacheAllAirtableImages() {
     // Save the record-image mapping for reference
     try {
       const mapPath = path.join(process.cwd(), 'image-record-map.json');
+      // Convert Map to a proper array of objects for serialization
+      const recordsArray = Array.from(recordImageMap.values()).filter(
+        entry => entry.images && entry.images.length > 0
+      );
+      
+      console.log(`Found ${recordsArray.length} records with images to save in mapping`);
+      
       fs.writeFileSync(
         mapPath, 
-        JSON.stringify(Array.from(recordImageMap.entries()), null, 2)
+        JSON.stringify(recordsArray, null, 2)
       );
       console.log(`Saved image-record mapping to ${mapPath}`);
+      
+      // Also create a URL to filename lookup map
+      const urlToFilenameMap = {};
+      for (const record of recordsArray) {
+        for (const image of record.images) {
+          if (image.url) {
+            const fileHash = crypto.createHash('md5').update(image.url).digest('hex');
+            // Find the matching file extension in the uploads directory
+            let extension = '.jpg'; // Default
+            try {
+              const files = fs.readdirSync(UPLOADS_DIR);
+              const matchingFile = files.find(file => file.startsWith(fileHash));
+              if (matchingFile) {
+                extension = path.extname(matchingFile);
+              }
+            } catch (err) {
+              console.error(`Error checking file extension: ${err.message}`);
+            }
+            
+            urlToFilenameMap[image.url] = `${fileHash}${extension}`;
+          }
+        }
+      }
+      
+      // Save URL to filename map for client-side usage
+      const urlMapPath = path.join(process.cwd(), 'url-to-filename-map.json');
+      fs.writeFileSync(
+        urlMapPath,
+        JSON.stringify(urlToFilenameMap, null, 2)
+      );
+      console.log(`Saved URL-to-filename mapping to ${urlMapPath}`);
+      
     } catch (error) {
       console.error('Error saving image-record mapping:', error.message);
     }
