@@ -22,12 +22,28 @@ if (!AIRTABLE_API_KEY || !AIRTABLE_BASE_ID) {
   process.exit(1);
 }
 
-// Configure Airtable
+// Configure Airtable with more lenient timeout and retry options
 Airtable.configure({
-  apiKey: AIRTABLE_API_KEY
+  apiKey: AIRTABLE_API_KEY,
+  requestTimeout: 300000, // 5 minutes
+  endpointUrl: 'https://api.airtable.com',
 });
 
 const base = Airtable.base(AIRTABLE_BASE_ID);
+
+// Define the standard Airtable tables we know exist in the project
+const KNOWN_TABLES = [
+  'Team',         // Team members
+  'Articles',     // Blog articles 
+  'First',        // Might be main content
+  'CarouselQuote', // Quotes/testimonials
+  'History',      // Historical content
+  'Blog',         // Alternative blog table
+  'Content',      // General content
+  'Images',       // Dedicated image table
+  'Members',      // Alternative team members
+  'Authors'       // Article authors
+];
 
 // Create uploads directory if it doesn't exist
 const UPLOADS_DIR = path.join(process.cwd(), 'uploads');
@@ -41,10 +57,25 @@ function extractAttachmentUrls(record) {
   
   // Debug log each record ID for tracing
   console.log(`Processing record: ${record.id}`);
+
+  // Common image field patterns
+  const imageFieldPatterns = [
+    'image', 'photo', 'picture', 'avatar', 'icon', 'logo', 'banner',
+    'thumbnail', 'cover', 'header', 'background', 'featured'
+  ];
   
   // Process all fields in the record
   for (const fieldName in record.fields) {
     const field = record.fields[fieldName];
+    const fieldNameLower = fieldName.toLowerCase();
+    
+    const isLikelyImageField = imageFieldPatterns.some(pattern => 
+      fieldNameLower.includes(pattern) || fieldNameLower === pattern
+    );
+    
+    if (isLikelyImageField) {
+      console.log(`Found potential image field: "${fieldName}"`);
+    }
     
     // Check if field is an array (potentially attachments)
     if (Array.isArray(field)) {
@@ -69,55 +100,122 @@ function extractAttachmentUrls(record) {
               urls.push(item.thumbnails.full.url);
             }
           }
-        } else if (typeof item === 'string' && item.startsWith('http') && 
-                  (item.includes('.jpg') || item.includes('.jpeg') || 
-                   item.includes('.png') || item.includes('.gif') || 
-                   item.includes('.webp') || item.includes('.svg'))) {
-          // It's a direct URL to an image
-          console.log(`Found image URL in field "${fieldName}" [${index}]: ${item.substring(0, 80)}...`);
-          urls.push(item);
+        } else if (typeof item === 'string' && item.startsWith('http')) {
+          // Check if it's an image URL by common extensions or URL patterns
+          if (item.match(/\.(jpg|jpeg|png|gif|webp|svg)($|\?)/i) ||
+              item.includes('images') || item.includes('photos') || 
+              item.includes('thumbnails') || item.includes('media')) {
+            console.log(`Found image URL in field "${fieldName}" [${index}]: ${item.substring(0, 80)}...`);
+            urls.push(item);
+          }
         }
       });
     }
     // Check if field is a direct URL string
-    else if (typeof field === 'string' && field.startsWith('http') && 
-            (field.includes('.jpg') || field.includes('.jpeg') || 
-             field.includes('.png') || field.includes('.gif') || 
-             field.includes('.webp') || field.includes('.svg'))) {
-      console.log(`Found image URL in field "${fieldName}": ${field.substring(0, 80)}...`);
-      urls.push(field);
+    else if (typeof field === 'string' && field.startsWith('http')) {
+      // Check if it's an image URL by common extensions or URL patterns
+      if (field.match(/\.(jpg|jpeg|png|gif|webp|svg)($|\?)/i) ||
+          field.includes('images') || field.includes('photos') || 
+          field.includes('thumbnails') || field.includes('media')) {
+        console.log(`Found image URL in field "${fieldName}": ${field.substring(0, 80)}...`);
+        urls.push(field);
+      }
     }
     // Check if this is a rich text field that might contain image URLs
-    else if (typeof field === 'string' && 
-            (fieldName.includes('content') || fieldName.includes('description') || 
-             fieldName.includes('text') || fieldName.includes('html') || 
-             fieldName.includes('body') || fieldName.includes('bio'))) {
-      // Find all image URLs in HTML/text content
-      const imgRegex = /(https?:\/\/[^\s"'<>]+\.(jpg|jpeg|png|gif|webp|svg))/gi;
-      const matches = field.match(imgRegex);
+    else if (typeof field === 'string' && (
+      fieldNameLower.includes('content') || 
+      fieldNameLower.includes('description') || 
+      fieldNameLower.includes('text') || 
+      fieldNameLower.includes('html') || 
+      fieldNameLower.includes('body') || 
+      fieldNameLower.includes('bio') ||
+      fieldNameLower.includes('about') ||
+      fieldNameLower.includes('detail') ||
+      field.includes('<img') || // Contains HTML img tags
+      field.includes('src=') // Contains src attributes
+    )) {
+      // Find all image URLs in HTML content (img tags)
+      const imgTagRegex = /<img[^>]+src=["']([^"']+)["'][^>]*>/gi;
+      let match;
+      const imgUrls = [];
       
-      if (matches && matches.length > 0) {
-        console.log(`Found ${matches.length} image URLs in rich text field "${fieldName}"`);
-        matches.forEach(url => urls.push(url));
+      while ((match = imgTagRegex.exec(field)) !== null) {
+        if (match[1] && match[1].startsWith('http')) {
+          imgUrls.push(match[1]);
+        }
+      }
+      
+      // Find all direct image URLs by extension
+      const imgUrlRegex = /(https?:\/\/[^\s"'<>]+\.(jpg|jpeg|png|gif|webp|svg)($|\?))/gi;
+      const directMatches = field.match(imgUrlRegex) || [];
+      
+      // Find URLs containing image-like paths
+      const imgPathRegex = /(https?:\/\/[^\s"'<>]+\/(images|photos|media|uploads)\/[^\s"'<>]+)/gi;
+      const pathMatches = field.match(imgPathRegex) || [];
+      
+      // Combine all matches
+      const allMatches = [...imgUrls, ...directMatches, ...pathMatches];
+      const uniqueMatches = [...new Set(allMatches)]; // Remove duplicates
+      
+      if (uniqueMatches.length > 0) {
+        console.log(`Found ${uniqueMatches.length} image URLs in rich text field "${fieldName}"`);
+        uniqueMatches.forEach(url => urls.push(url));
       }
     }
     // Check if this is an object with a URL property
-    else if (field && typeof field === 'object' && field.url && typeof field.url === 'string') {
-      console.log(`Found object with URL in field "${fieldName}": ${field.url.substring(0, 80)}...`);
-      urls.push(field.url);
-      
-      // Check for thumbnails in the same pattern
-      if (field.thumbnails) {
-        if (field.thumbnails.large && field.thumbnails.large.url) {
-          urls.push(field.thumbnails.large.url);
-        }
-        if (field.thumbnails.small && field.thumbnails.small.url) {
-          urls.push(field.thumbnails.small.url);
-        }
-        if (field.thumbnails.full && field.thumbnails.full.url) {
-          urls.push(field.thumbnails.full.url);
+    else if (field && typeof field === 'object') {
+      // Handle URL property
+      if (field.url && typeof field.url === 'string') {
+        console.log(`Found object with URL in field "${fieldName}": ${field.url.substring(0, 80)}...`);
+        urls.push(field.url);
+        
+        // Check for thumbnails in the same pattern
+        if (field.thumbnails) {
+          if (field.thumbnails.large && field.thumbnails.large.url) {
+            urls.push(field.thumbnails.large.url);
+          }
+          if (field.thumbnails.small && field.thumbnails.small.url) {
+            urls.push(field.thumbnails.small.url);
+          }
+          if (field.thumbnails.full && field.thumbnails.full.url) {
+            urls.push(field.thumbnails.full.url);
+          }
         }
       }
+      
+      // Check for other possible image-related keys in the object
+      const possibleImageKeys = ['image', 'imageUrl', 'photo', 'picture', 'thumbnail', 'src'];
+      for (const key of possibleImageKeys) {
+        if (field[key] && typeof field[key] === 'string' && field[key].startsWith('http')) {
+          console.log(`Found image URL in nested object field "${fieldName}.${key}": ${field[key].substring(0, 80)}...`);
+          urls.push(field[key]);
+        }
+      }
+    }
+  }
+  
+  // Look for raw data object fields with a different pattern
+  for (const fieldName in record._rawJson?.fields) {
+    const field = record._rawJson?.fields[fieldName];
+    
+    // Sometimes Airtable API returns _rawJson with different data format
+    if (field && Array.isArray(field) && field.length > 0) {
+      field.forEach(item => {
+        // Check for URLs in raw data that might have been missed
+        if (typeof item === 'object' && item.url && typeof item.url === 'string') {
+          console.log(`Found URL in _rawJson for field "${fieldName}": ${item.url.substring(0, 80)}...`);
+          urls.push(item.url);
+          
+          // Check for thumbnails
+          if (item.thumbnails) {
+            Object.values(item.thumbnails).forEach(thumb => {
+              if (thumb && thumb.url) {
+                urls.push(thumb.url);
+              }
+            });
+          }
+        }
+      });
     }
   }
   
@@ -175,6 +273,112 @@ async function cacheImage(imageUrl) {
   }
 }
 
+// Create a mapping between record IDs and their images for reference
+const recordImageMap = new Map();
+
+// Process image fields for Articles specifically
+function processArticleRecord(record) {
+  const urls = [];
+  const id = record.id;
+  
+  // Store the mapping
+  recordImageMap.set(id, { 
+    id,
+    title: record.fields.title || record.fields.name || 'Untitled',
+    images: []
+  });
+  
+  // Common image field names in articles
+  const imageFieldNames = [
+    'image', 'imageUrl', 'mainImage', 'mainPhoto', 'photo', 'thumbnail',
+    'featured_image', 'headerImage', 'coverImage', 'featureImage'
+  ];
+  
+  // Try to find the main image for this article
+  let mainImageFound = false;
+  for (const fieldName of imageFieldNames) {
+    if (record.fields[fieldName]) {
+      const field = record.fields[fieldName];
+      
+      // Process array fields
+      if (Array.isArray(field) && field.length > 0) {
+        field.forEach((item, index) => {
+          if (item && typeof item === 'object' && item.url) {
+            console.log(`Found article image in field "${fieldName}" [${index}]: ${item.url.substring(0, 80)}...`);
+            urls.push(item.url);
+            recordImageMap.get(id).images.push({
+              url: item.url,
+              field: fieldName,
+              type: 'main'
+            });
+            mainImageFound = true;
+            
+            // Get thumbnails too
+            if (item.thumbnails) {
+              if (item.thumbnails.large && item.thumbnails.large.url) {
+                urls.push(item.thumbnails.large.url);
+                recordImageMap.get(id).images.push({
+                  url: item.thumbnails.large.url,
+                  field: `${fieldName}_large_thumb`,
+                  type: 'thumbnail'
+                });
+              }
+              if (item.thumbnails.small && item.thumbnails.small.url) {
+                urls.push(item.thumbnails.small.url);
+                recordImageMap.get(id).images.push({
+                  url: item.thumbnails.small.url,
+                  field: `${fieldName}_small_thumb`,
+                  type: 'thumbnail'
+                });
+              }
+              if (item.thumbnails.full && item.thumbnails.full.url) {
+                urls.push(item.thumbnails.full.url);
+                recordImageMap.get(id).images.push({
+                  url: item.thumbnails.full.url,
+                  field: `${fieldName}_full_thumb`,
+                  type: 'thumbnail'
+                });
+              }
+            }
+          }
+        });
+      }
+      // Process string fields
+      else if (typeof field === 'string' && field.startsWith('http')) {
+        console.log(`Found article image URL in field "${fieldName}": ${field.substring(0, 80)}...`);
+        urls.push(field);
+        recordImageMap.get(id).images.push({
+          url: field,
+          field: fieldName,
+          type: 'main'
+        });
+        mainImageFound = true;
+      }
+    }
+  }
+  
+  // Check for images in rich text content
+  if (record.fields.content && typeof record.fields.content === 'string') {
+    const imgRegex = /(https?:\/\/[^\s"'<>]+\.(jpg|jpeg|png|gif|webp|svg))/gi;
+    const matches = record.fields.content.match(imgRegex);
+    
+    if (matches && matches.length > 0) {
+      console.log(`Found ${matches.length} image URLs in article content`);
+      matches.forEach((url, index) => {
+        urls.push(url);
+        recordImageMap.get(id).images.push({
+          url: url,
+          field: 'content',
+          type: 'embedded',
+          index
+        });
+      });
+    }
+  }
+  
+  return urls;
+}
+
 // Main function to fetch all data from Airtable tables
 async function cacheAllAirtableImages() {
   const allImageUrls = new Set();
@@ -182,12 +386,18 @@ async function cacheAllAirtableImages() {
   try {
     console.log('Starting direct Airtable image caching process...');
     
-    // Get a list of all tables in the base
-    console.log('Fetching list of tables from Airtable base...');
-    let tables = [];
+    // First try KNOWN_TABLES, then try to discover tables
+    console.log('First checking known tables...');
+    const allTables = new Set();
     
+    // Add all known tables to our set
+    for (const tableName of KNOWN_TABLES) {
+      allTables.add(tableName);
+    }
+    
+    // Try to discover more tables
     try {
-      // Make a direct API request to list tables
+      console.log('Attempting to discover additional tables...');
       const response = await fetch(`https://api.airtable.com/v0/meta/bases/${AIRTABLE_BASE_ID}/tables`, {
         headers: { 
           'Authorization': `Bearer ${AIRTABLE_API_KEY}`,
@@ -197,37 +407,61 @@ async function cacheAllAirtableImages() {
       
       if (response.ok) {
         const data = await response.json();
-        tables = data.tables.map(table => table.name);
-        console.log(`Found ${tables.length} tables in Airtable base: ${tables.join(', ')}`);
+        data.tables.forEach(table => allTables.add(table.name));
+        console.log(`Found ${data.tables.length} tables via API discovery`);
       } else {
-        console.error(`Failed to fetch tables: ${response.status} ${response.statusText}`);
-        // Fall back to default tables
-        tables = ['Team', 'Articles', 'Teams', 'Blog', 'Content', 'Images', 'Authors', 'Members'];
-        console.log(`Using fallback table list: ${tables.join(', ')}`);
+        console.error(`Failed to discover tables via API: ${response.status} ${response.statusText}`);
       }
     } catch (error) {
-      console.error(`Error fetching tables: ${error.message}`);
-      // Fall back to default tables
-      tables = ['Team', 'Articles', 'Teams', 'Blog', 'Content', 'Images', 'Authors', 'Members'];
-      console.log(`Using fallback table list: ${tables.join(', ')}`);
+      console.error(`Error discovering tables: ${error.message}`);
     }
     
-    for (const table of tables) {
-      console.log(`Fetching records from "${table}" table...`);
+    console.log(`Processing ${allTables.size} tables: ${Array.from(allTables).join(', ')}`);
+    
+    // Process Articles table first to ensure we get article images
+    if (allTables.has('Articles')) {
+      console.log('Processing Articles table first...');
+      try {
+        const records = await base('Articles').select().all();
+        console.log(`Found ${records.length} records in "Articles" table`);
+        
+        // Process articles with special handling
+        for (const record of records) {
+          const urls = processArticleRecord(record);
+          urls.forEach(url => allImageUrls.add(url));
+        }
+      } catch (error) {
+        console.error(`Error processing Articles table: ${error.message}`);
+      }
+      
+      // Remove Articles from the set to avoid duplicate processing
+      allTables.delete('Articles');
+    }
+    
+    // Process all other tables
+    for (const tableName of allTables) {
+      console.log(`Processing "${tableName}" table...`);
       
       try {
-        // Get all records from this table
-        const records = await base(table).select().all();
-        console.log(`Found ${records.length} records in "${table}" table`);
+        const records = await base(tableName).select().all();
+        console.log(`Found ${records.length} records in "${tableName}" table`);
         
-        // Extract attachment URLs from each record
-        records.forEach(record => {
-          const urls = extractAttachmentUrls(record);
-          urls.forEach(url => allImageUrls.add(url));
-        });
+        // Special handling for some tables
+        if (tableName === 'Blog') {
+          // Process blog posts with article-specific handling
+          for (const record of records) {
+            const urls = processArticleRecord(record);
+            urls.forEach(url => allImageUrls.add(url));
+          }
+        } else {
+          // Generic processing for other tables
+          records.forEach(record => {
+            const urls = extractAttachmentUrls(record);
+            urls.forEach(url => allImageUrls.add(url));
+          });
+        }
       } catch (error) {
-        console.error(`Error fetching records from "${table}" table: ${error.message}`);
-        // Continue with other tables even if one fails
+        console.error(`Error processing "${tableName}" table: ${error.message}`);
       }
     }
     
@@ -237,16 +471,36 @@ async function cacheAllAirtableImages() {
       console.log('No image URLs found to cache. This could mean:');
       console.log('1. There are no images in the Airtable');
       console.log('2. The Airtable API key or Base ID might be incorrect');
-      console.log('3. The table names "Team" and "Articles" might not match your Airtable');
+      console.log('3. The table names might not match your Airtable structure');
       return;
     }
     
+    // Save the record-image mapping for reference
+    try {
+      const mapPath = path.join(process.cwd(), 'image-record-map.json');
+      fs.writeFileSync(
+        mapPath, 
+        JSON.stringify(Array.from(recordImageMap.entries()), null, 2)
+      );
+      console.log(`Saved image-record mapping to ${mapPath}`);
+    } catch (error) {
+      console.error('Error saving image-record mapping:', error.message);
+    }
+    
     // Cache each image
+    let cacheCount = 0;
     for (const url of allImageUrls) {
       await cacheImage(url);
+      cacheCount++;
+      
+      // Log progress every 10 images
+      if (cacheCount % 10 === 0) {
+        console.log(`Progress: Cached ${cacheCount}/${allImageUrls.size} images`);
+      }
     }
     
     console.log('Image caching completed successfully!');
+    console.log(`Total images cached: ${cacheCount}`);
   } catch (error) {
     console.error('Error during image caching:', error);
   }
