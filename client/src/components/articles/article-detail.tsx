@@ -5,6 +5,7 @@ import { API_ROUTES } from "@/lib/constants";
 import { formatDate } from "@/lib/utils";
 import { Skeleton } from "@/components/ui/skeleton";
 import { X } from "lucide-react";
+import { getImageUrl, getPhotoUrl } from "@/lib/image-helper";
 
 interface ArticleDetailProps {
   articleId: string;
@@ -90,6 +91,9 @@ export function ArticleDetail({ articleId, onClose }: ArticleDetailProps) {
     );
   }
 
+  // Use photo if imageUrl is not available
+  const imageSource = article.imageUrl ? getImageUrl(article.imageUrl) : getPhotoUrl(article.photo);
+
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center" onClick={handleBackdropClick}>
       <div className="bg-white rounded-lg max-w-4xl w-full max-h-screen overflow-y-auto mx-4" onClick={e => e.stopPropagation()}>
@@ -101,7 +105,7 @@ export function ArticleDetail({ articleId, onClose }: ArticleDetailProps) {
         </div>
         <div className="p-6">
           <img 
-            src={article.imageUrl} 
+            src={imageSource} 
             alt={article.title} 
             className="w-full h-80 object-cover rounded-lg mb-6"
           />
