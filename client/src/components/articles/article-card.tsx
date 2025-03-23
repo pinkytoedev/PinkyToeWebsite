@@ -28,13 +28,12 @@ export function ArticleCard({ article }: ArticleCardProps) {
         />
         <div className="article-overlay absolute inset-0 bg-primary bg-opacity-40 opacity-0 flex items-center justify-center transition-opacity duration-300 group-hover:opacity-100">
           <div>
-            <Link href={`/articles/${article.id}`}>
-              <Button 
-                className="bg-white text-primary font-quicksand font-bold py-2 px-4 rounded-full shadow-lg transition-colors hover:bg-pinky-dark hover:text-white"
-              >
-                Read More
-              </Button>
-            </Link>
+            <Button 
+              className="bg-white text-primary font-quicksand font-bold py-2 px-4 rounded-full shadow-lg transition-colors hover:bg-pinky-dark hover:text-white"
+              onClick={(e) => e.stopPropagation()} // Prevent duplicate click events
+            >
+              Read More
+            </Button>
           </div>
         </div>
       </div>
