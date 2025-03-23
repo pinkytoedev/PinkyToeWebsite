@@ -26,8 +26,8 @@ export function Layout({ children }: LayoutProps) {
     <div className={`flex flex-col min-h-screen ${mounted ? 'opacity-100' : 'opacity-0'} transition-opacity duration-500`}>
       <Header />
       
-      {/* Marquee Banner with improved styling */}
-      <div className="bg-gradient-to-r from-primary via-pink-300 to-primary text-white py-3 overflow-hidden whitespace-nowrap shadow-md">
+      {/* Marquee Banner with solid color */}
+      <div className="bg-primary text-white py-3 overflow-hidden whitespace-nowrap shadow-md">
         {isLoading ? (
           <div className="container mx-auto">
             <Skeleton className="h-6 w-3/4 bg-primary-foreground/20" />
@@ -39,7 +39,7 @@ export function Layout({ children }: LayoutProps) {
         ) : (
           <Marquee speed={35} pauseOnHover={true}>
             {Array.isArray(quotes) && quotes.map((quote: CarouselQuote) => (
-              <span key={quote.id} className="mx-8 font-pacifico text-lg drop-shadow-sm">✧ {quote.quote} ✧</span>
+              <span key={quote.id} className="mx-8 font-pacifico text-lg drop-shadow-sm">{quote.quote}</span>
             ))}
           </Marquee>
         )}
