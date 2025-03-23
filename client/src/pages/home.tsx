@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Layout } from "@/components/layout/layout";
 import { API_ROUTES } from "@/lib/constants";
 import { FeaturedArticleCard } from "@/components/articles/featured-article-card";
@@ -16,6 +16,9 @@ import {
 } from "@/components/ui/carousel";
 
 export default function Home() {
+  const [autoPlayInterval, setAutoPlayInterval] = useState<NodeJS.Timeout | null>(null);
+  const carouselRef = useRef<{ scrollNext: () => void } | null>(null);
+
   const { data: featuredArticles = [], isLoading: featuredLoading } = useQuery<any[]>({
     queryKey: [API_ROUTES.FEATURED_ARTICLES],
   });
@@ -27,6 +30,27 @@ export default function Home() {
   const { data: quotes = [], isLoading: quotesLoading } = useQuery<CarouselQuote[]>({
     queryKey: [API_ROUTES.QUOTES],
   });
+
+  // Set up auto-play for the carousel
+  useEffect(() => {
+    if (quotes && quotes.length > 0 && carouselRef.current) {
+      // Start auto-play
+      const interval = setInterval(() => {
+        if (carouselRef.current) {
+          carouselRef.current.scrollNext();
+        }
+      }, 5000); // Change slide every 5 seconds
+      
+      setAutoPlayInterval(interval);
+      
+      // Clean up interval on unmount
+      return () => {
+        if (autoPlayInterval) {
+          clearInterval(autoPlayInterval);
+        }
+      };
+    }
+  }, [quotes, carouselRef.current]);
 
   return (
     <Layout>
@@ -132,8 +156,16 @@ export default function Home() {
                   <div className="relative">
                     <Carousel
                       opts={{
-                        align: "start",
+                        align: "center",
                         loop: true,
+                        slidesToScroll: 1,
+                        containScroll: "trimSnaps",
+                        duration: 30,
+                      }}
+                      setApi={(api) => {
+                        if (api) {
+                          carouselRef.current = api;
+                        }
                       }}
                     >
                       <CarouselContent>
