@@ -47,9 +47,10 @@ try {
 imagesRouter.get('/:id', async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
+    const decodedId = decodeURIComponent(id);
     
     // Generate a consistent filename from the ID
-    const fileHash = crypto.createHash('md5').update(id).digest('hex');
+    const fileHash = crypto.createHash('md5').update(decodedId).digest('hex');
     
     // Look for cached version first
     const cachedFiles = fs.readdirSync(UPLOADS_DIR).filter(f => f.startsWith(fileHash));
@@ -74,26 +75,61 @@ imagesRouter.get('/:id', async (req: Request, res: Response) => {
       
       // If file is more than a day old, refresh in background
       if (fileAge > 24 * 60 * 60 * 1000) {
-        refreshImageInBackground(id, fileHash);
+        refreshImageInBackground(decodedId, fileHash);
       }
       
       return;
     }
     
-    // If no cached version, we need to fetch it
-    // First check if this is an Airtable ID (att...) or a URL encoded as ID
-    if (id.startsWith('http')) {
-      // ID is an encoded URL (for non-Airtable images)
-      return await handleUrlImage(id, fileHash, res);
+    // Handle Airtable record IDs (starting with 'rec')
+    if (decodedId.startsWith('rec')) {
+      try {
+        // For Airtable record IDs, we need to return a placeholder
+        // since we don't have direct access to the image
+        const svg = `<svg width="400" height="300" xmlns="http://www.w3.org/2000/svg">
+          <rect width="400" height="300" fill="#f8f9fa" />
+          <text x="50%" y="50%" font-family="Arial" font-size="16" text-anchor="middle" fill="#343a40">
+            Airtable Image (ID: ${decodedId})
+          </text>
+        </svg>`;
+        
+        try {
+          // Save the SVG as a fallback
+          const filepath = path.join(UPLOADS_DIR, `${fileHash}.svg`);
+          fs.writeFileSync(filepath, svg);
+        } catch (writeError) {
+          console.error('Failed to save SVG placeholder:', writeError);
+          // Continue even if write fails
+        }
+        
+        res.setHeader('Content-Type', 'image/svg+xml');
+        res.setHeader('Cache-Control', 'public, max-age=86400');
+        return res.send(svg);
+      } catch (svgError) {
+        console.error('Error creating SVG placeholder:', svgError);
+        return res.redirect('/api/images/placeholder');
+      }
+    }
+    
+    // If it's a URL (http/https)
+    if (decodedId.startsWith('http')) {
+      return await handleUrlImage(decodedId, fileHash, res);
     } else {
-      // We'll assume this is a direct URL pointing to an image
-      const imageUrl = decodeURIComponent(id);
-      return await handleUrlImage(imageUrl, fileHash, res);
+      // For any other type of ID, try to use it as a URL
+      // but wrap in try/catch to handle invalid URLs
+      try {
+        return await handleUrlImage(decodedId, fileHash, res);
+      } catch (urlError) {
+        console.error('Error with URL:', urlError);
+        
+        // Return placeholder if URL is invalid
+        return res.redirect('/api/images/placeholder');
+      }
     }
     
   } catch (error) {
     console.error('Error serving image:', error);
-    return res.status(500).json({ error: 'Failed to serve image' });
+    return res.redirect('/api/images/placeholder');
   }
 });
 
@@ -102,31 +138,58 @@ imagesRouter.get('/:id', async (req: Request, res: Response) => {
  */
 async function handleUrlImage(url: string, fileHash: string, res: Response) {
   try {
-    // Fetch the image
-    const response = await fetch(url);
-    if (!response.ok) {
-      return res.status(404).json({ error: 'Image not found' });
+    // Handle invalid URLs
+    if (!url || url.startsWith('rec')) {
+      console.error(`Invalid URL format: ${url}`);
+      return res.redirect('/api/images/placeholder');
     }
     
-    // Get content type and determine extension
-    const contentType = response.headers.get('content-type') || 'image/jpeg';
-    const ext = contentType.includes('png') ? '.png' : 
-                contentType.includes('gif') ? '.gif' : 
-                contentType.includes('webp') ? '.webp' : '.jpg';
+    // If the URL doesn't start with http/https, add it
+    const fullUrl = url.startsWith('http') ? url : `https://${url}`;
     
-    // Save the image
-    const buffer = await response.buffer();
-    const filepath = path.join(UPLOADS_DIR, `${fileHash}${ext}`);
-    fs.writeFileSync(filepath, buffer);
-    
-    // Serve the image
-    res.setHeader('Content-Type', contentType);
-    res.setHeader('Cache-Control', 'public, max-age=86400'); // Cache for 24 hours
-    res.end(buffer);
-    
+    try {
+      // Fetch the image
+      const response = await fetch(fullUrl);
+      if (!response.ok) {
+        console.error(`Failed to fetch image: ${fullUrl} (Status: ${response.status})`);
+        return res.redirect('/api/images/placeholder');
+      }
+      
+      // Get content type and determine extension
+      const contentType = response.headers.get('content-type') || 'image/jpeg';
+      
+      // Check if it's actually an image
+      if (!contentType.startsWith('image/')) {
+        console.error(`URL doesn't point to an image: ${fullUrl} (Content-Type: ${contentType})`);
+        return res.redirect('/api/images/placeholder');
+      }
+      
+      const ext = contentType.includes('png') ? '.png' : 
+                  contentType.includes('gif') ? '.gif' : 
+                  contentType.includes('webp') ? '.webp' : '.jpg';
+      
+      // Save the image
+      const buffer = await response.buffer();
+      
+      try {
+        const filepath = path.join(UPLOADS_DIR, `${fileHash}${ext}`);
+        fs.writeFileSync(filepath, buffer);
+      } catch (writeError) {
+        console.error('Error writing image to disk:', writeError);
+        // Continue anyway to serve the image from memory
+      }
+      
+      // Serve the image
+      res.setHeader('Content-Type', contentType);
+      res.setHeader('Cache-Control', 'public, max-age=86400'); // Cache for 24 hours
+      res.end(buffer);
+    } catch (fetchError) {
+      console.error(`Error fetching image from URL: ${fullUrl}`, fetchError);
+      return res.redirect('/api/images/placeholder');
+    }
   } catch (error) {
     console.error('Error handling URL image:', error);
-    res.status(500).json({ error: 'Failed to fetch image' });
+    return res.redirect('/api/images/placeholder');
   }
 }
 
@@ -134,39 +197,46 @@ async function handleUrlImage(url: string, fileHash: string, res: Response) {
  * Refresh an image in the background without blocking the response
  */
 async function refreshImageInBackground(id: string, fileHash: string) {
+  // Don't attempt to refresh Airtable record IDs
+  if (!id || id.startsWith('rec')) {
+    return;
+  }
+  
   try {
-    // Check if this is a URL
-    if (id.startsWith('http')) {
-      const url = id;
-      const response = await fetch(url);
-      if (!response.ok) return;
+    // If the URL doesn't start with http/https, add it
+    const fullUrl = id.startsWith('http') ? id : `https://${id}`;
+    
+    try {
+      const response = await fetch(fullUrl);
+      if (!response.ok) {
+        console.error(`Failed to refresh image: ${fullUrl} (Status: ${response.status})`);
+        return;
+      }
       
       // Get content type and determine extension
       const contentType = response.headers.get('content-type') || 'image/jpeg';
+      
+      // Skip if not an image
+      if (!contentType.startsWith('image/')) {
+        console.error(`URL doesn't point to an image: ${fullUrl} (Content-Type: ${contentType})`);
+        return;
+      }
+      
       const ext = contentType.includes('png') ? '.png' : 
                  contentType.includes('gif') ? '.gif' : 
                  contentType.includes('webp') ? '.webp' : '.jpg';
       
-      // Save the image
-      const buffer = await response.buffer();
-      const filepath = path.join(UPLOADS_DIR, `${fileHash}${ext}`);
-      fs.writeFileSync(filepath, buffer);
-    } else {
-      // For non-URL IDs (implement specific logic here)
-      const url = decodeURIComponent(id);
-      const response = await fetch(url);
-      if (!response.ok) return;
-      
-      // Get content type and determine extension
-      const contentType = response.headers.get('content-type') || 'image/jpeg';
-      const ext = contentType.includes('png') ? '.png' : 
-                 contentType.includes('gif') ? '.gif' : 
-                 contentType.includes('webp') ? '.webp' : '.jpg';
-      
-      // Save the image
-      const buffer = await response.buffer();
-      const filepath = path.join(UPLOADS_DIR, `${fileHash}${ext}`);
-      fs.writeFileSync(filepath, buffer);
+      try {
+        // Save the image
+        const buffer = await response.buffer();
+        const filepath = path.join(UPLOADS_DIR, `${fileHash}${ext}`);
+        fs.writeFileSync(filepath, buffer);
+        console.log(`Successfully refreshed image: ${fullUrl}`);
+      } catch (writeError) {
+        console.error('Error writing refreshed image to disk:', writeError);
+      }
+    } catch (fetchError) {
+      console.error(`Error fetching image: ${fullUrl}`, fetchError);
     }
   } catch (error) {
     // Just log the error, don't interrupt the request flow
