@@ -224,6 +224,9 @@ export class AirtableStorage implements IStorage {
     const imageField = record.get('Image') || record.get('image') || record.get('Banner') || record.get('banner');
     
     if (imageField) {
+      // For debugging
+      console.log(`Article ${record.id}: Image field type: ${typeof imageField}`);
+      
       // Try to extract attachment data
       const attachment = ImageService.extractAttachmentFromField(imageField);
       if (attachment) {
@@ -231,6 +234,30 @@ export class AirtableStorage implements IStorage {
         const bestUrl = ImageService.getBestAttachmentUrl(attachment);
         // Create a proxy URL using the actual image URL
         imageUrl = ImageService.getProxyUrl(bestUrl);
+        console.log(`Article ${record.id}: Using attachment URL: ${bestUrl.substring(0, 30)}...`);
+      } else if (typeof imageField === 'string') {
+        // If the field is a direct URL string
+        imageUrl = ImageService.getProxyUrl(imageField);
+        console.log(`Article ${record.id}: Using direct string URL`);
+      } else if (Array.isArray(imageField) && imageField.length > 0) {
+        // If the field is an array, try the first item
+        const firstItem = imageField[0];
+        if (typeof firstItem === 'string') {
+          imageUrl = ImageService.getProxyUrl(firstItem);
+        } else if (typeof firstItem === 'object' && firstItem !== null) {
+          // If it's an object, it might be an Airtable attachment format
+          const url = firstItem.url || (firstItem.thumbnails && firstItem.thumbnails.large && firstItem.thumbnails.large.url);
+          if (url) {
+            imageUrl = ImageService.getProxyUrl(url);
+          } else {
+            // Last resort - try serializing the object
+            try {
+              imageUrl = ImageService.getProxyUrl(JSON.stringify(firstItem));
+            } catch (error) {
+              console.error('Failed to serialize image field object:', error);
+            }
+          }
+        }
       }
     }
     
@@ -240,7 +267,14 @@ export class AirtableStorage implements IStorage {
       if (directUrl) {
         // Proxy the direct URL as well
         imageUrl = ImageService.getProxyUrl(directUrl);
+        console.log(`Article ${record.id}: Using fallback URL field`);
       }
+    }
+    
+    // Final fallback - use record ID
+    if (!imageUrl) {
+      imageUrl = ImageService.getProxyUrl(record.id);
+      console.log(`Article ${record.id}: Using record ID as last resort: ${record.id}`);
     }
     
     return {
@@ -270,6 +304,9 @@ export class AirtableStorage implements IStorage {
     const imageField = record.get('Image') || record.get('image') || record.get('Photo') || record.get('photo');
     
     if (imageField) {
+      // For debugging
+      console.log(`Team member ${record.id}: Image field type: ${typeof imageField}`);
+      
       // Try to extract attachment data
       const attachment = ImageService.extractAttachmentFromField(imageField);
       if (attachment) {
@@ -277,6 +314,30 @@ export class AirtableStorage implements IStorage {
         const bestUrl = ImageService.getBestAttachmentUrl(attachment);
         // Create a proxy URL using the actual image URL
         imageUrl = ImageService.getProxyUrl(bestUrl);
+        console.log(`Team member ${record.id}: Using attachment URL: ${bestUrl.substring(0, 30)}...`);
+      } else if (typeof imageField === 'string') {
+        // If the field is a direct URL string
+        imageUrl = ImageService.getProxyUrl(imageField);
+        console.log(`Team member ${record.id}: Using direct string URL`);
+      } else if (Array.isArray(imageField) && imageField.length > 0) {
+        // If the field is an array, try the first item
+        const firstItem = imageField[0];
+        if (typeof firstItem === 'string') {
+          imageUrl = ImageService.getProxyUrl(firstItem);
+        } else if (typeof firstItem === 'object' && firstItem !== null) {
+          // If it's an object, it might be an Airtable attachment format
+          const url = firstItem.url || (firstItem.thumbnails && firstItem.thumbnails.large && firstItem.thumbnails.large.url);
+          if (url) {
+            imageUrl = ImageService.getProxyUrl(url);
+          } else {
+            // Last resort - try serializing the object
+            try {
+              imageUrl = ImageService.getProxyUrl(JSON.stringify(firstItem));
+            } catch (error) {
+              console.error('Failed to serialize image field object:', error);
+            }
+          }
+        }
       }
     }
     
@@ -286,7 +347,14 @@ export class AirtableStorage implements IStorage {
       if (directUrl) {
         // Proxy the direct URL as well
         imageUrl = ImageService.getProxyUrl(directUrl);
+        console.log(`Team member ${record.id}: Using fallback URL field`);
       }
+    }
+    
+    // Final fallback - use record ID
+    if (!imageUrl) {
+      imageUrl = ImageService.getProxyUrl(record.id);
+      console.log(`Team member ${record.id}: Using record ID as last resort: ${record.id}`);
     }
     
     return {

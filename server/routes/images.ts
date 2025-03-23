@@ -49,6 +49,9 @@ imagesRouter.get('/:id', async (req: Request, res: Response) => {
     const { id } = req.params;
     const decodedId = decodeURIComponent(id);
     
+    // Debug logging to trace the incoming ID
+    console.log(`Image request for ID: ${decodedId.substring(0, 30)}${decodedId.length > 30 ? '...' : ''}`);
+    
     // Generate a consistent filename from the ID
     const fileHash = crypto.createHash('md5').update(decodedId).digest('hex');
     
@@ -60,7 +63,8 @@ imagesRouter.get('/:id', async (req: Request, res: Response) => {
       const ext = path.extname(cachedFile);
       const contentType = ext === '.png' ? 'image/png' : 
                           ext === '.gif' ? 'image/gif' : 
-                          ext === '.webp' ? 'image/webp' : 'image/jpeg';
+                          ext === '.webp' ? 'image/webp' :
+                          ext === '.svg' ? 'image/svg+xml' : 'image/jpeg';
       
       res.setHeader('Content-Type', contentType);
       res.setHeader('Cache-Control', 'public, max-age=86400'); // Cache for 24 hours
@@ -84,22 +88,23 @@ imagesRouter.get('/:id', async (req: Request, res: Response) => {
     // Handle Airtable record IDs (starting with 'rec')
     if (decodedId.startsWith('rec')) {
       try {
-        // For Airtable record IDs, we need to return a placeholder
-        // since we don't have direct access to the image
+        console.log(`Processing Airtable record ID: ${decodedId}`);
+        
+        // For now, as we don't have a direct way to fetch from Airtable API by ID,
+        // we use a special placeholder for record IDs
         const svg = `<svg width="400" height="300" xmlns="http://www.w3.org/2000/svg">
           <rect width="400" height="300" fill="#f8f9fa" />
           <text x="50%" y="50%" font-family="Arial" font-size="16" text-anchor="middle" fill="#343a40">
-            Airtable Image (ID: ${decodedId})
+            ${decodedId}
           </text>
         </svg>`;
         
+        // Save the SVG as a fallback
+        const filepath = path.join(UPLOADS_DIR, `${fileHash}.svg`);
         try {
-          // Save the SVG as a fallback
-          const filepath = path.join(UPLOADS_DIR, `${fileHash}.svg`);
           fs.writeFileSync(filepath, svg);
         } catch (writeError) {
           console.error('Failed to save SVG placeholder:', writeError);
-          // Continue even if write fails
         }
         
         res.setHeader('Content-Type', 'image/svg+xml');
@@ -108,6 +113,41 @@ imagesRouter.get('/:id', async (req: Request, res: Response) => {
       } catch (svgError) {
         console.error('Error creating SVG placeholder:', svgError);
         return res.redirect('/api/images/placeholder');
+      }
+    }
+    
+    // Check if it might be a JSON serialized Airtable attachment
+    if (decodedId.includes('"thumbnails"') || decodedId.includes('"url"')) {
+      try {
+        console.log('Attempting to parse JSON data in image request');
+        // Try to parse as JSON to handle serialized Airtable attachments
+        let attachmentData;
+        try {
+          attachmentData = JSON.parse(decodedId);
+        } catch (jsonError) {
+          console.error('Failed to parse JSON in image request:', jsonError);
+          attachmentData = null;
+        }
+        
+        if (attachmentData && typeof attachmentData === 'object') {
+          let imageUrl = '';
+          
+          // Extract URL from Airtable attachment format
+          if (attachmentData.thumbnails && attachmentData.thumbnails.large) {
+            imageUrl = attachmentData.thumbnails.large.url;
+          } else if (attachmentData.thumbnails && attachmentData.thumbnails.small) {
+            imageUrl = attachmentData.thumbnails.small.url;
+          } else if (attachmentData.url) {
+            imageUrl = attachmentData.url;
+          }
+          
+          if (imageUrl) {
+            console.log(`Found URL in attachment data: ${imageUrl.substring(0, 30)}...`);
+            return await handleUrlImage(imageUrl, fileHash, res);
+          }
+        }
+      } catch (attachmentError) {
+        console.error('Error processing attachment data:', attachmentError);
       }
     }
     
