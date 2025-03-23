@@ -4,6 +4,7 @@ import { Layout } from "@/components/layout/layout";
 import { ArticleCard } from "@/components/articles/article-card";
 import { ArticleDetail } from "@/components/articles/article-detail";
 import { API_ROUTES, ITEMS_PER_PAGE } from "@/lib/constants";
+import { fetchArticles } from "@/lib/api";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -28,6 +29,7 @@ export default function Articles() {
 
   const { data, isLoading, isFetching } = useQuery({
     queryKey: [API_ROUTES.ARTICLES, page, search],
+    queryFn: () => fetchArticles(page, search),
     refetchOnWindowFocus: false,
   });
 
