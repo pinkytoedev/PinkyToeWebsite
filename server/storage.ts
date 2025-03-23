@@ -42,8 +42,8 @@ export class AirtableStorage implements IStorage {
       // Create filter formula if search term is provided
       let filterByFormula = '';
       if (search) {
-        // Use Title (capitalized) instead of title
-        filterByFormula = `SEARCH("${search.replace(/"/g, '\\"')}", {Title})`;
+        // Use Name field for searching
+        filterByFormula = `SEARCH("${search.replace(/"/g, '\\"')}", {Name})`;
       }
       
       // First get count of total records matching the search
@@ -220,7 +220,7 @@ export class AirtableStorage implements IStorage {
     
     return {
       id: record.id,
-      title: record.get('title') as string || record.get('Title') as string || '',
+      title: record.get('Name') as string || record.get('title') as string || record.get('Title') as string || '',
       description: record.get('description') as string || record.get('Description') as string || '',
       excerpt: record.get('excerpt') as string || record.get('Excerpt') as string || undefined,
       content: record.get('content') as string || record.get('Content') as string || '',
@@ -270,7 +270,7 @@ export class MemStorage implements IStorage {
     if (search) {
       const searchLower = search.toLowerCase();
       filteredArticles = filteredArticles.filter(article => 
-        article.title.toLowerCase().includes(searchLower)
+        (article.title || '').toLowerCase().includes(searchLower)
       );
     }
     
