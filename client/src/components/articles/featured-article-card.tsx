@@ -23,12 +23,12 @@ export function FeaturedArticleCard({ article }: FeaturedArticleCardProps) {
     <Link href={`/articles/${article.id}`} className="block">
       <div className="article-card bg-white rounded-lg shadow-lg overflow-hidden cursor-pointer hover:shadow-xl transition-shadow">
         <div className="md:flex">
-          <div className="md:w-2/5">
-            <div className="h-64 bg-gray-50 relative">
+          <div className="md:w-2/5 flex items-center justify-center">
+            <div className="h-64 w-full bg-gray-50 relative overflow-hidden">
               <img 
                 src={imageSource} 
                 alt={article.title} 
-                className="absolute inset-0 w-full h-full object-cover object-center"
+                className="absolute inset-0 w-full h-full object-contain object-center"
                 onError={(e) => {
                   const target = e.target as HTMLImageElement;
                   console.error(`Failed to load image: ${target.src}`);

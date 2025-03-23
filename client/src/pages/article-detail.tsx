@@ -146,16 +146,18 @@ export default function ArticleDetail() {
           </div>
         ) : article ? (
           <div className="bg-white rounded-lg shadow-lg overflow-hidden">
-            <img 
-              src={imageSource} 
-              alt={article.title} 
-              className="w-full h-80 object-cover"
-              onError={(e) => {
-                const target = e.target as HTMLImageElement;
-                console.error(`Failed to load image: ${target.src}`);
-                target.src = '/api/images/placeholder';
-              }}
-            />
+            <div className="flex justify-center bg-gray-50 py-4">
+              <img 
+                src={imageSource} 
+                alt={article.title} 
+                className="max-w-full max-h-[500px] object-contain"
+                onError={(e) => {
+                  const target = e.target as HTMLImageElement;
+                  console.error(`Failed to load image: ${target.src}`);
+                  target.src = '/api/images/placeholder';
+                }}
+              />
+            </div>
             <div className="p-6">
               <h1 className="font-quicksand font-bold text-3xl text-primary mb-4">
                 {article.title}
