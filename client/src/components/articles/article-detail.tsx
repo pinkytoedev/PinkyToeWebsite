@@ -21,6 +21,9 @@ export function ArticleDetail({ articleId, onClose }: ArticleDetailProps) {
     // Prevent body scroll when modal is open
     document.body.style.overflow = 'hidden';
     
+    // Scroll to top of the page when article is opened
+    window.scrollTo(0, 0);
+    
     // Re-enable scroll when modal is closed
     return () => {
       document.body.style.overflow = '';

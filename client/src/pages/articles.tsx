@@ -49,6 +49,12 @@ export default function Articles() {
     // Remove article ID from URL, replace with articles route
     window.history.pushState(null, "", "/articles");
   };
+  
+  const handleArticleClick = (articleId: string) => {
+    // Scroll to top when an article is clicked
+    window.scrollTo(0, 0);
+    setSelectedArticleId(articleId);
+  };
 
   return (
     <Layout>
@@ -117,7 +123,9 @@ export default function Articles() {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
           {articles.map((article: any) => (
-            <ArticleCard key={article.id} article={article} />
+            <div key={article.id} onClick={() => handleArticleClick(article.id)}>
+              <ArticleCard article={article} />
+            </div>
           ))}
         </div>
       )}
