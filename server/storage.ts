@@ -29,11 +29,23 @@ export class AirtableStorage implements IStorage {
   private quoteLastFetched: Date | null = null;
   
   constructor() {
-    Airtable.configure({
-      apiKey: airtableApiKey,
-    });
-    
-    this.base = Airtable.base(airtableBaseId);
+    try {
+      console.log('Initializing Airtable connection...');
+      console.log(`API Key valid: ${Boolean(airtableApiKey)}`);
+      console.log(`Base ID valid: ${Boolean(airtableBaseId)}`);
+      
+      Airtable.configure({
+        apiKey: airtableApiKey,
+      });
+      
+      this.base = Airtable.base(airtableBaseId);
+      console.log('Airtable connection initialized successfully');
+    } catch (error) {
+      console.error('Failed to initialize Airtable connection:', error);
+      // Still create the base object even if there's an error
+      // to avoid null references, but operations will fail
+      this.base = Airtable.base(airtableBaseId);
+    }
   }
   
   async getArticles(page: number, limit: number, search = ""): Promise<{ articles: Article[], total: number }> {
@@ -77,15 +89,49 @@ export class AirtableStorage implements IStorage {
   
   async getFeaturedArticles(): Promise<Article[]> {
     try {
-      // Query for featured articles - checking if featured is true as a boolean
-      const query = this.base('History').select({
-        filterByFormula: "featured = TRUE()",
-        sort: [{ field: 'Date', direction: 'desc' }],
-        maxRecords: 5
-      });
+      console.log('Getting featured articles from Airtable...');
       
-      const records = await query.all();
-      return records.map(this.mapAirtableRecordToArticle);
+      // List all tables in the base to debug
+      console.log('Attempting to access tables in Airtable base...');
+      
+      try {
+        // Query for featured articles - checking if featured is true as a boolean
+        const query = this.base('History').select({
+          filterByFormula: "featured = TRUE()",
+          sort: [{ field: 'Date', direction: 'desc' }],
+          maxRecords: 5
+        });
+        
+        console.log('Query created successfully, fetching records...');
+        const records = await query.all();
+        console.log(`Fetched ${records.length} featured articles successfully`);
+        
+        return records.map(this.mapAirtableRecordToArticle);
+      } catch (tableError) {
+        console.error('Error accessing History table:', tableError);
+        
+        // Try other possible table names
+        const possibleTables = ['Articles', 'Blog', 'Content', 'Posts'];
+        
+        for (const tableName of possibleTables) {
+          try {
+            console.log(`Trying alternative table name: ${tableName}`);
+            const query = this.base(tableName).select({
+              filterByFormula: "featured = TRUE()",
+              sort: [{ field: 'Date', direction: 'desc' }],
+              maxRecords: 5
+            });
+            
+            const records = await query.all();
+            console.log(`Success with table name ${tableName}, found ${records.length} records`);
+            return records.map(this.mapAirtableRecordToArticle);
+          } catch (altError) {
+            console.error(`Failed with table name ${tableName}:`, altError);
+          }
+        }
+        
+        throw new Error('Could not find a valid table for articles');
+      }
     } catch (error) {
       console.error('Error fetching featured articles from Airtable:', error);
       return [];
@@ -94,13 +140,43 @@ export class AirtableStorage implements IStorage {
   
   async getRecentArticles(limit: number): Promise<Article[]> {
     try {
-      const query = this.base('History').select({
-        sort: [{ field: 'Date', direction: 'desc' }],
-        maxRecords: limit
-      });
+      console.log('Getting recent articles from Airtable...');
       
-      const records = await query.all();
-      return records.map(this.mapAirtableRecordToArticle);
+      try {
+        const query = this.base('History').select({
+          sort: [{ field: 'Date', direction: 'desc' }],
+          maxRecords: limit
+        });
+        
+        console.log('Recent articles query created successfully, fetching records...');
+        const records = await query.all();
+        console.log(`Fetched ${records.length} recent articles successfully`);
+        
+        return records.map(this.mapAirtableRecordToArticle);
+      } catch (tableError) {
+        console.error('Error accessing History table for recent articles:', tableError);
+        
+        // Try other possible table names
+        const possibleTables = ['Articles', 'Blog', 'Content', 'Posts'];
+        
+        for (const tableName of possibleTables) {
+          try {
+            console.log(`Trying alternative table name for recent articles: ${tableName}`);
+            const query = this.base(tableName).select({
+              sort: [{ field: 'Date', direction: 'desc' }],
+              maxRecords: limit
+            });
+            
+            const records = await query.all();
+            console.log(`Success with table name ${tableName}, found ${records.length} records`);
+            return records.map(this.mapAirtableRecordToArticle);
+          } catch (altError) {
+            console.error(`Failed with table name ${tableName}:`, altError);
+          }
+        }
+        
+        throw new Error('Could not find a valid table for recent articles');
+      }
     } catch (error) {
       console.error('Error fetching recent articles from Airtable:', error);
       return [];
