@@ -38,16 +38,29 @@ export function Layout({ children }: LayoutProps) {
           </div>
         ) : (
           <Marquee speed={35} pauseOnHover={true}>
-            {Array.isArray(quotes) && quotes.map((quote: any) => (
+            {Array.isArray(quotes) && quotes.map((quote: CarouselQuote) => (
               <span key={quote.id} className="mx-8 font-pacifico text-lg drop-shadow-sm">✧ {quote.quote} ✧</span>
             ))}
           </Marquee>
         )}
       </div>
       
+      {/* Decorative floating elements */}
+      <div className="fixed top-20 right-10 opacity-20 pointer-events-none z-0 hidden lg:block">
+        <div className="w-24 h-24 floating-bg" style={{ animationDelay: '0s' }}>
+          <img src="/attached_assets/TransparentLogo.png" alt="" className="w-full h-full object-contain" />
+        </div>
+      </div>
+      
+      <div className="fixed bottom-20 left-10 opacity-20 pointer-events-none z-0 hidden lg:block">
+        <div className="w-16 h-16 floating-bg" style={{ animationDelay: '2s' }}>
+          <img src="/attached_assets/TransparentLogo.png" alt="" className="w-full h-full object-contain" />
+        </div>
+      </div>
+      
       {/* Main content with improved styling */}
-      <main className="flex-grow container mx-auto px-4 py-8 md:py-12">
-        <div className="bg-white/85 rounded-xl shadow-lg p-6 md:p-8 scale-in">
+      <main className="flex-grow container mx-auto px-4 py-8 md:py-12 relative z-10">
+        <div className="bg-white/90 backdrop-blur-sm rounded-xl shadow-lg p-6 md:p-8 scale-in border border-pink-200/30">
           {children}
         </div>
       </main>
