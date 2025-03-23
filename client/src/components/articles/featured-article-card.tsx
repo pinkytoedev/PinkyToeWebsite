@@ -29,10 +29,6 @@ export function FeaturedArticleCard({ article }: FeaturedArticleCardProps) {
             className="h-64 w-full object-cover"
             onError={(e) => {
               const target = e.target as HTMLImageElement;
-              target.src = 'https://via.placeholder.com/800x600?text=Image+Not+Available';
-            }}
-            onError={(e) => {
-              const target = e.target as HTMLImageElement;
               console.error(`Failed to load image: ${target.src}`);
               // Fallback to a placeholder if image fails to load
               target.src = 'https://via.placeholder.com/800x600?text=Image+Not+Available';
