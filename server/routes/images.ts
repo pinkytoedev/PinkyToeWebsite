@@ -84,12 +84,36 @@ imagesRouter.get('/:id', async (req: Request, res: Response) => {
     // Handle Airtable record IDs (starting with 'rec')
     if (decodedId.startsWith('rec')) {
       try {
-        // Check if we already have a cached image for this Airtable record
-        // If not, generate a placeholder
+        // First check if we have this image cached already
+        const cachedFiles = fs.readdirSync(UPLOADS_DIR).filter(f => f.startsWith(fileHash));
+        if (cachedFiles.length > 0) {
+          // Use the cached file
+          const cachedFile = cachedFiles[0];
+          const ext = path.extname(cachedFile);
+          const contentType = ext === '.png' ? 'image/png' : 
+                              ext === '.gif' ? 'image/gif' : 
+                              ext === '.webp' ? 'image/webp' : 
+                              ext === '.svg' ? 'image/svg+xml' : 'image/jpeg';
+          
+          res.setHeader('Content-Type', contentType);
+          res.setHeader('Cache-Control', 'public, max-age=86400'); // Cache for 24 hours
+          
+          // Stream the file
+          const cachedPath = path.join(UPLOADS_DIR, cachedFile);
+          fs.createReadStream(cachedPath).pipe(res);
+          return;
+        }
+
+        console.log(`Processing Airtable record ID: ${decodedId}`);
+        
+        // For Airtable record IDs, we need to create a placeholder
+        // In a real app, we would try to fetch the actual image from the Airtable API here
+        // For now, we'll use a better placeholder that indicates it's an Airtable image
         const svg = `<svg width="400" height="300" xmlns="http://www.w3.org/2000/svg">
-          <rect width="400" height="300" fill="#f8f9fa" />
-          <text x="50%" y="50%" font-family="Arial" font-size="16" text-anchor="middle" fill="#343a40">
-            Airtable Image
+          <rect width="400" height="300" fill="#f5f3ff" />
+          <rect width="400" height="60" y="120" fill="#8b5cf6" />
+          <text x="50%" y="160" font-family="Arial" font-size="16" text-anchor="middle" fill="#ffffff">
+            Airtable Image ID: ${decodedId}
           </text>
         </svg>`;
         
