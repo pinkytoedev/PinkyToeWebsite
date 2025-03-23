@@ -239,7 +239,21 @@ export class AirtableStorage implements IStorage {
       const query = this.base('CarouselQuote').select();
       const records = await query.all();
       
-      this.quotes = records.map((record, index) => {
+      // Default quotes to use if Airtable values are empty
+      const defaultMainQuotes = [
+        "Welcome to The Pinky Toe - feminist humor with a kick!",
+        "Breaking gender stereotypes one laugh at a time",
+        "Join us in celebrating women's voices through humor and satire"
+      ];
+      
+      const defaultPhiloQuotes = [
+        "The funniest feminists are the ones who can laugh at themselves while dismantling the patriarchy.",
+        "If laughter is medicine, feminist humor is the prescription for a more equal world.",
+        "When you can't change the world with a revolution, change it with a punchline.",
+        "Philosophy is the art of questioning everything, including why your pinky toe always finds the furniture."
+      ];
+      
+      let airtableQuotes = records.map((record, index) => {
         // For the Banner (carousel "main"), get the quote from the Quote field
         // For the Quote section (carousel "Philo"), get the quote from the Philo field
         let quoteText = '';
@@ -263,11 +277,53 @@ export class AirtableStorage implements IStorage {
         };
       });
       
+      // Filter out any quotes with empty content
+      airtableQuotes = airtableQuotes.filter(quote => quote.quote.trim() !== '');
+      
+      // Add default quotes if we're missing either type
+      const hasMainQuotes = airtableQuotes.some(q => q.carousel === 'main' && q.quote.trim() !== '');
+      const hasPhiloQuotes = airtableQuotes.some(q => q.carousel === 'Philo' && q.quote.trim() !== '');
+      
+      // If no valid main quotes from Airtable, add our defaults
+      if (!hasMainQuotes) {
+        defaultMainQuotes.forEach((quote, idx) => {
+          airtableQuotes.push({
+            id: 1000 + idx, // Use high IDs to avoid conflicts
+            carousel: 'main',
+            quote: quote
+          });
+        });
+      }
+      
+      // If no valid Philo quotes from Airtable, add our defaults
+      if (!hasPhiloQuotes) {
+        defaultPhiloQuotes.forEach((quote, idx) => {
+          airtableQuotes.push({
+            id: 2000 + idx, // Use high IDs to avoid conflicts
+            carousel: 'Philo',
+            quote: quote
+          });
+        });
+      }
+      
+      this.quotes = airtableQuotes;
       this.quoteLastFetched = new Date();
       return this.quotes;
     } catch (error) {
       console.error('Error fetching quotes from Airtable:', error);
-      return [];
+      
+      // If error occurs, return default quotes
+      const defaultQuotes = [
+        { id: 1001, carousel: 'main', quote: "Welcome to The Pinky Toe - feminist humor with a kick!" },
+        { id: 1002, carousel: 'main', quote: "Breaking gender stereotypes one laugh at a time" },
+        { id: 1003, carousel: 'main', quote: "Join us in celebrating women's voices through humor and satire" },
+        { id: 2001, carousel: 'Philo', quote: "The funniest feminists are the ones who can laugh at themselves while dismantling the patriarchy." },
+        { id: 2002, carousel: 'Philo', quote: "If laughter is medicine, feminist humor is the prescription for a more equal world." },
+        { id: 2003, carousel: 'Philo', quote: "When you can't change the world with a revolution, change it with a punchline." },
+        { id: 2004, carousel: 'Philo', quote: "Philosophy is the art of questioning everything, including why your pinky toe always finds the furniture." }
+      ];
+      
+      return defaultQuotes;
     }
   }
   
@@ -451,6 +507,22 @@ export class MemStorage implements IStorage {
   }
   
   async getQuotes(): Promise<CarouselQuote[]> {
+    // If quotes are already populated, return them
+    if (this.quotes.length > 0) {
+      return this.quotes;
+    }
+    
+    // Add default quotes if array is empty
+    this.quotes = [
+      { id: 1001, carousel: 'main', quote: "Welcome to The Pinky Toe - feminist humor with a kick!" },
+      { id: 1002, carousel: 'main', quote: "Breaking gender stereotypes one laugh at a time" },
+      { id: 1003, carousel: 'main', quote: "Join us in celebrating women's voices through humor and satire" },
+      { id: 2001, carousel: 'Philo', quote: "The funniest feminists are the ones who can laugh at themselves while dismantling the patriarchy." },
+      { id: 2002, carousel: 'Philo', quote: "If laughter is medicine, feminist humor is the prescription for a more equal world." },
+      { id: 2003, carousel: 'Philo', quote: "When you can't change the world with a revolution, change it with a punchline." },
+      { id: 2004, carousel: 'Philo', quote: "Philosophy is the art of questioning everything, including why your pinky toe always finds the furniture." }
+    ];
+    
     return this.quotes;
   }
   
