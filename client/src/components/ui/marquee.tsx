@@ -1,6 +1,4 @@
-
 import * as React from "react";
-import { useEffect, useRef, useState } from "react";
 import { cn } from "@/lib/utils";
 
 interface MarqueeProps {
@@ -18,20 +16,20 @@ export function Marquee({
   direction = "left",
   children,
 }: MarqueeProps) {
-  const containerRef = useRef<HTMLDivElement>(null);
-  const [activeIndex, setActiveIndex] = useState(0);
-  const [isPaused, setIsPaused] = useState(false);
-  const [childrenArray, setChildrenArray] = useState<React.ReactNode[]>([]);
+  const containerRef = React.useRef<HTMLDivElement>(null);
+  const [activeIndex, setActiveIndex] = React.useState(0);
+  const [isPaused, setIsPaused] = React.useState(false);
+  const [childrenArray, setChildrenArray] = React.useState<React.ReactNode[]>([]);
 
   // Convert children to array so we can cycle through them
-  useEffect(() => {
+  React.useEffect(() => {
     // Handle both array and single child case
     const childArray = React.Children.toArray(children);
     setChildrenArray(childArray);
   }, [children]);
 
   // Set up the interval to change the active quote
-  useEffect(() => {
+  React.useEffect(() => {
     if (childrenArray.length <= 1) return;
     
     const intervalTime = 5000; // 5 seconds per quote

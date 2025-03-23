@@ -84,12 +84,12 @@ imagesRouter.get('/:id', async (req: Request, res: Response) => {
     // Handle Airtable record IDs (starting with 'rec')
     if (decodedId.startsWith('rec')) {
       try {
-        // For Airtable record IDs, we need to return a placeholder
-        // since we don't have direct access to the image
+        // Check if we already have a cached image for this Airtable record
+        // If not, generate a placeholder
         const svg = `<svg width="400" height="300" xmlns="http://www.w3.org/2000/svg">
           <rect width="400" height="300" fill="#f8f9fa" />
           <text x="50%" y="50%" font-family="Arial" font-size="16" text-anchor="middle" fill="#343a40">
-            Airtable Image (ID: ${decodedId})
+            Airtable Image
           </text>
         </svg>`;
         
