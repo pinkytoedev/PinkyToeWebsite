@@ -3,8 +3,13 @@ import Airtable from "airtable";
 import { ImageService } from "./services/image-service";
 
 // Initialize Airtable
+// Store these values when the module is first loaded
 const airtableApiKey = process.env.AIRTABLE_API_KEY || "";
 const airtableBaseId = process.env.AIRTABLE_BASE_ID || "";
+
+// Log values for debugging
+console.log('Airtable API Key configured length:', airtableApiKey ? airtableApiKey.length : 0);
+console.log('Airtable Base ID configured:', airtableBaseId || 'NOT SET');
 
 export interface IStorage {
   // Article methods
@@ -694,17 +699,30 @@ The suffragette movement also employed humor effectively, using satirical cartoo
 
 // Export appropriate storage implementation based on environment
 // Add detailed logging to help debug environment variable issues
-console.log('Checking Airtable credentials presence...');
-console.log(`AIRTABLE_API_KEY exists: ${!!process.env.AIRTABLE_API_KEY}`);
-console.log(`AIRTABLE_BASE_ID exists: ${!!process.env.AIRTABLE_BASE_ID}`);
+console.log('===== ENVIRONMENT DEBUG INFO =====');
+console.log('Environment:', process.env.NODE_ENV);
+console.log('Replit: Site ID:', process.env.REPL_ID, 'Owner:', process.env.REPL_OWNER);
+console.log('Airtable API Key length:', process.env.AIRTABLE_API_KEY ? process.env.AIRTABLE_API_KEY.length : 0);
+console.log('Airtable Base ID:', process.env.AIRTABLE_BASE_ID || 'NOT FOUND');
+console.log('AIRTABLE_API_KEY exists:', !!process.env.AIRTABLE_API_KEY);
+console.log('AIRTABLE_BASE_ID exists:', !!process.env.AIRTABLE_BASE_ID);
+console.log('===== END DEBUG INFO =====');
 
 // Create and export the appropriate storage implementation
 let storage: IStorage;
 if (process.env.AIRTABLE_API_KEY && process.env.AIRTABLE_BASE_ID) {
   console.log('Using Airtable storage with valid API credentials');
-  storage = new AirtableStorage();
+  try {
+    storage = new AirtableStorage();
+    console.log('Successfully initialized Airtable storage');
+  } catch (error) {
+    console.error('ERROR: Failed to initialize Airtable storage:', error);
+    console.log('Falling back to memory storage due to initialization error');
+    storage = new MemStorage();
+  }
 } else {
   console.log('WARNING: Missing Airtable credentials. Using fallback memory storage.');
+  console.log('Make sure AIRTABLE_API_KEY and AIRTABLE_BASE_ID are set in your environment');
   storage = new MemStorage();
 }
 
