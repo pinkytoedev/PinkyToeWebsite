@@ -3,9 +3,23 @@ import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { imagesRouter } from "./routes/images";
 
+// Helper function to set cache headers based on route type
+function setCacheHeaders(res: Response, type: 'dynamic' | 'static' = 'dynamic') {
+  if (type === 'static') {
+    // Static content (team members, quotes) - cache for longer
+    res.setHeader('Cache-Control', 'public, max-age=3600'); // 1 hour
+    res.setHeader('ETag', `W/"${Date.now().toString(36)}"`); // Weak ETag
+  } else {
+    // Dynamic content (articles) - shorter cache time
+    res.setHeader('Cache-Control', 'public, max-age=300'); // 5 minutes
+    res.setHeader('ETag', `W/"${Date.now().toString(36)}"`); // Weak ETag
+  }
+}
+
 export async function registerRoutes(app: Express): Promise<Server> {
   // Register the images router
   app.use('/api/images', imagesRouter);
+  
   // API routes for articles
   app.get("/api/articles", async (req, res) => {
     try {
@@ -13,6 +27,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const limit = parseInt(req.query.limit as string) || 6;
       const search = req.query.search as string || "";
       
+      setCacheHeaders(res);
       const result = await storage.getArticles(page, limit, search);
       res.json(result);
     } catch (error) {
@@ -23,6 +38,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.get("/api/articles/featured", async (_req, res) => {
     try {
+      setCacheHeaders(res);
       const featuredArticles = await storage.getFeaturedArticles();
       res.json(featuredArticles);
     } catch (error) {
@@ -33,6 +49,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.get("/api/articles/recent", async (req, res) => {
     try {
+      setCacheHeaders(res);
       const limit = parseInt(req.query.limit as string) || 4;
       const recentArticles = await storage.getRecentArticles(limit);
       res.json(recentArticles);
@@ -44,6 +61,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.get("/api/articles/:id", async (req, res) => {
     try {
+      setCacheHeaders(res);
       const article = await storage.getArticleById(req.params.id);
       
       if (!article) {
@@ -60,6 +78,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // API routes for team members
   app.get("/api/team", async (_req, res) => {
     try {
+      setCacheHeaders(res, 'static'); // Team members change less frequently
       const teamMembers = await storage.getTeamMembers();
       res.json(teamMembers);
     } catch (error) {
@@ -70,6 +89,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.get("/api/team/:id", async (req, res) => {
     try {
+      setCacheHeaders(res, 'static'); // Team members change less frequently
       const teamMember = await storage.getTeamMemberById(req.params.id);
       
       if (!teamMember) {
@@ -85,6 +105,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.get("/api/team/:id/articles", async (req, res) => {
     try {
+      setCacheHeaders(res);
       const articles = await storage.getArticlesByAuthorId(req.params.id);
       res.json(articles);
     } catch (error) {
@@ -96,6 +117,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // API routes for quotes
   app.get("/api/quotes", async (_req, res) => {
     try {
+      setCacheHeaders(res, 'static'); // Quotes change less frequently
       const quotes = await storage.getQuotes();
       res.json(quotes);
     } catch (error) {
@@ -106,6 +128,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.get("/api/quotes/daily", async (_req, res) => {
     try {
+      setCacheHeaders(res, 'static'); // Daily quote changes once per day
       const quoteOfDay = await storage.getQuoteOfDay();
       res.json(quoteOfDay);
     } catch (error) {

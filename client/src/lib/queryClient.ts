@@ -1,7 +1,8 @@
 import { QueryClient, QueryFunction } from "@tanstack/react-query";
 
 async function throwIfResNotOk(res: Response) {
-  if (!res.ok) {
+  // 304 Not Modified is a valid caching response and shouldn't be treated as an error
+  if (!res.ok && res.status !== 304) {
     const text = (await res.text()) || res.statusText;
     throw new Error(`${res.status}: ${text}`);
   }
@@ -35,6 +36,15 @@ export const getQueryFn: <T>(options: {
 
     if (unauthorizedBehavior === "returnNull" && res.status === 401) {
       return null;
+    }
+    
+    // Handle 304 Not Modified responses
+    if (res.status === 304) {
+      console.log('304 Not Modified received, using cached data for:', queryKey[0]);
+      // For 304 responses, TanStack Query will automatically use the cached data
+      // We just need to not throw an error and return undefined
+      // The query cache will use the previously stored data
+      return undefined;
     }
 
     await throwIfResNotOk(res);
