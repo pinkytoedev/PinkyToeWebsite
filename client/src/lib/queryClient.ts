@@ -1,8 +1,7 @@
 import { QueryClient, QueryFunction } from "@tanstack/react-query";
 
 async function throwIfResNotOk(res: Response) {
-  // 304 Not Modified is a valid caching response and shouldn't be treated as an error
-  if (!res.ok && res.status !== 304) {
+  if (!res.ok) {
     const text = (await res.text()) || res.statusText;
     throw new Error(`${res.status}: ${text}`);
   }
@@ -29,60 +28,17 @@ export const getQueryFn: <T>(options: {
   on401: UnauthorizedBehavior;
 }) => QueryFunction<T> =
   ({ on401: unauthorizedBehavior }) =>
-  async ({ queryKey, signal }) => {
-    try {
-      const res = await fetch(queryKey[0] as string, {
-        credentials: "include",
-        signal,
-        // Add cache headers for browser caching
-        headers: {
-          "Cache-Control": "no-cache",
-          "Pragma": "no-cache"
-        }
-      });
+  async ({ queryKey }) => {
+    const res = await fetch(queryKey[0] as string, {
+      credentials: "include",
+    });
 
-      if (unauthorizedBehavior === "returnNull" && res.status === 401) {
-        return null;
-      }
-      
-      // If 304 Not Modified status is returned:
-      // The most reliable solution is to make a new request ignoring cache
-      // This ensures we always get data even in production environments
-      if (res.status === 304) {
-        console.log('304 Not Modified received, fetching fresh data for:', queryKey[0]);
-        
-        // Make a new request with cache-busting query parameter
-        const cacheBustUrl = new URL(queryKey[0] as string, window.location.origin);
-        cacheBustUrl.searchParams.append('_cb', Date.now().toString());
-        
-        const freshRes = await fetch(cacheBustUrl.toString(), {
-          credentials: "include",
-          signal,
-          headers: {
-            "Cache-Control": "no-cache",
-            "Pragma": "no-cache"
-          }
-        });
-        
-        if (!freshRes.ok) {
-          const text = (await freshRes.text()) || freshRes.statusText;
-          throw new Error(`${freshRes.status}: ${text}`);
-        }
-        
-        return await freshRes.json();
-      }
-
-      await throwIfResNotOk(res);
-      return await res.json();
-    } catch (error) {
-      // If the error is an AbortError, rethrow it (this is for canceled requests)
-      if (error instanceof DOMException && error.name === 'AbortError') {
-        throw error;
-      }
-      
-      console.error('Error fetching data:', error);
-      throw error;
+    if (unauthorizedBehavior === "returnNull" && res.status === 401) {
+      return null;
     }
+
+    await throwIfResNotOk(res);
+    return await res.json();
   };
 
 export const queryClient = new QueryClient({
@@ -91,8 +47,8 @@ export const queryClient = new QueryClient({
       queryFn: getQueryFn({ on401: "throw" }),
       refetchInterval: false,
       refetchOnWindowFocus: false,
-      staleTime: 5 * 60 * 1000, // 5 minutes
-      retry: 1,
+      staleTime: Infinity,
+      retry: false,
     },
     mutations: {
       retry: false,
