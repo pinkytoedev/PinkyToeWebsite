@@ -19,6 +19,34 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.set('Cache-Control', 'public, max-age=300'); // Cache for 5 minutes
     next();
   });
+  
+  // Diagnostic endpoint for checking environment variables in production
+  // Only shows existence and length - not the actual values for security
+  app.get("/api/system-check", (req, res) => {
+    const isProduction = process.env.NODE_ENV === 'production';
+    const isDeployment = !!process.env.REPL_DEPLOYMENT_ID;
+    
+    res.json({
+      environment: {
+        node_env: process.env.NODE_ENV || 'undefined',
+        is_production: isProduction,
+        is_deployment: isDeployment,
+        replit_info: {
+          has_repl_id: !!process.env.REPL_ID,
+          has_repl_owner: !!process.env.REPL_OWNER,
+          has_deployment_id: !!process.env.REPL_DEPLOYMENT_ID
+        }
+      },
+      airtable_credentials: {
+        api_key_exists: !!process.env.AIRTABLE_API_KEY,
+        api_key_length: process.env.AIRTABLE_API_KEY ? process.env.AIRTABLE_API_KEY.length : 0,
+        base_id_exists: !!process.env.AIRTABLE_BASE_ID,
+        base_id_value: process.env.AIRTABLE_BASE_ID || 'NOT SET',
+        storage_type: process.env.AIRTABLE_API_KEY && process.env.AIRTABLE_BASE_ID ? 'AirtableStorage' : 'MemStorage'
+      },
+      timestamp: new Date().toISOString()
+    });
+  });
   // API routes for articles
   app.get("/api/articles", cacheMiddleware(300), async (req, res) => {
     try {
