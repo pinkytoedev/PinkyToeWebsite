@@ -25,11 +25,35 @@ export async function registerRoutes(app: Express): Promise<Server> {
     if (!key) return false;
     
     const cleanKey = key.trim();
-    // Support both legacy and new Personal Access Token (PAT) format
-    // Legacy format: starts with "key" (e.g., keyAbc123Def456Ghi)
-    // New PAT format: starts with "pat" followed by a version identifier (e.g., patC4AbcDef...)
-    return /^key[A-Za-z0-9]{14,}$/.test(cleanKey) || 
-           /^pat[A-Za-z][A-Za-z0-9]{16,}$/.test(cleanKey);
+    // Support various API key formats:
+    // 1. Legacy format: starts with "key" (e.g., keyAbc123Def456Ghi)
+    // 2. New Personal Access Token (PAT) format: starts with "pat" followed by a version identifier
+    // 3. More flexible pattern for PAT format: some PATs might have different formats between environments
+    // 4. Accept any sufficiently long string (at least 16 chars) as a fallback for custom API key formats
+    
+    // Check for legacy format
+    if (/^key[A-Za-z0-9]{14,}$/.test(cleanKey)) {
+      return true;
+    }
+    
+    // Check for PAT format with version identifier
+    if (/^pat[A-Za-z][A-Za-z0-9]{16,}$/.test(cleanKey)) {
+      return true;
+    }
+    
+    // More flexible PAT format (any PAT starting with 'pat')
+    if (cleanKey.startsWith('pat') && cleanKey.length >= 20) {
+      return true;
+    }
+    
+    // Accept any sufficiently long string as a fallback
+    // This is a last resort for custom API key formats
+    if (cleanKey.length >= 16) {
+      console.log('[API Key Validation] Using fallback validation for non-standard API key format');
+      return true;
+    }
+    
+    return false;
   }
 
   // Diagnostic endpoint for checking environment variables in production
@@ -68,6 +92,49 @@ export async function registerRoutes(app: Express): Promise<Server> {
     const isProduction = process.env.NODE_ENV === 'production';
     const isDeployment = !!process.env.REPL_DEPLOYMENT_ID;
     
+    // Determine API key format more precisely
+    let apiKeyFormat = 'unknown';
+    let apiKeyPrefix = 'none';
+    let apiKeyPrefixLength = 0;
+    let apiKeyValidationResults = {
+      legacy: false,
+      pat_strict: false,
+      pat_flexible: false,
+      length_fallback: false
+    };
+    
+    if (airtableApiKey) {
+      // Legacy format check
+      apiKeyValidationResults.legacy = /^key[A-Za-z0-9]{14,}$/.test(cleanKey);
+      
+      // PAT strict format check
+      apiKeyValidationResults.pat_strict = /^pat[A-Za-z][A-Za-z0-9]{16,}$/.test(cleanKey);
+      
+      // PAT flexible format check
+      apiKeyValidationResults.pat_flexible = cleanKey.startsWith('pat') && cleanKey.length >= 20;
+      
+      // Length fallback check
+      apiKeyValidationResults.length_fallback = cleanKey.length >= 16;
+      
+      // Get a safe prefix for diagnosis
+      if (cleanKey.startsWith('key')) {
+        apiKeyFormat = 'legacy';
+        apiKeyPrefix = 'key';
+        apiKeyPrefixLength = 3;
+      } else if (cleanKey.startsWith('pat')) {
+        apiKeyFormat = 'personal_access_token';
+        const prefixEnd = Math.min(6, cleanKey.length);
+        apiKeyPrefix = cleanKey.substring(0, prefixEnd);
+        apiKeyPrefixLength = prefixEnd;
+      } else {
+        // Try to get a safe prefix for diagnosis (first 4 chars)
+        const prefixEnd = Math.min(4, cleanKey.length);
+        apiKeyPrefix = cleanKey.substring(0, prefixEnd);
+        apiKeyPrefixLength = prefixEnd;
+        apiKeyFormat = 'custom';
+      }
+    }
+    
     res.json({
       environment: {
         node_env: process.env.NODE_ENV || 'undefined',
@@ -89,7 +156,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
         api_key_length: airtableApiKey.length,
         api_key_clean_length: cleanKey.length,
         api_key_has_whitespace: airtableApiKey !== cleanKey,
-        api_key_first_chars: cleanKey.substring(0, 4),
+        api_key_prefix: apiKeyPrefix,
+        api_key_format: apiKeyFormat,
+        api_key_validation: apiKeyValidationResults,
         api_key_format_valid: hasValidAirtableKeyFormat(cleanKey),
         base_id_exists: !!airtableBaseId,
         base_id_value: airtableBaseId,

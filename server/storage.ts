@@ -2,13 +2,35 @@ import { Article, Team, CarouselQuote } from "@shared/schema";
 import Airtable from "airtable";
 import { ImageService } from "./services/image-service";
 
+// Function to sanitize and normalize API key format
+function sanitizeAirtableApiKey(apiKey: string): string {
+  if (!apiKey) return "";
+  
+  // Remove any whitespace
+  const cleanKey = apiKey.trim();
+  
+  // Log format detection for better debugging (without exposing the key)
+  if (cleanKey.startsWith('key')) {
+    console.log('[INIT] Detected legacy Airtable API key format (key...)');
+  } else if (cleanKey.startsWith('pat')) {
+    console.log('[INIT] Detected Personal Access Token (PAT) format (pat...)');
+  } else if (cleanKey.length > 20) {
+    console.log('[INIT] Using non-standard API key format (neither key nor pat prefix)');
+  } else {
+    console.log('[INIT] WARNING: API key format does not match expected patterns');
+  }
+  
+  return cleanKey;
+}
+
 // Initialize Airtable
 // Store these values when the module is first loaded
-const airtableApiKey = process.env.AIRTABLE_API_KEY || "";
+const rawAirtableApiKey = process.env.AIRTABLE_API_KEY || "";
+const airtableApiKey = sanitizeAirtableApiKey(rawAirtableApiKey);
 const airtableBaseId = process.env.AIRTABLE_BASE_ID || "";
 
 // Log values for debugging
-console.log('Airtable API Key configured length:', airtableApiKey ? airtableApiKey.length : 0);
+console.log('Airtable API Key configured length:', airtableApiKey.length);
 console.log('Airtable Base ID configured:', airtableBaseId || 'NOT SET');
 
 export interface IStorage {
@@ -51,12 +73,34 @@ export class AirtableStorage implements IStorage {
     console.log('[INIT] API key format:', isPAT ? 'Personal Access Token (PAT)' : 
                                        isLegacyKey ? 'Legacy API Key' : 'Unknown');
     
-    Airtable.configure({
-      apiKey: cleanApiKey,
-      endpointUrl: 'https://api.airtable.com'
-    });
-    
-    this.base = Airtable.base(airtableBaseId);
+    try {
+      // Additional validation for API key
+      if (cleanApiKey.length < 16) {
+        console.error('[INIT] Warning: API key length is unusually short. This might cause authentication failures.');
+      }
+      
+      if (!isPAT && !isLegacyKey && cleanApiKey.length >= 16) {
+        console.log('[INIT] Using custom API key format (not starting with "key" or "pat")');
+        console.log('[INIT] Prefix:', cleanApiKey.substring(0, 4));
+      }
+      
+      // Configure Airtable with the clean key
+      Airtable.configure({
+        apiKey: cleanApiKey,
+        endpointUrl: 'https://api.airtable.com',
+        requestTimeout: 30000 // 30 second timeout for requests
+      });
+      
+      this.base = Airtable.base(airtableBaseId);
+    } catch (configError) {
+      console.error('[INIT] Error configuring Airtable client:', configError);
+      // Still create the base object to avoid null references
+      Airtable.configure({
+        apiKey: cleanApiKey,
+        endpointUrl: 'https://api.airtable.com'
+      });
+      this.base = Airtable.base(airtableBaseId);
+    }
     
     // Test connection on init
     this.testConnection();
