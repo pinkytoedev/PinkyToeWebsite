@@ -7,73 +7,68 @@ function isResponseValid(res: Response): boolean {
   return res.ok || res.status === 304;
 }
 
-export async function fetchFeaturedArticles(): Promise<Article[]> {
+export async function fetchFeaturedArticles(): Promise<Article[] | undefined> {
   const res = await fetch(API_ROUTES.FEATURED_ARTICLES);
   if (!isResponseValid(res)) throw new Error("Failed to fetch featured articles");
-  return res.status === 304 ? [] : res.json(); // Return empty array for 304, TanStack will use cache
+  // Return undefined for 304 so TanStack Query will use the cached data
+  return res.status === 304 ? undefined : res.json();
 }
 
-export async function fetchRecentArticles(limit = 4): Promise<Article[]> {
+export async function fetchRecentArticles(limit = 4): Promise<Article[] | undefined> {
   const res = await fetch(`${API_ROUTES.RECENT_ARTICLES}?limit=${limit}`);
   if (!isResponseValid(res)) throw new Error("Failed to fetch recent articles");
-  return res.status === 304 ? [] : res.json(); // Return empty array for 304, TanStack will use cache
+  // Return undefined for 304 so TanStack Query will use the cached data
+  return res.status === 304 ? undefined : res.json();
 }
 
 export async function fetchArticles(
   page = 1, 
   search?: string
-): Promise<{ articles: Article[], total: number }> {
+): Promise<{ articles: Article[], total: number } | undefined> {
   const searchParam = search ? `&search=${encodeURIComponent(search)}` : '';
   const res = await fetch(
     `${API_ROUTES.ARTICLES}?page=${page}&limit=${ITEMS_PER_PAGE}${searchParam}`
   );
   if (!isResponseValid(res)) throw new Error("Failed to fetch articles");
   
-  // Return empty result for 304, TanStack will use cache
-  return res.status === 304 ? { articles: [], total: 0 } : res.json();
+  // Return undefined for 304 so TanStack Query will use the cached data
+  return res.status === 304 ? undefined : res.json();
 }
 
-export async function fetchArticleById(id: string): Promise<Article> {
+export async function fetchArticleById(id: string): Promise<Article | undefined> {
   const res = await fetch(API_ROUTES.ARTICLE_BY_ID(id));
   if (!isResponseValid(res)) throw new Error(`Failed to fetch article with id ${id}`);
   
-  // For 304, return empty object, TanStack will use cache
-  if (res.status === 304) {
-    return {} as Article;
-  }
-  return res.json();
+  // Return undefined for 304 so TanStack Query will use the cached data
+  return res.status === 304 ? undefined : res.json();
 }
 
-export async function fetchTeamMembers(): Promise<Team[]> {
+export async function fetchTeamMembers(): Promise<Team[] | undefined> {
   const res = await fetch(API_ROUTES.TEAM);
   if (!isResponseValid(res)) throw new Error("Failed to fetch team members");
-  return res.status === 304 ? [] : res.json(); // Return empty array for 304, TanStack will use cache
+  // Return undefined for 304 so TanStack Query will use the cached data
+  return res.status === 304 ? undefined : res.json();
 }
 
-export async function fetchTeamMemberById(id: string): Promise<Team> {
+export async function fetchTeamMemberById(id: string): Promise<Team | undefined> {
   const res = await fetch(API_ROUTES.TEAM_MEMBER_BY_ID(id));
   if (!isResponseValid(res)) throw new Error(`Failed to fetch team member with id ${id}`);
   
-  // For 304, return empty object, TanStack will use cache
-  if (res.status === 304) {
-    return {} as Team;
-  }
-  return res.json();
+  // Return undefined for 304 so TanStack Query will use the cached data
+  return res.status === 304 ? undefined : res.json();
 }
 
-export async function fetchQuotes(): Promise<CarouselQuote[]> {
+export async function fetchQuotes(): Promise<CarouselQuote[] | undefined> {
   const res = await fetch(API_ROUTES.QUOTES);
   if (!isResponseValid(res)) throw new Error("Failed to fetch quotes");
-  return res.status === 304 ? [] : res.json(); // Return empty array for 304, TanStack will use cache
+  // Return undefined for 304 so TanStack Query will use the cached data
+  return res.status === 304 ? undefined : res.json();
 }
 
-export async function fetchQuoteOfDay(): Promise<CarouselQuote> {
+export async function fetchQuoteOfDay(): Promise<CarouselQuote | undefined> {
   const res = await fetch(API_ROUTES.QUOTE_OF_DAY);
   if (!isResponseValid(res)) throw new Error("Failed to fetch quote of the day");
   
-  // For 304, return empty object, TanStack will use cache
-  if (res.status === 304) {
-    return {} as CarouselQuote;
-  }
-  return res.json();
+  // Return undefined for 304 so TanStack Query will use the cached data
+  return res.status === 304 ? undefined : res.json();
 }
