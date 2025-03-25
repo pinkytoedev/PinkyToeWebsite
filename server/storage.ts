@@ -693,6 +693,19 @@ The suffragette movement also employed humor effectively, using satirical cartoo
 }
 
 // Export appropriate storage implementation based on environment
-export const storage: IStorage = process.env.AIRTABLE_API_KEY && process.env.AIRTABLE_BASE_ID
-  ? new AirtableStorage()
-  : new MemStorage();
+// Add detailed logging to help debug environment variable issues
+console.log('Checking Airtable credentials presence...');
+console.log(`AIRTABLE_API_KEY exists: ${!!process.env.AIRTABLE_API_KEY}`);
+console.log(`AIRTABLE_BASE_ID exists: ${!!process.env.AIRTABLE_BASE_ID}`);
+
+// Create and export the appropriate storage implementation
+let storage: IStorage;
+if (process.env.AIRTABLE_API_KEY && process.env.AIRTABLE_BASE_ID) {
+  console.log('Using Airtable storage with valid API credentials');
+  storage = new AirtableStorage();
+} else {
+  console.log('WARNING: Missing Airtable credentials. Using fallback memory storage.');
+  storage = new MemStorage();
+}
+
+export { storage };
