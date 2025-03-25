@@ -110,7 +110,45 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const base = airtable.base(airtableBaseId);
       
       // Start building the diagnostic results
-      const diagnosticResults = {
+      type DiagnosticResult = {
+        timestamp: string;
+        environment: {
+          node_env: string;
+          is_production: boolean;
+          is_deployment: boolean;
+        };
+        testing_info: {
+          using_test_key: boolean;
+          using_test_base: boolean;
+          custom_tables: boolean;
+        };
+        api_key: {
+          exists: boolean;
+          length: number;
+          format: string;
+          prefix: string;
+          validation: {
+            legacy: boolean;
+            pat_strict: boolean;
+            pat_flexible: boolean;
+            length_check: boolean;
+          };
+        };
+        base_id: {
+          exists: boolean;
+          value: string;
+        };
+        connection_test: {
+          status: string;
+          tables_found: string[];
+          tables_tested: string[];
+          tables_detail: any[];
+          error: any;
+        };
+        recommendations?: string[];
+      };
+
+      const diagnosticResults: DiagnosticResult = {
         timestamp: new Date().toISOString(),
         environment: {
           node_env: process.env.NODE_ENV || 'unknown',
@@ -140,10 +178,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
         },
         connection_test: {
           status: 'pending',
-          tables_found: [] as string[],
+          tables_found: [],
           tables_tested: tableNames,
-          tables_detail: [] as any[],
-          error: null as any
+          tables_detail: [],
+          error: null
         }
       };
       
@@ -195,7 +233,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       // Include a summary of common issues based on the test results
       if (diagnosticResults.connection_test.status === 'failed') {
-        diagnosticResults.recommendations = [];
+        // Initialize recommendations array if not already present
+        if (!diagnosticResults.recommendations) {
+          diagnosticResults.recommendations = [];
+        }
         
         // Check for specific error patterns in the results
         const hasAuthErrors = tableResults.some(r => 
@@ -243,7 +284,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json(diagnosticResults);
     } catch (error: any) {
       // More detailed error response for the diagnostic endpoint
-      const errorResponse = {
+      type ErrorResponse = {
+        error: string;
+        message: string;
+        timestamp: string;
+        error_details: {
+          name: string;
+          status_code: string | number;
+          error_type: string;
+        };
+        possible_causes: string[];
+      };
+      
+      const errorResponse: ErrorResponse = {
         error: 'Failed to run Airtable diagnostic',
         message: error.message || 'Unknown error',
         timestamp: new Date().toISOString(),
@@ -257,15 +310,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       // Add potential causes based on error type
       if (error.code === 'ENOTFOUND' || error.code === 'ETIMEDOUT') {
-        errorResponse.possible_causes.push('Network connectivity issue', 'DNS resolution problem');
+        errorResponse.possible_causes = ['Network connectivity issue', 'DNS resolution problem'];
       } else if (error.statusCode === 401) {
-        errorResponse.possible_causes.push('Invalid API key', 'Revoked API key', 'Malformed API key');
+        errorResponse.possible_causes = ['Invalid API key', 'Revoked API key', 'Malformed API key'];
       } else if (error.statusCode === 403) {
-        errorResponse.possible_causes.push('Insufficient permissions', 'API key scope too limited');
+        errorResponse.possible_causes = ['Insufficient permissions', 'API key scope too limited'];
       } else if (error.statusCode === 404) {
-        errorResponse.possible_causes.push('Base ID incorrect', 'Table does not exist');
+        errorResponse.possible_causes = ['Base ID incorrect', 'Table does not exist'];
       } else if (error.statusCode === 429) {
-        errorResponse.possible_causes.push('Rate limit exceeded', 'Too many requests');
+        errorResponse.possible_causes = ['Rate limit exceeded', 'Too many requests'];
       }
       
       res.status(500).json(errorResponse);
