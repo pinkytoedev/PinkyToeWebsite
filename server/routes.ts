@@ -1,6 +1,6 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
-import { storage } from "./storage";
+import { cachedStorage } from "./index";
 import { imagesRouter } from "./routes/images";
 
 export async function registerRoutes(app: Express): Promise<Server> {
@@ -13,7 +13,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const limit = parseInt(req.query.limit as string) || 6;
       const search = req.query.search as string || "";
       
-      const result = await storage.getArticles(page, limit, search);
+      const result = await cachedStorage.getArticles(page, limit, search);
       res.json(result);
     } catch (error) {
       console.error("Error fetching articles:", error);
@@ -23,7 +23,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.get("/api/articles/featured", async (_req, res) => {
     try {
-      const featuredArticles = await storage.getFeaturedArticles();
+      const featuredArticles = await cachedStorage.getFeaturedArticles();
       res.json(featuredArticles);
     } catch (error) {
       console.error("Error fetching featured articles:", error);

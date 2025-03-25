@@ -1,6 +1,12 @@
 import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
+import { storage } from "./storage";
+import { CachedStorage } from "./storage-cached";
+import { RefreshService } from "./services/refresh-service";
+
+// Create cached storage wrapper around the original storage
+export const cachedStorage = new CachedStorage(storage);
 
 const app = express();
 app.use(express.json());
@@ -66,5 +72,19 @@ app.use((req, res, next) => {
     reusePort: true,
   }, () => {
     log(`serving on port ${port}`);
+    
+    // Start background refresh service once server is running
+    RefreshService.startRefreshSchedules();
+    
+    // Setup graceful shutdown
+    const shutdown = () => {
+      log('Shutting down refresh service...');
+      RefreshService.stopRefreshSchedules();
+      process.exit(0);
+    };
+    
+    // Listen for termination signals
+    process.on('SIGINT', shutdown);
+    process.on('SIGTERM', shutdown);
   });
 })();
