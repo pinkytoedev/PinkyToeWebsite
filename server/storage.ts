@@ -2,36 +2,9 @@ import { Article, Team, CarouselQuote } from "@shared/schema";
 import Airtable from "airtable";
 import { ImageService } from "./services/image-service";
 
-// Function to sanitize and normalize API key format
-function sanitizeAirtableApiKey(apiKey: string): string {
-  if (!apiKey) return "";
-  
-  // Remove any whitespace
-  const cleanKey = apiKey.trim();
-  
-  // Log format detection for better debugging (without exposing the key)
-  if (cleanKey.startsWith('key')) {
-    console.log('[INIT] Detected legacy Airtable API key format (key...)');
-  } else if (cleanKey.startsWith('pat')) {
-    console.log('[INIT] Detected Personal Access Token (PAT) format (pat...)');
-  } else if (cleanKey.length > 20) {
-    console.log('[INIT] Using non-standard API key format (neither key nor pat prefix)');
-  } else {
-    console.log('[INIT] WARNING: API key format does not match expected patterns');
-  }
-  
-  return cleanKey;
-}
-
 // Initialize Airtable
-// Store these values when the module is first loaded
-const rawAirtableApiKey = process.env.AIRTABLE_API_KEY || "";
-const airtableApiKey = sanitizeAirtableApiKey(rawAirtableApiKey);
+const airtableApiKey = process.env.AIRTABLE_API_KEY || "";
 const airtableBaseId = process.env.AIRTABLE_BASE_ID || "";
-
-// Log values for debugging
-console.log('Airtable API Key configured length:', airtableApiKey.length);
-console.log('Airtable Base ID configured:', airtableBaseId || 'NOT SET');
 
 export interface IStorage {
   // Article methods
@@ -53,100 +26,14 @@ export interface IStorage {
 export class AirtableStorage implements IStorage {
   private base: Airtable.Base;
   private quotes: CarouselQuote[] = [];
-  private articles: Article[] = [];
-  private teamMembers: Team[] = [];
   private quoteLastFetched: Date | null = null;
   
   constructor() {
-    console.log('[INIT] Setting up Airtable with API key length:', airtableApiKey.length);
-    console.log('[INIT] Using Base ID:', airtableBaseId);
+    Airtable.configure({
+      apiKey: airtableApiKey,
+    });
     
-    // Clean up API key (remove any whitespace that might have been introduced)
-    const cleanApiKey = airtableApiKey.trim();
-    
-    if (cleanApiKey !== airtableApiKey) {
-      console.log('[INIT] Warning: API key had whitespace that was trimmed');
-    }
-    
-    // Detect API key format for better error messaging
-    const isPAT = cleanApiKey.startsWith('pat');
-    const isLegacyKey = cleanApiKey.startsWith('key');
-    
-    console.log('[INIT] API key format:', isPAT ? 'Personal Access Token (PAT)' : 
-                                       isLegacyKey ? 'Legacy API Key' : 'Unknown');
-    
-    try {
-      // Additional validation for API key
-      if (cleanApiKey.length < 16) {
-        console.error('[INIT] Warning: API key length is unusually short. This might cause authentication failures.');
-      }
-      
-      if (!isPAT && !isLegacyKey && cleanApiKey.length >= 16) {
-        console.log('[INIT] Using custom API key format (not starting with "key" or "pat")');
-        console.log('[INIT] Prefix:', cleanApiKey.substring(0, 4));
-      }
-      
-      // Configure Airtable with the clean key
-      Airtable.configure({
-        apiKey: cleanApiKey,
-        endpointUrl: 'https://api.airtable.com',
-        requestTimeout: 30000 // 30 second timeout for requests
-      });
-      
-      this.base = Airtable.base(airtableBaseId);
-    } catch (configError) {
-      console.error('[INIT] Error configuring Airtable client:', configError);
-      // Still create the base object to avoid null references
-      Airtable.configure({
-        apiKey: cleanApiKey,
-        endpointUrl: 'https://api.airtable.com'
-      });
-      this.base = Airtable.base(airtableBaseId);
-    }
-    
-    // Test connection on init
-    this.testConnection();
-  }
-  
-  private async testConnection() {
-    try {
-      console.log('[INIT] Testing Airtable connection...');
-      // Try to fetch a single record from the Teams table as a test
-      const testResult = await this.base('Teams').select({ maxRecords: 1 }).firstPage();
-      console.log('[INIT] Connection test successful, found', testResult.length, 'records');
-    } catch (error: any) {
-      console.error('[INIT] Connection test failed:', error);
-      
-      // Log additional details for better debugging
-      if (error.statusCode === 401) {
-        console.error('[INIT] 401 Authentication error - API key is invalid or missing');
-        console.error('[INIT] This can happen when:');
-        console.error('[INIT] - The API key is incorrect');
-        console.error('[INIT] - The API key is formatted incorrectly (should be clean with no whitespace)');
-        console.error('[INIT] - The API key has been revoked');
-        console.error('[INIT] - For Personal Access Tokens, proper scopes must be granted');
-      } else if (error.statusCode === 403) {
-        console.error('[INIT] 403 Authorization error - API key does not have access to this base');
-        console.error('[INIT] This can happen when:');
-        console.error('[INIT] - The API key has insufficient permissions');
-        console.error('[INIT] - For Personal Access Tokens, the token needs access to this specific base');
-      } else if (error.statusCode === 404) {
-        console.error('[INIT] 404 Not Found error - Base ID or table name is incorrect');
-        console.error('[INIT] This can happen when:');
-        console.error('[INIT] - The base ID is wrong or has changed');
-        console.error('[INIT] - The "Teams" table does not exist in this base');
-        console.error('[INIT] Base ID being used:', airtableBaseId);
-      } else if (error.statusCode === 429) {
-        console.error('[INIT] 429 Rate Limit error - Too many requests to Airtable API');
-        console.error('[INIT] The application should implement retry logic with exponential backoff');
-      } else {
-        console.error('[INIT] Unknown error type:', error.statusCode || 'No status code', 
-                      error.message || 'No error message');
-        if (error.code === 'ENOTFOUND' || error.code === 'ETIMEDOUT' || error.code === 'ECONNREFUSED') {
-          console.error('[INIT] Network connectivity issue detected. Check internet connection.');
-        }
-      }
-    }
+    this.base = Airtable.base(airtableBaseId);
   }
   
   async getArticles(page: number, limit: number, search = ""): Promise<{ articles: Article[], total: number }> {
@@ -192,105 +79,18 @@ export class AirtableStorage implements IStorage {
   
   async getFeaturedArticles(): Promise<Article[]> {
     try {
-      console.log('[DEBUG][AirtableStorage] Starting to fetch featured articles');
-      console.log('[DEBUG][AirtableStorage] Airtable Base ID:', airtableBaseId);
-      
       // Query for featured articles - checking if featured is true as a boolean
-      // Note: We've seen issues with boolean filters in some environments, so we check multiple possible values
       const query = this.base('History').select({
-        filterByFormula: "OR(featured = TRUE(), featured = 1, featured = '1', featured = 'true', featured = 'yes')",
+        filterByFormula: "featured = TRUE()",
         sort: [{ field: 'Date', direction: 'desc' }],
         maxRecords: 5
       });
       
-      // Start the request
-      console.log('[DEBUG][AirtableStorage] Sending query to Airtable API');
-      let records;
-      try {
-        records = await query.all();
-        console.log(`[DEBUG][AirtableStorage] Successfully retrieved ${records.length} featured articles`);
-      } catch (innerError: any) {
-        console.error('[ERROR][AirtableStorage] Failed to retrieve records from Airtable:', 
-          innerError instanceof Error ? innerError.message : String(innerError));
-        
-        // Enhanced error reporting with status code check first
-        const statusCode = innerError.statusCode || (innerError.error && innerError.error.statusCode);
-        const errorString = String(innerError);
-        
-        if (statusCode === 429 || errorString.includes('rate_limit_exceeded') || errorString.includes('429')) {
-          console.error('[ERROR][AirtableStorage] Rate limit exceeded on Airtable API');
-          console.error('[ERROR][AirtableStorage] Recommendation: Implement rate limiting or caching');
-        } else if (statusCode === 401 || errorString.includes('401') || errorString.includes('AUTHENTICATION_REQUIRED')) {
-          console.error('[ERROR][AirtableStorage] Authentication error (401) with Airtable API');
-          console.error('[ERROR][AirtableStorage] API Key Format:', 
-            airtableApiKey.startsWith('pat') ? 'PAT' : 
-            airtableApiKey.startsWith('key') ? 'Legacy' : 'Unknown');
-          console.error('[ERROR][AirtableStorage] API Key Length:', airtableApiKey.length);
-          console.error('[ERROR][AirtableStorage] Recommendation: Verify API key is correct and has proper permissions');
-        } else if (statusCode === 403 || errorString.includes('403') || errorString.includes('FORBIDDEN')) {
-          console.error('[ERROR][AirtableStorage] Authorization error (403) with Airtable API');
-          console.error('[ERROR][AirtableStorage] Recommendation: Check if API key has access to this base and table');
-        } else if (statusCode === 404 || errorString.includes('404') || errorString.includes('NOT_FOUND')) {
-          console.error('[ERROR][AirtableStorage] Resource not found (404). Check Base ID and table name.');
-          console.error('[DEBUG][AirtableStorage] Base ID used:', airtableBaseId);
-          console.error('[DEBUG][AirtableStorage] Table name used: History');
-          console.error('[ERROR][AirtableStorage] Recommendation: Verify Base ID and table names are correct');
-        } else if (errorString.includes('ENOTFOUND') || errorString.includes('ETIMEDOUT') || 
-                  errorString.includes('ECONNREFUSED') || errorString.includes('network')) {
-          console.error('[ERROR][AirtableStorage] Network connectivity issue when contacting Airtable API');
-          console.error('[ERROR][AirtableStorage] Error code:', innerError.code || 'Unknown');
-          console.error('[ERROR][AirtableStorage] Recommendation: Check network connectivity');
-        } else {
-          console.error('[ERROR][AirtableStorage] Unknown error type:', statusCode || 'No status code');
-          console.error('[ERROR][AirtableStorage] Error message:', innerError.message || 'No error message');
-          console.error('[ERROR][AirtableStorage] Error name:', innerError.name || 'Unknown error name');
-        }
-        
-        // Rethrow for outer catch handler
-        throw innerError;
-      }
-      
-      if (records.length === 0) {
-        console.log('[DEBUG][AirtableStorage] No featured articles found, check your filtering criteria');
-        console.log('[DEBUG][AirtableStorage] This could be normal if no articles are marked as featured');
-      }
-      
-      // Debug what fields are available in the records
-      if (records.length > 0) {
-        const firstRecord = records[0];
-        console.log('[DEBUG][AirtableStorage] Fields available in first record:', Object.keys(firstRecord.fields));
-        
-        // Check for the MainImage field to help debug image loading issues
-        if (firstRecord.fields.MainImage) {
-          const mainImageField = firstRecord.fields.MainImage;
-          console.log('MainImage field found:', mainImageField);
-          console.log(`Found image field for article "${firstRecord.fields.Name}":`, 
-                      typeof mainImageField, Array.isArray(mainImageField) ? 'Array' : '');
-          console.log('Field data type:', typeof mainImageField);
-          
-          if (Array.isArray(mainImageField) && mainImageField.length > 0) {
-            console.log('Array field in extractAttachmentFromField, first item:', mainImageField[0]);
-          }
-        }
-      }
-      
-      return records.map(record => this.mapAirtableRecordToArticle(record));
+      const records = await query.all();
+      return records.map(this.mapAirtableRecordToArticle);
     } catch (error) {
-      console.error('[ERROR][AirtableStorage] Error in getFeaturedArticles:', error);
-      
-      // In production, handle errors more gracefully with fallbacks
-      if (process.env.NODE_ENV === 'production') {
-        console.error('[ERROR][AirtableStorage] Production error caught, returning empty array but logging error');
-        
-        // Track this for monitoring
-        console.error('[ERROR][AirtableStorage] Production data retrieval failure timestamp:', new Date().toISOString());
-        
-        // Return empty array as fallback
-        return [];
-      }
-      
-      // In development, throw the error for better debugging
-      throw error;
+      console.error('Error fetching featured articles from Airtable:', error);
+      return [];
     }
   }
   
@@ -302,7 +102,7 @@ export class AirtableStorage implements IStorage {
       });
       
       const records = await query.all();
-      return records.map(record => this.mapAirtableRecordToArticle(record));
+      return records.map(this.mapAirtableRecordToArticle);
     } catch (error) {
       console.error('Error fetching recent articles from Airtable:', error);
       return [];
@@ -333,7 +133,7 @@ export class AirtableStorage implements IStorage {
       });
       
       const records = await query.all();
-      return records.map(record => this.mapAirtableRecordToArticle(record));
+      return records.map(this.mapAirtableRecordToArticle);
     } catch (error) {
       console.error(`Error fetching articles for author ${authorId} from Airtable:`, error);
       return [];
@@ -893,32 +693,6 @@ The suffragette movement also employed humor effectively, using satirical cartoo
 }
 
 // Export appropriate storage implementation based on environment
-// Add detailed logging to help debug environment variable issues
-console.log('===== ENVIRONMENT DEBUG INFO =====');
-console.log('Environment:', process.env.NODE_ENV);
-console.log('Replit: Site ID:', process.env.REPL_ID, 'Owner:', process.env.REPL_OWNER);
-console.log('Airtable API Key length:', process.env.AIRTABLE_API_KEY ? process.env.AIRTABLE_API_KEY.length : 0);
-console.log('Airtable Base ID:', process.env.AIRTABLE_BASE_ID || 'NOT FOUND');
-console.log('AIRTABLE_API_KEY exists:', !!process.env.AIRTABLE_API_KEY);
-console.log('AIRTABLE_BASE_ID exists:', !!process.env.AIRTABLE_BASE_ID);
-console.log('===== END DEBUG INFO =====');
-
-// Create and export the appropriate storage implementation
-let storage: IStorage;
-if (process.env.AIRTABLE_API_KEY && process.env.AIRTABLE_BASE_ID) {
-  console.log('Using Airtable storage with valid API credentials');
-  try {
-    storage = new AirtableStorage();
-    console.log('Successfully initialized Airtable storage');
-  } catch (error) {
-    console.error('ERROR: Failed to initialize Airtable storage:', error);
-    console.log('Falling back to memory storage due to initialization error');
-    storage = new MemStorage();
-  }
-} else {
-  console.log('WARNING: Missing Airtable credentials. Using fallback memory storage.');
-  console.log('Make sure AIRTABLE_API_KEY and AIRTABLE_BASE_ID are set in your environment');
-  storage = new MemStorage();
-}
-
-export { storage };
+export const storage: IStorage = process.env.AIRTABLE_API_KEY && process.env.AIRTABLE_BASE_ID
+  ? new AirtableStorage()
+  : new MemStorage();
