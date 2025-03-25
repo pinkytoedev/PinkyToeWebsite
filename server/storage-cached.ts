@@ -1,0 +1,378 @@
+import { Article, Team, CarouselQuote } from "@shared/schema";
+import { IStorage } from "./storage";
+import { CacheService } from "./services/cache-service";
+
+/**
+ * Cached storage decorator
+ * Wraps the original storage implementation with caching functionality
+ */
+export class CachedStorage implements IStorage {
+  private originalStorage: IStorage;
+  
+  constructor(storage: IStorage) {
+    this.originalStorage = storage;
+  }
+  
+  async getArticles(page: number, limit: number, search = ""): Promise<{ articles: Article[], total: number }> {
+    try {
+      // For search queries, bypass cache
+      if (search) {
+        return await this.originalStorage.getArticles(page, limit, search);
+      }
+      
+      // Try to get from cache first
+      const cachedArticles = CacheService.getCachedArticles();
+      if (cachedArticles) {
+        console.log('Serving articles from cache');
+        
+        // Apply pagination to cached data
+        const start = (page - 1) * limit;
+        const end = start + limit;
+        const pagedArticles = cachedArticles.articles.slice(start, end);
+        
+        return {
+          articles: pagedArticles,
+          total: cachedArticles.total
+        };
+      }
+      
+      // If not in cache, get from original storage
+      console.log('Cache miss for articles, fetching from original storage');
+      const result = await this.originalStorage.getArticles(page, limit, search);
+      
+      // Cache the result for future use
+      CacheService.cacheArticles(result);
+      
+      return result;
+    } catch (error) {
+      console.error('Error in cached getArticles:', error);
+      // Try to serve from cache even on error
+      const cachedArticles = CacheService.getCachedArticles();
+      if (cachedArticles) {
+        console.log('Serving articles from cache after error');
+        
+        // Apply pagination to cached data
+        const start = (page - 1) * limit;
+        const end = start + limit;
+        const pagedArticles = cachedArticles.articles.slice(start, end);
+        
+        return {
+          articles: pagedArticles,
+          total: cachedArticles.total
+        };
+      }
+      
+      // If no cache available, rethrow
+      throw error;
+    }
+  }
+  
+  async getFeaturedArticles(): Promise<Article[]> {
+    try {
+      // Try to get from cache first
+      const cachedArticles = CacheService.getCachedFeaturedArticles();
+      if (cachedArticles) {
+        console.log('Serving featured articles from cache');
+        return cachedArticles;
+      }
+      
+      // If not in cache, get from original storage
+      console.log('Cache miss for featured articles, fetching from original storage');
+      const articles = await this.originalStorage.getFeaturedArticles();
+      
+      // Cache the result for future use
+      CacheService.cacheFeaturedArticles(articles);
+      
+      return articles;
+    } catch (error) {
+      console.error('Error in cached getFeaturedArticles:', error);
+      // Try to serve from cache even on error
+      const cachedArticles = CacheService.getCachedFeaturedArticles();
+      if (cachedArticles) {
+        console.log('Serving featured articles from cache after error');
+        return cachedArticles;
+      }
+      
+      // If no cache available, rethrow
+      throw error;
+    }
+  }
+  
+  async getRecentArticles(limit: number): Promise<Article[]> {
+    try {
+      // Try to get from cache first
+      const cachedArticles = CacheService.getCachedRecentArticles();
+      if (cachedArticles) {
+        console.log('Serving recent articles from cache');
+        // Apply limit to cached data
+        return cachedArticles.slice(0, limit);
+      }
+      
+      // If not in cache, get from original storage
+      console.log('Cache miss for recent articles, fetching from original storage');
+      const articles = await this.originalStorage.getRecentArticles(limit);
+      
+      // Cache the result for future use
+      CacheService.cacheRecentArticles(articles);
+      
+      return articles;
+    } catch (error) {
+      console.error('Error in cached getRecentArticles:', error);
+      // Try to serve from cache even on error
+      const cachedArticles = CacheService.getCachedRecentArticles();
+      if (cachedArticles) {
+        console.log('Serving recent articles from cache after error');
+        return cachedArticles.slice(0, limit);
+      }
+      
+      // If no cache available, rethrow
+      throw error;
+    }
+  }
+  
+  async getArticleById(id: string): Promise<Article | undefined> {
+    try {
+      // Try to find in the cached articles first
+      const cachedArticles = CacheService.getCachedArticles();
+      if (cachedArticles) {
+        const cachedArticle = cachedArticles.articles.find(article => article.id === id);
+        if (cachedArticle) {
+          console.log(`Serving article ${id} from cache`);
+          return cachedArticle;
+        }
+      }
+      
+      // If not in cache, get from original storage
+      console.log(`Cache miss for article ${id}, fetching from original storage`);
+      return await this.originalStorage.getArticleById(id);
+    } catch (error) {
+      console.error(`Error in cached getArticleById for ${id}:`, error);
+      
+      // Try to find in the cached articles after error
+      const cachedArticles = CacheService.getCachedArticles();
+      if (cachedArticles) {
+        const cachedArticle = cachedArticles.articles.find(article => article.id === id);
+        if (cachedArticle) {
+          console.log(`Serving article ${id} from cache after error`);
+          return cachedArticle;
+        }
+      }
+      
+      // If not found in cache or error occurred, return undefined
+      return undefined;
+    }
+  }
+  
+  async getArticlesByAuthorId(authorId: string): Promise<Article[]> {
+    try {
+      // Try to build from cached articles first
+      const cachedArticles = CacheService.getCachedArticles();
+      if (cachedArticles) {
+        const teamMembers = CacheService.getCachedTeamMembers();
+        if (teamMembers) {
+          const teamMember = teamMembers.find(member => member.id === authorId);
+          if (teamMember) {
+            const authorArticles = cachedArticles.articles.filter(
+              article => article.name === teamMember.name
+            );
+            if (authorArticles.length > 0) {
+              console.log(`Serving articles for author ${authorId} from cache`);
+              return authorArticles;
+            }
+          }
+        }
+      }
+      
+      // If not in cache, get from original storage
+      console.log(`Cache miss for articles by author ${authorId}, fetching from original storage`);
+      return await this.originalStorage.getArticlesByAuthorId(authorId);
+    } catch (error) {
+      console.error(`Error in cached getArticlesByAuthorId for ${authorId}:`, error);
+      
+      // Try to build from cached articles after error
+      const cachedArticles = CacheService.getCachedArticles();
+      if (cachedArticles) {
+        const teamMembers = CacheService.getCachedTeamMembers();
+        if (teamMembers) {
+          const teamMember = teamMembers.find(member => member.id === authorId);
+          if (teamMember) {
+            const authorArticles = cachedArticles.articles.filter(
+              article => article.name === teamMember.name
+            );
+            if (authorArticles.length > 0) {
+              console.log(`Serving articles for author ${authorId} from cache after error`);
+              return authorArticles;
+            }
+          }
+        }
+      }
+      
+      // If no cache available, return empty array
+      return [];
+    }
+  }
+  
+  async getTeamMembers(): Promise<Team[]> {
+    try {
+      // Try to get from cache first
+      const cachedTeam = CacheService.getCachedTeamMembers();
+      if (cachedTeam) {
+        console.log('Serving team members from cache');
+        return cachedTeam;
+      }
+      
+      // If not in cache, get from original storage
+      console.log('Cache miss for team members, fetching from original storage');
+      const team = await this.originalStorage.getTeamMembers();
+      
+      // Cache the result for future use
+      CacheService.cacheTeamMembers(team);
+      
+      return team;
+    } catch (error) {
+      console.error('Error in cached getTeamMembers:', error);
+      // Try to serve from cache even on error
+      const cachedTeam = CacheService.getCachedTeamMembers();
+      if (cachedTeam) {
+        console.log('Serving team members from cache after error');
+        return cachedTeam;
+      }
+      
+      // If no cache available, rethrow
+      throw error;
+    }
+  }
+  
+  async getTeamMemberById(id: string): Promise<Team | undefined> {
+    try {
+      // Try to find in the cached team first
+      const cachedTeam = CacheService.getCachedTeamMembers();
+      if (cachedTeam) {
+        const cachedMember = cachedTeam.find(member => member.id === id);
+        if (cachedMember) {
+          console.log(`Serving team member ${id} from cache`);
+          return cachedMember;
+        }
+      }
+      
+      // If not in cache, get from original storage
+      console.log(`Cache miss for team member ${id}, fetching from original storage`);
+      return await this.originalStorage.getTeamMemberById(id);
+    } catch (error) {
+      console.error(`Error in cached getTeamMemberById for ${id}:`, error);
+      
+      // Try to find in the cached team after error
+      const cachedTeam = CacheService.getCachedTeamMembers();
+      if (cachedTeam) {
+        const cachedMember = cachedTeam.find(member => member.id === id);
+        if (cachedMember) {
+          console.log(`Serving team member ${id} from cache after error`);
+          return cachedMember;
+        }
+      }
+      
+      // If not found in cache or error occurred, return undefined
+      return undefined;
+    }
+  }
+  
+  async getQuotes(): Promise<CarouselQuote[]> {
+    try {
+      // Try to get from cache first
+      const cachedQuotes = CacheService.getCachedQuotes();
+      if (cachedQuotes) {
+        console.log('Serving quotes from cache');
+        return cachedQuotes;
+      }
+      
+      // If not in cache, get from original storage
+      console.log('Cache miss for quotes, fetching from original storage');
+      const quotes = await this.originalStorage.getQuotes();
+      
+      // Cache the result for future use
+      CacheService.cacheQuotes(quotes);
+      
+      return quotes;
+    } catch (error) {
+      console.error('Error in cached getQuotes:', error);
+      // Try to serve from cache even on error
+      const cachedQuotes = CacheService.getCachedQuotes();
+      if (cachedQuotes) {
+        console.log('Serving quotes from cache after error');
+        return cachedQuotes;
+      }
+      
+      // If no cache available, rethrow
+      throw error;
+    }
+  }
+  
+  async getQuoteOfDay(): Promise<CarouselQuote> {
+    try {
+      // Get all quotes from cache first
+      const cachedQuotes = CacheService.getCachedQuotes();
+      if (cachedQuotes && cachedQuotes.length > 0) {
+        console.log('Generating quote of the day from cached quotes');
+        
+        // Filter for philosophy quotes
+        const philosophyQuotes = cachedQuotes.filter(quote => 
+          quote.carousel.toLowerCase() === 'philo' || 
+          quote.carousel.toLowerCase() === 'philosophy'
+        );
+        
+        // Handle case where no philosophy quotes are available
+        if (philosophyQuotes.length === 0) {
+          if (cachedQuotes.length > 0) {
+            // If we have any quotes, use the day of year to select one deterministically
+            const today = new Date();
+            const start = new Date(today.getFullYear(), 0, 0);
+            const diff = today.getTime() - start.getTime();
+            const oneDay = 1000 * 60 * 60 * 24;
+            const dayOfYear = Math.floor(diff / oneDay);
+            
+            const quoteIndex = dayOfYear % cachedQuotes.length;
+            return cachedQuotes[quoteIndex];
+          } else {
+            // If no quotes at all, return a default empty quote
+            return {
+              id: 0,
+              carousel: 'default',
+              quote: ''
+            };
+          }
+        }
+        
+        // Use the day of year to select a quote deterministically
+        const today = new Date();
+        const start = new Date(today.getFullYear(), 0, 0);
+        const diff = today.getTime() - start.getTime();
+        const oneDay = 1000 * 60 * 60 * 24;
+        const dayOfYear = Math.floor(diff / oneDay);
+        
+        const quoteIndex = dayOfYear % philosophyQuotes.length;
+        return philosophyQuotes[quoteIndex];
+      }
+      
+      // If not in cache, get from original storage
+      console.log('Cache miss for quote of the day, fetching from original storage');
+      return await this.originalStorage.getQuoteOfDay();
+    } catch (error) {
+      console.error('Error in cached getQuoteOfDay:', error);
+      
+      // Try one more time with cached quotes
+      const cachedQuotes = CacheService.getCachedQuotes();
+      if (cachedQuotes && cachedQuotes.length > 0) {
+        // Get a random quote as fallback
+        const randomIndex = Math.floor(Math.random() * cachedQuotes.length);
+        return cachedQuotes[randomIndex];
+      }
+      
+      // If all else fails, return a default quote
+      return {
+        id: 0,
+        carousel: 'default',
+        quote: ''
+      };
+    }
+  }
+}
