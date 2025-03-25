@@ -62,8 +62,7 @@ export class ImageService {
 
   /**
    * Extract attachment data from Airtable record field
-   * Handles both single attachments and arrays of attachments with improved robustness
-   * for different API response formats between environments
+   * Handles both single attachments and arrays of attachments
    */
   static extractAttachmentFromField(field: any): AirtableAttachment | null {
     if (!field) {
@@ -80,78 +79,23 @@ export class ImageService {
         return null;
       }
       
-      const firstItem = field[0];
-      console.log('Array field in extractAttachmentFromField, first item:', firstItem);
-      
-      // Handle both object attachments and string IDs or URLs in arrays
-      if (typeof firstItem === 'object') {
-        // It's likely an attachment object with URL
-        if (firstItem.url) {
-          return firstItem;
-        }
-        
-        // Some environments might nest the thumbnails differently
-        if (firstItem.thumbnails) {
-          return firstItem;
-        }
-      } else if (typeof firstItem === 'string') {
-        // If it's a string in an array, it might be a URL directly
-        if (firstItem.startsWith('http')) {
-          return {
-            id: crypto.createHash('md5').update(firstItem).digest('hex'),
-            url: firstItem,
-            filename: path.basename(firstItem),
-            size: 0,
-            type: 'image/unknown'
-          };
-        }
-      }
-      
-      return firstItem;
+      console.log('Array field in extractAttachmentFromField, first item:', field[0]);
+      return field[0];
     }
     
-    // If it's already an attachment object with the expected structure
-    if (typeof field === 'object' && field !== null) {
-      // Direct attachment object
-      if (field.url) {
-        console.log('Object with URL found in extractAttachmentFromField:', field.url);
-        return field;
-      }
-      
-      // Nested thumbnails field
-      if (field.thumbnails) {
-        console.log('Object with thumbnails found in extractAttachmentFromField');
-        return field;
-      }
-      
-      // Some deployments might have a different structure
-      // with the URL nested inside another property
-      for (const key of Object.keys(field)) {
-        if (typeof field[key] === 'object' && field[key]?.url) {
-          console.log(`Found nested URL in field.${key}.url:`, field[key].url);
-          return field[key];
-        }
-      }
+    // If it's already an attachment object
+    if (typeof field === 'object' && field.url) {
+      console.log('Object with URL found in extractAttachmentFromField:', field.url);
+      return field;
     }
     
-    // If it's a string (potentially a URL or an Airtable record ID)
+    // If it's a string (potentially an Airtable record ID)
     if (typeof field === 'string') {
       console.log(`String value received in extractAttachmentFromField: "${field}"`);
-      
-      // If it's a URL, create a simple attachment object
-      if (field.startsWith('http')) {
-        return {
-          id: crypto.createHash('md5').update(field).digest('hex'),
-          url: field,
-          filename: path.basename(field),
-          size: 0,
-          type: 'image/unknown'
-        };
-      }
+      // In this case, we can't extract an attachment directly, but we log for debugging
     }
     
-    console.log('No valid attachment data found in field:', 
-      typeof field === 'object' ? 'Object keys: ' + Object.keys(field || {}).join(', ') : field);
+    console.log('No valid attachment data found in field:', field);
     return null;
   }
 

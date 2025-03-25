@@ -2,14 +2,6 @@ import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
 
-// Log environment details on startup to help with debugging
-console.log('======= SERVER STARTUP ENVIRONMENT INFO =======');
-console.log('NODE_ENV:', process.env.NODE_ENV);
-console.log('Running on Replit:', !!process.env.REPL_ID);
-console.log('Deployment type:', process.env.REPL_DEPLOYMENT_ID ? 'Replit Deployment' : 'Replit Dev');
-console.log('Airtable credentials available:', !!process.env.AIRTABLE_API_KEY && !!process.env.AIRTABLE_BASE_ID);
-console.log('================================================');
-
 const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
