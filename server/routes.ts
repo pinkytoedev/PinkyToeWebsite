@@ -84,6 +84,113 @@ export async function registerRoutes(app: Express): Promise<Server> {
     });
   });
   
+  // API Key diagnostic endpoint that directly tests the Airtable connection
+  // Can also test a provided key parameter in the query string
+  app.get("/api/airtable-diagnostic", async (req, res) => {
+    try {
+      // Check for a 'key' parameter for direct testing
+      const testKey = req.query.key as string | undefined;
+      
+      // Use the provided test key if available, otherwise use the environment key
+      const airtableApiKey = testKey || process.env.AIRTABLE_API_KEY || "";
+      const airtableBaseId = process.env.AIRTABLE_BASE_ID || "";
+      const cleanKey = airtableApiKey.trim();
+      
+      // Configure Airtable with the API key
+      const airtable = require('airtable');
+      airtable.configure({
+        apiKey: cleanKey,
+        endpointUrl: 'https://api.airtable.com',
+        requestTimeout: 30000 // 30 second timeout
+      });
+      
+      // Create a base instance
+      const base = airtable.base(airtableBaseId);
+      
+      // Start building the diagnostic results
+      const diagnosticResults = {
+        timestamp: new Date().toISOString(),
+        using_test_key: !!testKey,
+        api_key: {
+          exists: !!airtableApiKey,
+          length: airtableApiKey.length,
+          format: 'unknown',
+          validation: {
+            legacy: false,
+            pat_strict: false,
+            pat_flexible: false,
+            length_check: false
+          }
+        },
+        base_id: {
+          exists: !!airtableBaseId,
+          value: airtableBaseId
+        },
+        connection_test: {
+          status: 'pending',
+          tables_found: [] as string[],
+          tables_detail: [] as any[],
+          error: null as any
+        }
+      };
+      
+      // Format detection
+      if (cleanKey.startsWith('key')) {
+        diagnosticResults.api_key.format = 'legacy';
+        diagnosticResults.api_key.validation.legacy = true;
+      } else if (cleanKey.startsWith('pat')) {
+        diagnosticResults.api_key.format = 'personal_access_token';
+        diagnosticResults.api_key.validation.pat_flexible = true;
+        if (/^pat[A-Za-z][A-Za-z0-9]{16,}$/.test(cleanKey)) {
+          diagnosticResults.api_key.validation.pat_strict = true;
+        }
+      }
+      
+      diagnosticResults.api_key.validation.length_check = cleanKey.length >= 16;
+      
+      // Test a list of possible table names
+      const potentialTables = ['Teams', 'History', 'CarouselQuote'];
+      const tableResults = [];
+      
+      // Test each table with a minimal query
+      for (const tableName of potentialTables) {
+        try {
+          console.log(`[DIAGNOSTIC] Testing table '${tableName}'...`);
+          const query = base(tableName).select({ maxRecords: 1 });
+          const records = await query.firstPage();
+          
+          tableResults.push({
+            table: tableName,
+            status: 'success',
+            records_found: records.length
+          });
+          
+          diagnosticResults.connection_test.tables_found.push(tableName);
+        } catch (error: any) {
+          tableResults.push({
+            table: tableName,
+            status: 'error',
+            error_code: error.statusCode || 'unknown',
+            error_type: error.error || 'unknown',
+            error_message: error.message || 'No error message'
+          });
+        }
+      }
+      
+      diagnosticResults.connection_test.status = tableResults.some(r => r.status === 'success') 
+        ? 'success' : 'failed';
+      diagnosticResults.connection_test.tables_detail = tableResults;
+      
+      res.json(diagnosticResults);
+    } catch (error: any) {
+      res.status(500).json({
+        error: 'Failed to run Airtable diagnostic',
+        message: error.message || 'Unknown error',
+        timestamp: new Date().toISOString()
+      });
+    }
+  });
+  
   // More detailed system check endpoint with key format validation
   app.get("/api/system-check-full", (req, res) => {
     const airtableApiKey = process.env.AIRTABLE_API_KEY || "";
