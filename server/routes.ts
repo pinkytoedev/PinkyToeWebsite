@@ -64,11 +64,47 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.get("/api/articles/featured", cacheMiddleware(300), async (_req, res) => {
     try {
+      console.log("[DEBUG] Starting featured articles fetch...");
+      // Log what type of storage we're using
+      console.log("[DEBUG] Storage type:", storage.constructor.name);
+      
+      const startTime = Date.now();
       const featuredArticles = await storage.getFeaturedArticles();
+      const duration = Date.now() - startTime;
+      
+      console.log(`[DEBUG] Featured articles fetch completed in ${duration}ms, found ${featuredArticles.length} articles`);
+      
+      if (featuredArticles.length === 0) {
+        console.log("[DEBUG] Warning: No featured articles found, this might indicate a data access issue");
+      }
+      
       res.json(featuredArticles);
-    } catch (error) {
-      console.error("Error fetching featured articles:", error);
-      res.status(500).json({ message: "Failed to fetch featured articles" });
+    } catch (error: unknown) {
+      console.error("[ERROR] Detailed error fetching featured articles:", error);
+      // More detailed error logging
+      if (error instanceof Error) {
+        console.error("[ERROR] Name:", error.name);
+        console.error("[ERROR] Message:", error.message);
+        console.error("[ERROR] Stack:", error.stack);
+        
+        // Check for network-related errors
+        if (error.message.includes('ECONNREFUSED') || 
+            error.message.includes('ETIMEDOUT') || 
+            error.message.includes('network') ||
+            error.message.includes('socket')) {
+          console.error("[ERROR] This appears to be a network connectivity issue");
+        }
+        
+        // Check for Airtable rate limiting
+        if (error.message.includes('429') || error.message.includes('rate limit')) {
+          console.error("[ERROR] This appears to be an Airtable rate limiting issue");
+        }
+      }
+      
+      res.status(500).json({ 
+        message: "Failed to fetch featured articles", 
+        error: process.env.NODE_ENV === 'production' ? 'See server logs for details' : (error instanceof Error ? error.message : String(error))
+      });
     }
   });
 
