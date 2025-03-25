@@ -44,6 +44,13 @@ export class AirtableStorage implements IStorage {
       console.log('[INIT] Warning: API key had whitespace that was trimmed');
     }
     
+    // Detect API key format for better error messaging
+    const isPAT = cleanApiKey.startsWith('pat');
+    const isLegacyKey = cleanApiKey.startsWith('key');
+    
+    console.log('[INIT] API key format:', isPAT ? 'Personal Access Token (PAT)' : 
+                                       isLegacyKey ? 'Legacy API Key' : 'Unknown');
+    
     Airtable.configure({
       apiKey: cleanApiKey,
       endpointUrl: 'https://api.airtable.com'
@@ -64,12 +71,34 @@ export class AirtableStorage implements IStorage {
     } catch (error: any) {
       console.error('[INIT] Connection test failed:', error);
       
+      // Log additional details for better debugging
       if (error.statusCode === 401) {
         console.error('[INIT] 401 Authentication error - API key is invalid or missing');
+        console.error('[INIT] This can happen when:');
+        console.error('[INIT] - The API key is incorrect');
+        console.error('[INIT] - The API key is formatted incorrectly (should be clean with no whitespace)');
+        console.error('[INIT] - The API key has been revoked');
+        console.error('[INIT] - For Personal Access Tokens, proper scopes must be granted');
       } else if (error.statusCode === 403) {
         console.error('[INIT] 403 Authorization error - API key does not have access to this base');
+        console.error('[INIT] This can happen when:');
+        console.error('[INIT] - The API key has insufficient permissions');
+        console.error('[INIT] - For Personal Access Tokens, the token needs access to this specific base');
       } else if (error.statusCode === 404) {
         console.error('[INIT] 404 Not Found error - Base ID or table name is incorrect');
+        console.error('[INIT] This can happen when:');
+        console.error('[INIT] - The base ID is wrong or has changed');
+        console.error('[INIT] - The "Teams" table does not exist in this base');
+        console.error('[INIT] Base ID being used:', airtableBaseId);
+      } else if (error.statusCode === 429) {
+        console.error('[INIT] 429 Rate Limit error - Too many requests to Airtable API');
+        console.error('[INIT] The application should implement retry logic with exponential backoff');
+      } else {
+        console.error('[INIT] Unknown error type:', error.statusCode || 'No status code', 
+                      error.message || 'No error message');
+        if (error.code === 'ENOTFOUND' || error.code === 'ETIMEDOUT' || error.code === 'ECONNREFUSED') {
+          console.error('[INIT] Network connectivity issue detected. Check internet connection.');
+        }
       }
     }
   }
