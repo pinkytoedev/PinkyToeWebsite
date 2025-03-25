@@ -2,7 +2,7 @@ import type { Express, Request, Response, NextFunction } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { imagesRouter } from "./routes/images";
-import { cacheMiddleware, logCacheStats } from "./cache";
+import { cacheMiddleware, logCacheStats, clearCache } from "./cache";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Log cache stats every 5 minutes
@@ -88,12 +88,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Can also test a provided key parameter in the query string
   app.get("/api/airtable-diagnostic", async (req, res) => {
     try {
-      // Check for a 'key' parameter for direct testing
+      // Check for query parameters for flexible testing options
       const testKey = req.query.key as string | undefined;
+      const testBaseId = req.query.base as string | undefined;
+      const tableNames = req.query.tables ? (req.query.tables as string).split(',') : ['Teams', 'History', 'CarouselQuote'];
       
-      // Use the provided test key if available, otherwise use the environment key
+      // Use provided test values if available, otherwise use environment values
       const airtableApiKey = testKey || process.env.AIRTABLE_API_KEY || "";
-      const airtableBaseId = process.env.AIRTABLE_BASE_ID || "";
+      const airtableBaseId = testBaseId || process.env.AIRTABLE_BASE_ID || "";
       const cleanKey = airtableApiKey.trim();
       
       // Configure Airtable with the API key
@@ -110,11 +112,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Start building the diagnostic results
       const diagnosticResults = {
         timestamp: new Date().toISOString(),
-        using_test_key: !!testKey,
+        environment: {
+          node_env: process.env.NODE_ENV || 'unknown',
+          is_production: process.env.NODE_ENV === 'production',
+          is_deployment: !!process.env.REPL_DEPLOYMENT_ID
+        },
+        testing_info: {
+          using_test_key: !!testKey,
+          using_test_base: !!testBaseId,
+          custom_tables: req.query.tables ? true : false
+        },
         api_key: {
           exists: !!airtableApiKey,
           length: airtableApiKey.length,
           format: 'unknown',
+          prefix: airtableApiKey.length > 3 ? airtableApiKey.substring(0, 3) : '',
           validation: {
             legacy: false,
             pat_strict: false,
@@ -129,6 +141,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         connection_test: {
           status: 'pending',
           tables_found: [] as string[],
+          tables_tested: tableNames,
           tables_detail: [] as any[],
           error: null as any
         }
@@ -148,12 +161,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       diagnosticResults.api_key.validation.length_check = cleanKey.length >= 16;
       
-      // Test a list of possible table names
-      const potentialTables = ['Teams', 'History', 'CarouselQuote'];
+      // Test the tables specified in the request parameters or the default ones
       const tableResults = [];
       
       // Test each table with a minimal query
-      for (const tableName of potentialTables) {
+      for (const tableName of tableNames) {
         try {
           console.log(`[DIAGNOSTIC] Testing table '${tableName}'...`);
           const query = base(tableName).select({ maxRecords: 1 });
@@ -181,11 +193,114 @@ export async function registerRoutes(app: Express): Promise<Server> {
         ? 'success' : 'failed';
       diagnosticResults.connection_test.tables_detail = tableResults;
       
+      // Include a summary of common issues based on the test results
+      if (diagnosticResults.connection_test.status === 'failed') {
+        diagnosticResults.recommendations = [];
+        
+        // Check for specific error patterns in the results
+        const hasAuthErrors = tableResults.some(r => 
+          r.error_code === 401 || r.error_message?.includes('authentication')
+        );
+        
+        const hasPermissionErrors = tableResults.some(r => 
+          r.error_code === 403 || r.error_message?.includes('permission')
+        );
+        
+        const hasNotFoundErrors = tableResults.some(r => 
+          r.error_code === 404 || r.error_message?.includes('not found')
+        );
+        
+        // Add relevant recommendations based on error patterns
+        if (hasAuthErrors) {
+          diagnosticResults.recommendations.push(
+            "Authentication failed. The API key may be invalid, revoked, or incorrectly formatted.",
+            "Try generating a new Personal Access Token (PAT) from your Airtable account settings."
+          );
+        }
+        
+        if (hasPermissionErrors) {
+          diagnosticResults.recommendations.push(
+            "Permission denied. Your API key does not have access to this base or the required tables.",
+            "Ensure the API key has been granted access to all tables you're trying to access."
+          );
+        }
+        
+        if (hasNotFoundErrors) {
+          diagnosticResults.recommendations.push(
+            "Resources not found. Check that your Base ID is correct and the tables exist.",
+            "Confirm the table names match exactly (they are case-sensitive)."
+          );
+        }
+        
+        // General recommendation
+        if (diagnosticResults.recommendations.length === 0) {
+          diagnosticResults.recommendations.push(
+            "Unexpected error occurred. Check Airtable service status and your network connectivity."
+          );
+        }
+      }
+      
       res.json(diagnosticResults);
     } catch (error: any) {
-      res.status(500).json({
+      // More detailed error response for the diagnostic endpoint
+      const errorResponse = {
         error: 'Failed to run Airtable diagnostic',
         message: error.message || 'Unknown error',
+        timestamp: new Date().toISOString(),
+        error_details: {
+          name: error.name || 'Unknown',
+          status_code: error.statusCode || 'None',
+          error_type: error.error || 'Unknown'
+        },
+        possible_causes: []
+      };
+      
+      // Add potential causes based on error type
+      if (error.code === 'ENOTFOUND' || error.code === 'ETIMEDOUT') {
+        errorResponse.possible_causes.push('Network connectivity issue', 'DNS resolution problem');
+      } else if (error.statusCode === 401) {
+        errorResponse.possible_causes.push('Invalid API key', 'Revoked API key', 'Malformed API key');
+      } else if (error.statusCode === 403) {
+        errorResponse.possible_causes.push('Insufficient permissions', 'API key scope too limited');
+      } else if (error.statusCode === 404) {
+        errorResponse.possible_causes.push('Base ID incorrect', 'Table does not exist');
+      } else if (error.statusCode === 429) {
+        errorResponse.possible_causes.push('Rate limit exceeded', 'Too many requests');
+      }
+      
+      res.status(500).json(errorResponse);
+    }
+  });
+  
+  // Clear API cache endpoint - useful when testing with different API keys
+  app.get("/api/clear-cache", (req, res) => {
+    try {
+      const pattern = req.query.pattern as string;
+      if (pattern) {
+        console.log(`[CACHE] Clearing cache items matching pattern: ${pattern}`);
+        // Clear specific cache patterns
+        clearCache(pattern);
+        res.json({ 
+          success: true, 
+          message: `Cache cleared for pattern: ${pattern}`,
+          timestamp: new Date().toISOString()
+        });
+      } else {
+        console.log('[CACHE] Clearing entire cache');
+        // Clear all cache
+        clearCache();
+        res.json({ 
+          success: true, 
+          message: 'Entire cache cleared',
+          timestamp: new Date().toISOString()
+        });
+      }
+    } catch (error) {
+      console.error('[CACHE] Error clearing cache:', error);
+      res.status(500).json({ 
+        success: false, 
+        message: 'Failed to clear cache', 
+        error: error instanceof Error ? error.message : String(error),
         timestamp: new Date().toISOString()
       });
     }
