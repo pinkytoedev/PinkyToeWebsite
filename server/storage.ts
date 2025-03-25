@@ -34,11 +34,44 @@ export class AirtableStorage implements IStorage {
   private quoteLastFetched: Date | null = null;
   
   constructor() {
+    console.log('[INIT] Setting up Airtable with API key length:', airtableApiKey.length);
+    console.log('[INIT] Using Base ID:', airtableBaseId);
+    
+    // Clean up API key (remove any whitespace that might have been introduced)
+    const cleanApiKey = airtableApiKey.trim();
+    
+    if (cleanApiKey !== airtableApiKey) {
+      console.log('[INIT] Warning: API key had whitespace that was trimmed');
+    }
+    
     Airtable.configure({
-      apiKey: airtableApiKey,
+      apiKey: cleanApiKey,
+      endpointUrl: 'https://api.airtable.com'
     });
     
     this.base = Airtable.base(airtableBaseId);
+    
+    // Test connection on init
+    this.testConnection();
+  }
+  
+  private async testConnection() {
+    try {
+      console.log('[INIT] Testing Airtable connection...');
+      // Try to fetch a single record from the Teams table as a test
+      const testResult = await this.base('Teams').select({ maxRecords: 1 }).firstPage();
+      console.log('[INIT] Connection test successful, found', testResult.length, 'records');
+    } catch (error: any) {
+      console.error('[INIT] Connection test failed:', error);
+      
+      if (error.statusCode === 401) {
+        console.error('[INIT] 401 Authentication error - API key is invalid or missing');
+      } else if (error.statusCode === 403) {
+        console.error('[INIT] 403 Authorization error - API key does not have access to this base');
+      } else if (error.statusCode === 404) {
+        console.error('[INIT] 404 Not Found error - Base ID or table name is incorrect');
+      }
+    }
   }
   
   async getArticles(page: number, limit: number, search = ""): Promise<{ articles: Article[], total: number }> {
@@ -130,7 +163,7 @@ export class AirtableStorage implements IStorage {
         console.log('[DEBUG][AirtableStorage] Featured field value:', records[0].get('featured'));
       }
       
-      return records.map(this.mapAirtableRecordToArticle);
+      return records.map(record => this.mapAirtableRecordToArticle(record));
     } catch (error) {
       console.error('[ERROR][AirtableStorage] Error in getFeaturedArticles:', error);
       
@@ -152,7 +185,7 @@ export class AirtableStorage implements IStorage {
       });
       
       const records = await query.all();
-      return records.map(this.mapAirtableRecordToArticle);
+      return records.map(record => this.mapAirtableRecordToArticle(record));
     } catch (error) {
       console.error('Error fetching recent articles from Airtable:', error);
       return [];
@@ -183,7 +216,7 @@ export class AirtableStorage implements IStorage {
       });
       
       const records = await query.all();
-      return records.map(this.mapAirtableRecordToArticle);
+      return records.map(record => this.mapAirtableRecordToArticle(record));
     } catch (error) {
       console.error(`Error fetching articles for author ${authorId} from Airtable:`, error);
       return [];
