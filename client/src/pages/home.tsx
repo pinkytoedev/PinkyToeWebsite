@@ -2,6 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import React, { useState, useEffect, useRef } from "react";
 import { Layout } from "@/components/layout/layout";
 import { API_ROUTES } from "@/lib/constants";
+import { fetchFeaturedArticles, fetchRecentArticles, fetchQuotes } from "@/lib/api";
 import { FeaturedArticleCard } from "@/components/articles/featured-article-card";
 import { RecentArticleCard } from "@/components/articles/recent-article-card";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -19,16 +20,22 @@ export default function Home() {
   const [autoPlayInterval, setAutoPlayInterval] = useState<NodeJS.Timeout | null>(null);
   const carouselRef = useRef<{ scrollNext: () => void } | null>(null);
 
-  const { data: featuredArticles = [], isLoading: featuredLoading } = useQuery<any[]>({
+  const { data: featuredArticles = [], isLoading: featuredLoading } = useQuery({
     queryKey: [API_ROUTES.FEATURED_ARTICLES],
+    queryFn: () => fetchFeaturedArticles(),
+    staleTime: 60 * 1000, // 1 minute
   });
 
-  const { data: recentArticles = [], isLoading: recentLoading } = useQuery<any[]>({
+  const { data: recentArticles = [], isLoading: recentLoading } = useQuery({
     queryKey: [API_ROUTES.RECENT_ARTICLES],
+    queryFn: () => fetchRecentArticles(),
+    staleTime: 60 * 1000, // 1 minute
   });
 
   const { data: quotes = [], isLoading: quotesLoading } = useQuery<CarouselQuote[]>({
     queryKey: [API_ROUTES.QUOTES],
+    queryFn: () => fetchQuotes(),
+    staleTime: 60 * 1000, // 1 minute
   });
 
   // Set up auto-play for the carousel
