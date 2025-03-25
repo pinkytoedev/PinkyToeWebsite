@@ -15,11 +15,11 @@ if (!fs.existsSync(UPLOADS_DIR)) {
 
 // Define refresh intervals (in milliseconds)
 const REFRESH_INTERVALS = {
-  ARTICLES: 15 * 60 * 1000,       // 15 minutes
-  FEATURED_ARTICLES: 15 * 60 * 1000, // 15 minutes
-  RECENT_ARTICLES: 15 * 60 * 1000,   // 15 minutes
-  TEAM: 30 * 60 * 1000,           // 30 minutes
-  QUOTES: 30 * 60 * 1000,         // 30 minutes
+  ARTICLES: 30 * 60 * 1000,          // 30 minutes
+  FEATURED_ARTICLES: 15 * 60 * 1000,  // 15 minutes
+  RECENT_ARTICLES: 10 * 60 * 1000,    // 10 minutes
+  TEAM: 60 * 60 * 1000,               // 60 minutes
+  QUOTES: 60 * 60 * 1000              // 60 minutes
 };
 
 // Track timers for cleanup
