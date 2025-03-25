@@ -34,7 +34,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/articles/recent", async (req, res) => {
     try {
       const limit = parseInt(req.query.limit as string) || 4;
-      const recentArticles = await storage.getRecentArticles(limit);
+      const recentArticles = await cachedStorage.getRecentArticles(limit);
       res.json(recentArticles);
     } catch (error) {
       console.error("Error fetching recent articles:", error);
@@ -44,7 +44,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.get("/api/articles/:id", async (req, res) => {
     try {
-      const article = await storage.getArticleById(req.params.id);
+      const article = await cachedStorage.getArticleById(req.params.id);
       
       if (!article) {
         return res.status(404).json({ message: "Article not found" });
@@ -60,7 +60,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // API routes for team members
   app.get("/api/team", async (_req, res) => {
     try {
-      const teamMembers = await storage.getTeamMembers();
+      const teamMembers = await cachedStorage.getTeamMembers();
       res.json(teamMembers);
     } catch (error) {
       console.error("Error fetching team members:", error);
@@ -70,7 +70,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.get("/api/team/:id", async (req, res) => {
     try {
-      const teamMember = await storage.getTeamMemberById(req.params.id);
+      const teamMember = await cachedStorage.getTeamMemberById(req.params.id);
       
       if (!teamMember) {
         return res.status(404).json({ message: "Team member not found" });
@@ -85,7 +85,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.get("/api/team/:id/articles", async (req, res) => {
     try {
-      const articles = await storage.getArticlesByAuthorId(req.params.id);
+      const articles = await cachedStorage.getArticlesByAuthorId(req.params.id);
       res.json(articles);
     } catch (error) {
       console.error(`Error fetching articles for team member ${req.params.id}:`, error);
@@ -96,7 +96,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // API routes for quotes
   app.get("/api/quotes", async (_req, res) => {
     try {
-      const quotes = await storage.getQuotes();
+      const quotes = await cachedStorage.getQuotes();
       res.json(quotes);
     } catch (error) {
       console.error("Error fetching quotes:", error);
@@ -106,7 +106,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.get("/api/quotes/daily", async (_req, res) => {
     try {
-      const quoteOfDay = await storage.getQuoteOfDay();
+      const quoteOfDay = await cachedStorage.getQuoteOfDay();
       res.json(quoteOfDay);
     } catch (error) {
       console.error("Error fetching quote of the day:", error);
