@@ -84,6 +84,9 @@ export class AirtableStorage implements IStorage {
   
   async getFeaturedArticles(): Promise<Article[]> {
     try {
+      console.log('[DEBUG][AirtableStorage] Starting to fetch featured articles');
+      console.log('[DEBUG][AirtableStorage] Airtable Base ID:', airtableBaseId);
+      
       // Query for featured articles - checking if featured is true as a boolean
       const query = this.base('History').select({
         filterByFormula: "featured = TRUE()",
@@ -91,11 +94,53 @@ export class AirtableStorage implements IStorage {
         maxRecords: 5
       });
       
-      const records = await query.all();
+      // Start the request
+      console.log('[DEBUG][AirtableStorage] Sending query to Airtable API');
+      let records;
+      try {
+        records = await query.all();
+        console.log(`[DEBUG][AirtableStorage] Successfully retrieved ${records.length} featured articles`);
+      } catch (innerError) {
+        console.error('[ERROR][AirtableStorage] Failed to retrieve records from Airtable:', innerError);
+        
+        // Try to determine the specific error type
+        const errorString = String(innerError);
+        if (errorString.includes('rate_limit_exceeded') || errorString.includes('429')) {
+          console.error('[ERROR][AirtableStorage] Rate limit exceeded on Airtable API');
+        } else if (errorString.includes('401') || errorString.includes('403')) {
+          console.error('[ERROR][AirtableStorage] Authentication error with Airtable API. Check your API key permissions.');
+        } else if (errorString.includes('404')) {
+          console.error('[ERROR][AirtableStorage] Resource not found. Check your Base ID and table name.');
+          console.error('[DEBUG][AirtableStorage] Base ID used:', airtableBaseId);
+          console.error('[DEBUG][AirtableStorage] Table name used: History');
+        } else if (errorString.includes('ENOTFOUND') || errorString.includes('ETIMEDOUT')) {
+          console.error('[ERROR][AirtableStorage] Network error when contacting Airtable API');
+        }
+        
+        throw innerError;
+      }
+      
+      if (records.length === 0) {
+        console.log('[DEBUG][AirtableStorage] No featured articles found, check your filtering criteria');
+      }
+      
+      // Debug what fields are available in the records
+      if (records.length > 0) {
+        console.log('[DEBUG][AirtableStorage] Fields available in first record:', Object.keys(records[0].fields));
+        console.log('[DEBUG][AirtableStorage] Featured field value:', records[0].get('featured'));
+      }
+      
       return records.map(this.mapAirtableRecordToArticle);
     } catch (error) {
-      console.error('Error fetching featured articles from Airtable:', error);
-      return [];
+      console.error('[ERROR][AirtableStorage] Error in getFeaturedArticles:', error);
+      
+      // In production, we should handle this more gracefully, but still throw for better error visibility
+      if (process.env.NODE_ENV === 'production') {
+        console.error('[ERROR][AirtableStorage] Production error caught, returning empty array but logging error');
+        return [];
+      }
+      
+      throw error;
     }
   }
   
