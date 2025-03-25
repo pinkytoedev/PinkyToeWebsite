@@ -272,6 +272,10 @@ export class RefreshService {
       console.log('Refreshing featured articles data...');
       const articles = await storage.getFeaturedArticles();
       CacheService.cacheFeaturedArticles(articles);
+      
+      // Pre-cache images from featured articles to handle Airtable's expiring URLs
+      await this.preCacheArticleImages(articles);
+      
       console.log(`Featured articles refresh completed (${articles.length} articles)`);
     } catch (error) {
       console.error('Error refreshing featured articles:', error);
@@ -286,6 +290,10 @@ export class RefreshService {
       console.log('Refreshing recent articles data...');
       const articles = await storage.getRecentArticles(8); // Get more than default for cache
       CacheService.cacheRecentArticles(articles);
+      
+      // Pre-cache images from recent articles to handle Airtable's expiring URLs
+      await this.preCacheArticleImages(articles);
+      
       console.log(`Recent articles refresh completed (${articles.length} articles)`);
     } catch (error) {
       console.error('Error refreshing recent articles:', error);
@@ -300,6 +308,10 @@ export class RefreshService {
       console.log('Refreshing team members data...');
       const team = await storage.getTeamMembers();
       CacheService.cacheTeamMembers(team);
+      
+      // Pre-cache images from team members to handle Airtable's expiring URLs
+      await this.preCacheTeamImages(team);
+      
       console.log(`Team members refresh completed (${team.length} members)`);
     } catch (error) {
       console.error('Error refreshing team members:', error);
