@@ -20,6 +20,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
     next();
   });
   
+  // Helper to check API key format
+  function hasValidAirtableKeyFormat(key: string | undefined): boolean {
+    if (!key) return false;
+    
+    const cleanKey = key.trim();
+    // Support both legacy and new Personal Access Token (PAT) format
+    // Legacy format: starts with "key" (e.g., keyAbc123Def456Ghi)
+    // New PAT format: starts with "pat" followed by a version identifier (e.g., patC4AbcDef...)
+    return /^key[A-Za-z0-9]{14,}$/.test(cleanKey) || 
+           /^pat[A-Za-z][A-Za-z0-9]{16,}$/.test(cleanKey);
+  }
+
   // Diagnostic endpoint for checking environment variables in production
   // Only shows existence and length - not the actual values for security
   app.get("/api/system-check", (req, res) => {
@@ -43,6 +55,45 @@ export async function registerRoutes(app: Express): Promise<Server> {
         base_id_exists: !!process.env.AIRTABLE_BASE_ID,
         base_id_value: process.env.AIRTABLE_BASE_ID || 'NOT SET',
         storage_type: process.env.AIRTABLE_API_KEY && process.env.AIRTABLE_BASE_ID ? 'AirtableStorage' : 'MemStorage'
+      },
+      timestamp: new Date().toISOString()
+    });
+  });
+  
+  // More detailed system check endpoint with key format validation
+  app.get("/api/system-check-full", (req, res) => {
+    const airtableApiKey = process.env.AIRTABLE_API_KEY || "";
+    const airtableBaseId = process.env.AIRTABLE_BASE_ID || "";
+    const cleanKey = airtableApiKey.trim();
+    const isProduction = process.env.NODE_ENV === 'production';
+    const isDeployment = !!process.env.REPL_DEPLOYMENT_ID;
+    
+    res.json({
+      environment: {
+        node_env: process.env.NODE_ENV || 'undefined',
+        is_production: isProduction,
+        is_deployment: isDeployment,
+        replit_info: {
+          has_repl_id: !!process.env.REPL_ID,
+          has_repl_owner: !!process.env.REPL_OWNER,
+          has_deployment_id: !!process.env.REPL_DEPLOYMENT_ID
+        },
+        env_keys: Object.keys(process.env).filter(key => 
+          !key.includes('SECRET') && 
+          !key.includes('KEY') && 
+          !key.includes('TOKEN')
+        )
+      },
+      airtable_credentials: {
+        api_key_exists: !!airtableApiKey,
+        api_key_length: airtableApiKey.length,
+        api_key_clean_length: cleanKey.length,
+        api_key_has_whitespace: airtableApiKey !== cleanKey,
+        api_key_first_chars: cleanKey.substring(0, 4),
+        api_key_format_valid: hasValidAirtableKeyFormat(cleanKey),
+        base_id_exists: !!airtableBaseId,
+        base_id_value: airtableBaseId,
+        storage_type: storage.constructor.name
       },
       timestamp: new Date().toISOString()
     });
