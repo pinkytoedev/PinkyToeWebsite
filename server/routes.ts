@@ -1,13 +1,26 @@
-import type { Express } from "express";
+import type { Express, Request, Response, NextFunction } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { imagesRouter } from "./routes/images";
+import { cacheMiddleware, logCacheStats } from "./cache";
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  // Log cache stats every 5 minutes
+  setInterval(() => {
+    logCacheStats();
+  }, 5 * 60 * 1000);
+  
   // Register the images router
   app.use('/api/images', imagesRouter);
+  
+  // Setup response headers for API routes
+  app.use('/api', (req: Request, res: Response, next: NextFunction) => {
+    // Set Cache-Control headers
+    res.set('Cache-Control', 'public, max-age=300'); // Cache for 5 minutes
+    next();
+  });
   // API routes for articles
-  app.get("/api/articles", async (req, res) => {
+  app.get("/api/articles", cacheMiddleware(300), async (req, res) => {
     try {
       const page = parseInt(req.query.page as string) || 1;
       const limit = parseInt(req.query.limit as string) || 6;
@@ -21,7 +34,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get("/api/articles/featured", async (_req, res) => {
+  app.get("/api/articles/featured", cacheMiddleware(300), async (_req, res) => {
     try {
       const featuredArticles = await storage.getFeaturedArticles();
       res.json(featuredArticles);
@@ -31,7 +44,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get("/api/articles/recent", async (req, res) => {
+  app.get("/api/articles/recent", cacheMiddleware(300), async (req, res) => {
     try {
       const limit = parseInt(req.query.limit as string) || 4;
       const recentArticles = await storage.getRecentArticles(limit);
@@ -42,7 +55,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get("/api/articles/:id", async (req, res) => {
+  app.get("/api/articles/:id", cacheMiddleware(300), async (req, res) => {
     try {
       const article = await storage.getArticleById(req.params.id);
       
@@ -58,7 +71,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // API routes for team members
-  app.get("/api/team", async (_req, res) => {
+  app.get("/api/team", cacheMiddleware(300), async (_req, res) => {
     try {
       const teamMembers = await storage.getTeamMembers();
       res.json(teamMembers);
@@ -68,7 +81,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get("/api/team/:id", async (req, res) => {
+  app.get("/api/team/:id", cacheMiddleware(300), async (req, res) => {
     try {
       const teamMember = await storage.getTeamMemberById(req.params.id);
       
