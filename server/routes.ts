@@ -96,7 +96,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get("/api/team/:id/articles", async (req, res) => {
+  app.get("/api/team/:id/articles", cacheMiddleware(300), async (req, res) => {
     try {
       const articles = await storage.getArticlesByAuthorId(req.params.id);
       res.json(articles);
@@ -107,7 +107,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // API routes for quotes
-  app.get("/api/quotes", async (_req, res) => {
+  app.get("/api/quotes", cacheMiddleware(300), async (_req, res) => {
     try {
       const quotes = await storage.getQuotes();
       res.json(quotes);
@@ -117,7 +117,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get("/api/quotes/daily", async (_req, res) => {
+  app.get("/api/quotes/daily", cacheMiddleware(300), async (_req, res) => {
     try {
       const quoteOfDay = await storage.getQuoteOfDay();
       res.json(quoteOfDay);
