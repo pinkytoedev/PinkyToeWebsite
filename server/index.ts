@@ -12,6 +12,19 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
+// Add middleware to trigger refresh on page visits
+app.use((req, res, next) => {
+  // Skip API routes and static assets to avoid unnecessary refreshes
+  const path = req.path;
+  if (!path.startsWith('/api') && !path.includes('.')) {
+    // This is a page visit, trigger a background refresh
+    // The refresh is throttled internally to prevent overloading Airtable API
+    RefreshService.triggerRefreshOnVisit();
+  }
+  next();
+});
+
+// Logging middleware
 app.use((req, res, next) => {
   const start = Date.now();
   const path = req.path;

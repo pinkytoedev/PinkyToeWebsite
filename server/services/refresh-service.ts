@@ -30,6 +30,19 @@ let refreshTimers: NodeJS.Timeout[] = [];
  * It periodically fetches fresh data from Airtable and updates the cache
  */
 export class RefreshService {
+  // Track when the last refresh was triggered to prevent too many refreshes in a short period
+  private static lastRefreshTime: Record<string, number> = {
+    articles: 0,
+    featuredArticles: 0,
+    recentArticles: 0,
+    team: 0,
+    quotes: 0,
+    all: 0
+  };
+
+  // Minimum time between refreshes (in milliseconds) to prevent overloading Airtable API
+  private static readonly MIN_REFRESH_INTERVAL = 60 * 1000; // 1 minute
+  
   /**
    * Start all refresh schedules
    */
@@ -50,6 +63,46 @@ export class RefreshService {
     refreshTimers = [articlesTimer, featuredArticlesTimer, recentArticlesTimer, teamTimer, quotesTimer];
     
     console.log('Background refresh schedules started successfully');
+  }
+  
+  /**
+   * Trigger refresh on page visit
+   * This is called when a user visits the website
+   * It's throttled to prevent too many refreshes in a short period
+   */
+  static triggerRefreshOnVisit(): void {
+    const now = Date.now();
+    
+    // Check if enough time has passed since the last refresh
+    if (now - this.lastRefreshTime.all < this.MIN_REFRESH_INTERVAL) {
+      // Too soon since last refresh, skip
+      return;
+    }
+    
+    // Update refresh timestamp
+    this.lastRefreshTime.all = now;
+    
+    // Trigger refresh in background
+    this.refreshOnDemand().catch(error => {
+      console.error('Error in background refresh:', error);
+    });
+  }
+  
+  /**
+   * Refresh data on demand in background
+   * This does not block the response
+   */
+  static async refreshOnDemand(): Promise<void> {
+    console.log('Starting on-demand background refresh...');
+    
+    // Refresh data in sequence to avoid overwhelming the Airtable API
+    await this.refreshRecentArticles();
+    await this.refreshFeaturedArticles();
+    await this.refreshArticles();
+    await this.refreshTeam();
+    await this.refreshQuotes();
+    
+    console.log('On-demand background refresh completed');
   }
   
   /**
@@ -236,13 +289,25 @@ export class RefreshService {
    */
   static async refreshAll(): Promise<void> {
     console.log('Performing full data refresh...');
-    await Promise.all([
-      this.refreshArticles(),
-      this.refreshFeaturedArticles(),
-      this.refreshRecentArticles(),
-      this.refreshTeam(),
-      this.refreshQuotes()
-    ]);
+    
+    // Reset all timestamps to ensure refreshes run
+    const now = Date.now();
+    this.lastRefreshTime = {
+      articles: 0,
+      featuredArticles: 0,
+      recentArticles: 0,
+      team: 0,
+      quotes: 0,
+      all: now
+    };
+    
+    // Use the same approach as on-demand refresh but with forced refresh
+    await this.refreshRecentArticles();
+    await this.refreshFeaturedArticles();
+    await this.refreshArticles();
+    await this.refreshTeam();
+    await this.refreshQuotes();
+    
     console.log('Full data refresh completed');
   }
   
@@ -251,7 +316,16 @@ export class RefreshService {
    */
   static async refreshArticles(): Promise<void> {
     try {
+      // Check if it's too soon to refresh again
+      const now = Date.now();
+      if (now - this.lastRefreshTime.articles < this.MIN_REFRESH_INTERVAL) {
+        console.log('Skipping articles refresh (too soon since last refresh)');
+        return;
+      }
+      
       console.log('Refreshing articles data...');
+      this.lastRefreshTime.articles = now;
+      
       const result = await storage.getArticles(1, 100); // Get a large batch
       CacheService.cacheArticles(result);
       
@@ -269,7 +343,16 @@ export class RefreshService {
    */
   static async refreshFeaturedArticles(): Promise<void> {
     try {
+      // Check if it's too soon to refresh again
+      const now = Date.now();
+      if (now - this.lastRefreshTime.featuredArticles < this.MIN_REFRESH_INTERVAL) {
+        console.log('Skipping featured articles refresh (too soon since last refresh)');
+        return;
+      }
+      
       console.log('Refreshing featured articles data...');
+      this.lastRefreshTime.featuredArticles = now;
+      
       const articles = await storage.getFeaturedArticles();
       CacheService.cacheFeaturedArticles(articles);
       
@@ -287,7 +370,16 @@ export class RefreshService {
    */
   static async refreshRecentArticles(): Promise<void> {
     try {
+      // Check if it's too soon to refresh again
+      const now = Date.now();
+      if (now - this.lastRefreshTime.recentArticles < this.MIN_REFRESH_INTERVAL) {
+        console.log('Skipping recent articles refresh (too soon since last refresh)');
+        return;
+      }
+      
       console.log('Refreshing recent articles data...');
+      this.lastRefreshTime.recentArticles = now;
+      
       const articles = await storage.getRecentArticles(8); // Get more than default for cache
       CacheService.cacheRecentArticles(articles);
       
@@ -305,7 +397,16 @@ export class RefreshService {
    */
   static async refreshTeam(): Promise<void> {
     try {
+      // Check if it's too soon to refresh again
+      const now = Date.now();
+      if (now - this.lastRefreshTime.team < this.MIN_REFRESH_INTERVAL) {
+        console.log('Skipping team members refresh (too soon since last refresh)');
+        return;
+      }
+      
       console.log('Refreshing team members data...');
+      this.lastRefreshTime.team = now;
+      
       const team = await storage.getTeamMembers();
       CacheService.cacheTeamMembers(team);
       
@@ -323,7 +424,16 @@ export class RefreshService {
    */
   static async refreshQuotes(): Promise<void> {
     try {
+      // Check if it's too soon to refresh again
+      const now = Date.now();
+      if (now - this.lastRefreshTime.quotes < this.MIN_REFRESH_INTERVAL) {
+        console.log('Skipping quotes refresh (too soon since last refresh)');
+        return;
+      }
+      
       console.log('Refreshing quotes data...');
+      this.lastRefreshTime.quotes = now;
+      
       const quotes = await storage.getQuotes();
       CacheService.cacheQuotes(quotes);
       console.log(`Quotes refresh completed (${quotes.length} quotes)`);
