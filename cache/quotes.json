@@ -6,15 +6,30 @@
       "quote": "You should be locking in... "
     },
     {
-      "id": 2,
+      "id": 3,
       "carousel": "main",
       "quote": "Brown Paper Bag x Baggu"
     },
     {
-      "id": 3,
+      "id": 5,
       "carousel": "main",
       "quote": "Latina Mode On!"
+    },
+    {
+      "id": 2,
+      "carousel": "philo",
+      "quote": "Time Discovered To Be Revolutionary Treatment That Heal All Wounds"
+    },
+    {
+      "id": 4,
+      "carousel": "philo",
+      "quote": "Down to do hard drugs, on the fence about hinge"
+    },
+    {
+      "id": 6,
+      "carousel": "philo",
+      "quote": "Moo Deng dies in Southeast Asia earthquake. It's true!"
     }
   ],
-  "timestamp": 1744333305115
+  "timestamp": 1744333350337
 }
