@@ -277,18 +277,18 @@ export class AirtableStorage implements IStorage {
           }
         }
         
-        // Check if the record has a "Philo" field
-        if ('Philo' in record.fields) {
-          const philoQuoteText = record.get('Philo');
+        // Check if the record has a "philo" field
+        if ('philo' in record.fields) {
+          const philoQuoteText = record.get('philo');
           if (philoQuoteText && String(philoQuoteText).trim() !== '') {
             philoQuotes.push({
               id: quoteId++,
-              carousel: 'Philo',
+              carousel: 'philo',
               quote: String(philoQuoteText)
             });
-            console.log(`Found Philo quote: "${philoQuoteText}"`);
+            console.log(`Found philo quote: "${philoQuoteText}"`);
           } else {
-            console.log(`Record has empty "Philo" field`);
+            console.log(`Record has empty "philo" field`);
           }
         }
       });

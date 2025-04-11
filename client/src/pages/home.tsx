@@ -170,7 +170,7 @@ export default function Home() {
                     >
                       <CarouselContent>
                         {quotes
-                          .filter(quote => quote.carousel === "Philo")
+                          .filter(quote => quote.carousel === "philo")
                           .map((quote) => (
                             <CarouselItem key={quote.id} className="pt-1 md:basis-full">
                               <div className="py-2">
