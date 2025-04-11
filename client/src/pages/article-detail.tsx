@@ -145,8 +145,8 @@ export default function ArticleDetail() {
             <p className="text-gray-700">Failed to load article. Please try again later.</p>
           </div>
         ) : article ? (
-          <div className="bg-white rounded-lg shadow-lg overflow-hidden">
-            <div className="flex justify-center bg-gray-50 py-6">
+          <div className="bg-pink-50 rounded-lg shadow-lg overflow-hidden">
+            <div className="flex justify-center bg-pink-100/50 py-6">
               <img 
                 src={imageSource} 
                 alt={article.title} 
