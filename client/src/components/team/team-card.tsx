@@ -12,7 +12,7 @@ export function TeamCard({ teamMember }: TeamCardProps) {
   const imageSource = getImageUrl(teamMember.imageUrl);
   
   return (
-    <div className="team-card bg-white rounded-lg shadow-lg overflow-hidden">
+    <div className="team-card bg-pink-50 rounded-lg shadow-lg overflow-hidden">
       <div className="relative">
         <img 
           src={imageSource} 

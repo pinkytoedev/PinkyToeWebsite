@@ -15,12 +15,12 @@ export function ArticleCard({ article }: ArticleCardProps) {
 
   return (
     <Link href={`/articles/${article.id}`} className="block h-full">
-      <div className="article-card bg-white rounded-lg shadow-lg overflow-hidden flex flex-col h-full group cursor-pointer hover:shadow-xl transition-shadow">
+      <div className="article-card bg-pink-50 rounded-lg shadow-lg overflow-hidden flex flex-col h-full group cursor-pointer hover:shadow-xl transition-shadow">
         <div className="relative">
           <img 
             src={imageSource} 
             alt={article.title} 
-            className="h-48 w-full object-contain bg-gray-50"
+            className="h-48 w-full object-contain bg-pink-100/50"
             onError={(e) => {
               const target = e.target as HTMLImageElement;
               console.error(`Failed to load image: ${target.src}`);
