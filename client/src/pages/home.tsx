@@ -117,7 +117,7 @@ export default function Home() {
         {/* Sidebar Column (30%) */}
         <div className="lg:col-span-4">
           {/* Recent Articles Section */}
-          <div className="bg-white rounded-lg shadow-lg overflow-hidden mb-8">
+          <div className="bg-pink-50 rounded-lg shadow-lg overflow-hidden mb-8">
             <div className="bg-primary text-white py-3 px-4">
               <h2 className="font-quicksand font-bold text-xl">Recent Articles</h2>
             </div>
@@ -150,12 +150,12 @@ export default function Home() {
           </div>
 
           {/* Quotes Carousel Section */}
-          <div className="bg-white rounded-lg shadow-lg overflow-hidden">
+          <div className="bg-pink-50 rounded-lg shadow-lg overflow-hidden">
             <div className="bg-primary text-white py-3 px-4">
               <h2 className="font-quicksand font-bold text-xl">Quotes</h2>
             </div>
             <div className="p-6" style={{backgroundImage: 'url("/assets/pink-toe-pattern.png")', backgroundSize: '400px'}}>
-              <div className="bg-white bg-opacity-85 p-5 rounded-lg">
+              <div className="bg-pink-50 bg-opacity-85 p-5 rounded-lg">
                 {quotesLoading ? (
                   <div className="space-y-3">
                     <Skeleton className="h-5 w-full" />

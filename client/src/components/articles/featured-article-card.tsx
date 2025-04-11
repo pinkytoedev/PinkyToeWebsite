@@ -21,10 +21,10 @@ export function FeaturedArticleCard({ article }: FeaturedArticleCardProps) {
   
   return (
     <Link href={`/articles/${article.id}`} className="block">
-      <div className="article-card bg-white rounded-lg shadow-lg overflow-hidden cursor-pointer hover:shadow-xl transition-shadow">
+      <div className="article-card bg-pink-50 rounded-lg shadow-lg overflow-hidden cursor-pointer hover:shadow-xl transition-shadow">
         <div className="md:flex">
           <div className="md:w-2/5 flex items-center justify-center">
-            <div className="h-80 w-full bg-gray-50 relative overflow-hidden">
+            <div className="h-80 w-full bg-pink-100/50 relative overflow-hidden">
               <img 
                 src={imageSource} 
                 alt={article.title} 
