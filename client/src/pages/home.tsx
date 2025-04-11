@@ -29,6 +29,10 @@ export default function Home() {
 
   const { data: quotes = [], isLoading: quotesLoading } = useQuery<CarouselQuote[]>({
     queryKey: [API_ROUTES.QUOTES],
+    onSuccess: (data) => {
+      console.log("Quotes loaded:", data);
+      console.log("Philo quotes:", data.filter(quote => quote.carousel === "philo"));
+    }
   });
 
   // Set up auto-play for the carousel
