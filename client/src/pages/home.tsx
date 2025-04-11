@@ -27,17 +27,26 @@ export default function Home() {
     queryKey: [API_ROUTES.RECENT_ARTICLES],
   });
 
-  const { data: quotes = [], isLoading: quotesLoading } = useQuery<CarouselQuote[]>({
-    queryKey: [API_ROUTES.QUOTES],
-    onSuccess: (data) => {
-      console.log("Quotes loaded:", data);
-      console.log("Philo quotes:", data.filter(quote => quote.carousel === "philo"));
-    }
+  // We'll share the quotes query with Layout using the same query key
+  const { data: allQuotes = [], isLoading: quotesLoading } = useQuery<CarouselQuote[]>({
+    queryKey: ["/api/quotes"]
   });
+  
+  // Filter the philo quotes
+  const quotes = Array.isArray(allQuotes) ? allQuotes : [];
+  const philoQuotes = quotes.filter((quote: CarouselQuote) => quote.carousel === "philo");
+  
+  // Log quotes when they change
+  useEffect(() => {
+    if (quotes.length > 0) {
+      console.log("All quotes loaded:", quotes);
+      console.log("Philo quotes:", philoQuotes);
+    }
+  }, [quotes, philoQuotes]);
 
   // Set up auto-play for the carousel
   useEffect(() => {
-    if (quotes && quotes.length > 0 && carouselRef.current) {
+    if (philoQuotes.length > 0 && carouselRef.current) {
       // Start auto-play
       const interval = setInterval(() => {
         if (carouselRef.current) {
@@ -54,7 +63,7 @@ export default function Home() {
         }
       };
     }
-  }, [quotes, carouselRef.current]);
+  }, [philoQuotes, carouselRef.current]);
 
   return (
     <Layout>
@@ -156,44 +165,48 @@ export default function Home() {
                       <Skeleton className="h-4 w-40 ml-auto" />
                     </div>
                   </div>
-                ) : quotes && quotes.length > 0 ? (
-                  <div className="relative">
-                    <Carousel
-                      opts={{
-                        align: "center",
-                        loop: true,
-                        slidesToScroll: 1,
-                        containScroll: "trimSnaps",
-                        duration: 30,
-                      }}
-                      setApi={(api) => {
-                        if (api) {
-                          carouselRef.current = api;
-                        }
-                      }}
-                    >
-                      <CarouselContent>
-                        {quotes
-                          .filter(quote => quote.carousel === "philo")
-                          .map((quote) => (
-                            <CarouselItem key={quote.id} className="pt-1 md:basis-full">
-                              <div className="py-2">
-                                <blockquote className="italic text-lg font-pacifico text-pinky-dark min-h-[6rem] flex items-center">
-                                  "{quote.quote}"
-                                </blockquote>
-                                <div className="mt-3 text-right text-primary font-quicksand font-semibold">
-                                  - The Pinky Toe Team
+                ) : philoQuotes.length > 0 ? (
+                  <>
+                    <div className="text-xs text-gray-500 mb-2">
+                      Debug: Total quotes: {quotes.length}, 
+                      Philo quotes: {philoQuotes.length}
+                    </div>
+                    <div className="relative">
+                      <Carousel
+                        opts={{
+                          align: "center",
+                          loop: true,
+                          slidesToScroll: 1,
+                          containScroll: "trimSnaps",
+                          duration: 30,
+                        }}
+                        setApi={(api) => {
+                          if (api) {
+                            carouselRef.current = api;
+                          }
+                        }}
+                      >
+                        <CarouselContent>
+                          {philoQuotes.map((quote: CarouselQuote) => (
+                              <CarouselItem key={quote.id} className="pt-1 md:basis-full">
+                                <div className="py-2">
+                                  <blockquote className="italic text-lg font-pacifico text-pinky-dark min-h-[6rem] flex items-center">
+                                    "{quote.quote}"
+                                  </blockquote>
+                                  <div className="mt-3 text-right text-primary font-quicksand font-semibold">
+                                    - The Pinky Toe Team
+                                  </div>
                                 </div>
-                              </div>
-                            </CarouselItem>
-                          ))}
-                      </CarouselContent>
-                      <div className="flex justify-center mt-4">
-                        <CarouselPrevious className="relative static mr-2" />
-                        <CarouselNext className="relative static ml-2" />
-                      </div>
-                    </Carousel>
-                  </div>
+                              </CarouselItem>
+                            ))}
+                        </CarouselContent>
+                        <div className="flex justify-center mt-4">
+                          <CarouselPrevious className="relative static mr-2" />
+                          <CarouselNext className="relative static ml-2" />
+                        </div>
+                      </Carousel>
+                    </div>
+                  </>
                 ) : (
                   <>
                     <blockquote className="italic text-lg font-pacifico text-pinky-dark">
