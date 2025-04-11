@@ -4,12 +4,12 @@
   "description": "Feminist Humor, Right at Your Feet",
   "icons": [
     {
-      "src": "/attached_assets/TransparentLogo.png",
+      "src": "/attached_assets/FootLogo.png",
       "sizes": "192x192",
       "type": "image/png"
     },
     {
-      "src": "/attached_assets/TransparentLogo.png",
+      "src": "/attached_assets/FootLogo.png",
       "sizes": "512x512",
       "type": "image/png"
     }
