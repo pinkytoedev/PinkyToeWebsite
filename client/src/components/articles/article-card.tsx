@@ -15,6 +15,7 @@ export function ArticleCard({ article }: ArticleCardProps) {
 
   return (
     <Link href={`/articles/${article.id}`} className="block h-full">
+      // i think this is the code to change article card bg color if this needs to be fixed later on
       <div className="article-card bg-[#FDEBF3] rounded-lg shadow-lg overflow-hidden flex flex-col h-full group cursor-pointer hover:shadow-xl transition-shadow">
         <div className="relative">
           <img 
