@@ -7,19 +7,23 @@ import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
 import { Link } from "wouter";
 import { formatDate } from "@/lib/utils";
-import { getImageUrl, getPhotoUrl } from "@/lib/image-helper";
+import { getImageUrl } from "@/lib/image-helper";
+import { Team, Article } from "@shared/schema";
 
 export default function TeamMemberDetail() {
   const { id } = useParams();
   const [, setLocation] = useLocation();
 
-  const { data: teamMember, isLoading: teamLoading, error: teamError } = useQuery({
-    queryKey: [API_ROUTES.TEAM_MEMBER_BY_ID(id)],
+  const teamId = id || '';
+  
+  const { data: teamMember, isLoading: teamLoading, error: teamError } = useQuery<Team>({
+    queryKey: [API_ROUTES.TEAM_MEMBER_BY_ID(teamId)],
+    enabled: !!teamId,
   });
 
-  const { data: articles, isLoading: articlesLoading } = useQuery({
-    queryKey: [`/api/team/${id}/articles`],
-    enabled: !!teamMember,
+  const { data: articles, isLoading: articlesLoading } = useQuery<Article[]>({
+    queryKey: [`/api/team/${teamId}/articles`],
+    enabled: !!teamMember && !!teamId,
   });
 
   const goBack = () => {

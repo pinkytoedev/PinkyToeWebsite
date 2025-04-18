@@ -182,12 +182,38 @@ export class RefreshService {
     for (const article of articles) {
       // For articles with MainImageLink (now stored in imageUrl)
       if (article.imageUrl) {
-        imageUrls.push(article.imageUrl);
+        // Make sure we're using the direct URL, not our proxy URL
+        if (article.imageUrl.startsWith('/api/images/')) {
+          try {
+            const directUrl = decodeURIComponent(article.imageUrl.substring('/api/images/'.length));
+            if (directUrl.startsWith('http')) {
+              imageUrls.push(directUrl);
+            }
+          } catch (error) {
+            console.error(`Failed to decode URL ${article.imageUrl}:`, error);
+          }
+        } else if (article.imageUrl.startsWith('http')) {
+          // Already a direct URL
+          imageUrls.push(article.imageUrl);
+        }
       }
       
       // Legacy imagePath support
       if (article.imagePath && article.imagePath !== null) {
-        imageUrls.push(article.imagePath);
+        // Make sure we're using the direct URL, not our proxy URL
+        if (article.imagePath.startsWith('/api/images/')) {
+          try {
+            const directUrl = decodeURIComponent(article.imagePath.substring('/api/images/'.length));
+            if (directUrl.startsWith('http')) {
+              imageUrls.push(directUrl);
+            }
+          } catch (error) {
+            console.error(`Failed to decode URL ${article.imagePath}:`, error);
+          }
+        } else if (article.imagePath.startsWith('http')) {
+          // Already a direct URL
+          imageUrls.push(article.imagePath);
+        }
       }
       
       // Any other image URLs hidden in the article data
@@ -195,7 +221,19 @@ export class RefreshService {
       if (anyArticle.attachments && Array.isArray(anyArticle.attachments)) {
         for (const attachment of anyArticle.attachments) {
           if (typeof attachment === 'string') {
-            imageUrls.push(attachment);
+            // Handle potential proxy URLs in attachment strings
+            if (attachment.startsWith('/api/images/')) {
+              try {
+                const directUrl = decodeURIComponent(attachment.substring('/api/images/'.length));
+                if (directUrl.startsWith('http')) {
+                  imageUrls.push(directUrl);
+                }
+              } catch (error) {
+                console.error(`Failed to decode URL ${attachment}:`, error);
+              }
+            } else if (attachment.startsWith('http')) {
+              imageUrls.push(attachment);
+            }
           } else if (attachment && typeof attachment === 'object') {
             if (attachment.url) {
               imageUrls.push(attachment.url);
@@ -252,12 +290,38 @@ export class RefreshService {
     for (const member of teamMembers) {
       // Handle imagePath from the schema (legacy support)
       if (member.imagePath && member.imagePath !== null) {
-        imageUrls.push(member.imagePath);
+        // Make sure we're using the direct URL, not our proxy URL
+        if (member.imagePath.startsWith('/api/images/')) {
+          try {
+            const directUrl = decodeURIComponent(member.imagePath.substring('/api/images/'.length));
+            if (directUrl.startsWith('http')) {
+              imageUrls.push(directUrl);
+            }
+          } catch (error) {
+            console.error(`Failed to decode URL ${member.imagePath}:`, error);
+          }
+        } else if (member.imagePath.startsWith('http')) {
+          // Already a direct URL
+          imageUrls.push(member.imagePath);
+        }
       }
       
       // Handle imageUrl from the schema (MainImageLink field)
       if (member.imageUrl) {
-        imageUrls.push(member.imageUrl);
+        // Make sure we're using the direct URL, not our proxy URL
+        if (member.imageUrl.startsWith('/api/images/')) {
+          try {
+            const directUrl = decodeURIComponent(member.imageUrl.substring('/api/images/'.length));
+            if (directUrl.startsWith('http')) {
+              imageUrls.push(directUrl);
+            }
+          } catch (error) {
+            console.error(`Failed to decode URL ${member.imageUrl}:`, error);
+          }
+        } else if (member.imageUrl.startsWith('http')) {
+          // Already a direct URL
+          imageUrls.push(member.imageUrl);
+        }
       }
       
       // Any other image URLs hidden in the team member data
@@ -265,7 +329,19 @@ export class RefreshService {
       if (anyMember.attachments && Array.isArray(anyMember.attachments)) {
         for (const attachment of anyMember.attachments) {
           if (typeof attachment === 'string') {
-            imageUrls.push(attachment);
+            // Handle potential proxy URLs in attachment strings
+            if (attachment.startsWith('/api/images/')) {
+              try {
+                const directUrl = decodeURIComponent(attachment.substring('/api/images/'.length));
+                if (directUrl.startsWith('http')) {
+                  imageUrls.push(directUrl);
+                }
+              } catch (error) {
+                console.error(`Failed to decode URL ${attachment}:`, error);
+              }
+            } else if (attachment.startsWith('http')) {
+              imageUrls.push(attachment);
+            }
           } else if (attachment && typeof attachment === 'object') {
             if (attachment.url) {
               imageUrls.push(attachment.url);
@@ -289,7 +365,14 @@ export class RefreshService {
     }
     
     // Filter out duplicates and empty values
-    const uniqueUrls = Array.from(new Set(imageUrls)).filter(url => url);
+    const urlSet = new Set<string>();
+    // Add each URL to the set to eliminate duplicates
+    imageUrls.forEach(url => {
+      if (url) urlSet.add(url);
+    });
+    
+    // Convert set to array
+    const uniqueUrls = Array.from(urlSet);
     
     if (uniqueUrls.length === 0) {
       console.log('No team member images to preload');

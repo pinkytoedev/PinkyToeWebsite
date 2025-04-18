@@ -247,8 +247,28 @@ export class ImageService {
       await Promise.allSettled(
         batch.map(async (url) => {
           try {
-            const fileHash = crypto.createHash('md5').update(url).digest('hex');
-            await this.fetchAndCacheImage(url, url);
+            // Make sure we're using the actual direct URL, not our API endpoint
+            let directUrl = url;
+            
+            // If this is our proxy URL, extract the original URL
+            if (url.startsWith('/api/images/')) {
+              try {
+                directUrl = decodeURIComponent(url.substring('/api/images/'.length));
+                console.log(`Extracted direct URL from proxy: ${directUrl}`);
+              } catch (decodeError) {
+                console.error(`Failed to decode proxy URL ${url}:`, decodeError);
+                return; // Skip this URL
+              }
+            }
+            
+            // Skip URLs that don't seem to be valid
+            if (!directUrl.startsWith('http')) {
+              console.log(`Skipping invalid URL: ${directUrl}`);
+              return;
+            }
+            
+            const fileHash = crypto.createHash('md5').update(directUrl).digest('hex');
+            await this.fetchAndCacheImage(directUrl, directUrl);
           } catch (error) {
             console.error(`Failed to preload ${url}:`, error);
             // Continue with other URLs
