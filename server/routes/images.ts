@@ -157,7 +157,7 @@ imagesRouter.get('/:id', async (req: Request, res: Response) => {
     if (decodedId.includes('postimg.cc')) {
       // Convert postimg.cc gallery URL to direct URL
       if (!decodedId.includes('i.postimg.cc')) {
-        const directUrl = convertPostImgToDirectUrl(decodedId);
+        const directUrl = await convertPostImgToDirectUrl(decodedId);
         console.log('Converting postimg.cc gallery URL to direct URL:', directUrl);
         return await handleUrlImage(directUrl, fileHash, res);
       }
@@ -230,7 +230,7 @@ async function handleUrlImage(url: string, fileHash: string, res: Response) {
     try {
       // Handle PostImg URLs - convert gallery URL to direct URL if needed
       if (fullUrl.includes('postimg.cc') && !fullUrl.includes('i.postimg.cc')) {
-        const directUrl = convertPostImgToDirectUrl(fullUrl);
+        const directUrl = await convertPostImgToDirectUrl(fullUrl);
         console.log(`Converting postimg.cc gallery URL to direct URL: ${directUrl}`);
         return await handleUrlImage(directUrl, fileHash, res);
       }
@@ -355,30 +355,49 @@ async function handleUrlImage(url: string, fileHash: string, res: Response) {
 }
 
 /**
- * Convert a PostImg.cc URL to its direct image URL format
+ * Convert a PostImg.cc URL to its direct image URL format by fetching and parsing the HTML page
  * PostImg URLs follow this pattern:
  * Gallery URL: https://postimg.cc/kRCbhLW1
- * Direct URL: https://i.postimg.cc/kRCbhLW1/image.jpg
+ * The actual full-size image URL is embedded in the HTML page
  */
-function convertPostImgToDirectUrl(url: string): string {
+async function convertPostImgToDirectUrl(url: string): Promise<string> {
   // Check if it's already a direct URL
   if (url.includes('i.postimg.cc')) {
     return url;
   }
   
   try {
-    // Extract the image ID from the URL
-    // Example: https://postimg.cc/kRCbhLW1 -> kRCbhLW1
+    // We need to fetch the HTML page to get the actual full-size image URL
+    console.log(`Fetching postimg.cc page to extract full-size image URL: ${url}`);
+    const response = await fetch(url);
+    if (!response.ok) {
+      console.error(`Failed to fetch postimg.cc page: ${url} (Status: ${response.status})`);
+      return url;
+    }
+    
+    const html = await response.text();
+    
+    // Extract the full-size image URL from the HTML
+    const mainImageMatch = html.match(/<img id="main-image" src="([^"]+)"/);
+    if (mainImageMatch && mainImageMatch[1]) {
+      const fullSizeUrl = mainImageMatch[1].startsWith('//') 
+        ? `https:${mainImageMatch[1]}` 
+        : mainImageMatch[1];
+      
+      console.log(`Found full-size image URL: ${fullSizeUrl}`);
+      return fullSizeUrl;
+    }
+    
+    // Fallback to the old method if we couldn't parse the HTML
     let imageId = url;
     if (url.includes('postimg.cc/')) {
       imageId = url.split('postimg.cc/')[1].split('/')[0].split('?')[0];
     }
     
-    // Build direct URL format
-    // Direct postimg URL format is: https://i.postimg.cc/[ID]/image.jpg
-    const directUrl = `https://i.postimg.cc/${imageId}/image.jpg`;
-    console.log(`Converting postimg.cc gallery URL to direct URL: ${directUrl}`);
-    return directUrl;
+    // Use the fallback URL format
+    const fallbackUrl = `https://i.postimg.cc/${imageId}/image.jpg`;
+    console.log(`Falling back to default URL format: ${fallbackUrl}`);
+    return fallbackUrl;
   } catch (error) {
     console.error('Error converting PostImg URL:', error);
     return url; // Return original URL if conversion fails
@@ -416,7 +435,7 @@ async function refreshImageInBackground(id: string, fileHash: string) {
     // Special handling for PostImg URLs
     if (fullUrl.includes('postimg.cc') && !fullUrl.includes('i.postimg.cc')) {
       // Convert to direct URL if it's a gallery URL
-      const directUrl = convertPostImgToDirectUrl(fullUrl);
+      const directUrl = await convertPostImgToDirectUrl(fullUrl);
       console.log(`Converting postimg.cc gallery URL to direct URL for background refresh: ${directUrl}`);
       return refreshImageInBackground(directUrl, fileHash);
     }
