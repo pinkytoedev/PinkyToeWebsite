@@ -9,8 +9,9 @@ interface FeaturedArticleCardProps {
 }
 
 export function FeaturedArticleCard({ article }: FeaturedArticleCardProps) {
-  // Use photo if imageUrl is not available
-  let imageSource = article.imageUrl ? getImageUrl(article.imageUrl) : getPhotoUrl(article.photo);
+  // Use imageUrl from MainImageLink or fall back to placeholder
+  let imageSource = article.imageUrl ? getImageUrl(article.imageUrl) : '/api/images/placeholder';
+  console.log(`Featured article ${article.id} - Using imageUrl: ${article.imageUrl || 'Not available, using placeholder'}`);
   
   // Make sure the image is going through our proxy if it's an external URL
   if (imageSource && !imageSource.startsWith('/api/images/') && (imageSource.startsWith('http://') || imageSource.startsWith('https://'))) {

@@ -10,8 +10,9 @@ interface ArticleCardProps {
 }
 
 export function ArticleCard({ article }: ArticleCardProps) {
-  // Use photo if imageUrl is not available
-  const imageSource = article.imageUrl ? getImageUrl(article.imageUrl) : getPhotoUrl(article.photo);
+  // Use imageUrl from MainImageLink or fall back to placeholder
+  const imageSource = article.imageUrl ? getImageUrl(article.imageUrl) : '/api/images/placeholder';
+  console.log(`Article ${article.id} - Using imageUrl: ${article.imageUrl || 'Not available, using placeholder'}`);
 
   return (
     <Link href={`/articles/${article.id}`} className="block h-full">
