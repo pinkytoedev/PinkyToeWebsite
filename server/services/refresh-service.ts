@@ -130,6 +130,19 @@ export class RefreshService {
         return;
       }
       
+      // Handle URLs that are already proxied through our API
+      if (url.includes('/api/images/')) {
+        // This is already a proxied URL, extract the actual URL
+        try {
+          const encodedUrl = url.split('/api/images/')[1];
+          const decodedUrl = decodeURIComponent(encodedUrl);
+          // Replace the proxied URL with the actual URL
+          return this.preCacheImage(decodedUrl);
+        } catch (error) {
+          console.error(`Error extracting URL from proxied URL ${url}:`, error);
+        }
+      }
+      
       // Generate a filename based on URL
       const fileHash = crypto.createHash('md5').update(url).digest('hex');
       
@@ -276,6 +289,19 @@ export class RefreshService {
     // Check if it's already a direct URL
     if (url.includes('i.postimg.cc')) {
       return url;
+    }
+    
+    // Handle URLs that are already proxied through our API
+    if (url.includes('/api/images/')) {
+      // Extract the actual URL from the proxied URL
+      try {
+        const encodedUrl = url.split('/api/images/')[1];
+        const decodedUrl = decodeURIComponent(encodedUrl);
+        return this.convertPostImgToDirectUrl(decodedUrl);
+      } catch (error) {
+        console.error(`Error extracting URL from proxied URL ${url}:`, error);
+        return url;
+      }
     }
     
     try {

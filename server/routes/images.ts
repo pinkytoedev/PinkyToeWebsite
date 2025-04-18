@@ -366,6 +366,19 @@ async function convertPostImgToDirectUrl(url: string): Promise<string> {
     return url;
   }
   
+  // Handle URLs that are already proxied through our API
+  if (url.includes('/api/images/')) {
+    // Extract the actual URL from the proxied URL
+    try {
+      const encodedUrl = url.split('/api/images/')[1];
+      const decodedUrl = decodeURIComponent(encodedUrl);
+      return convertPostImgToDirectUrl(decodedUrl);
+    } catch (error) {
+      console.error(`Error extracting URL from proxied URL ${url}:`, error);
+      return url;
+    }
+  }
+  
   try {
     // We need to fetch the HTML page to get the actual full-size image URL
     console.log(`Fetching postimg.cc page to extract full-size image URL: ${url}`);
