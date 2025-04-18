@@ -2,7 +2,8 @@ import { Link } from "wouter";
 import { Article } from "@shared/schema";
 import { formatDate } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { getImageUrl, getPhotoUrl } from "@/lib/image-helper";
+import { getImageUrl } from "@/lib/image-helper";
+import { LazyImage } from "@/components/ui/lazy-image";
 
 interface FeaturedArticleCardProps {
   article: Article;
@@ -26,16 +27,13 @@ export function FeaturedArticleCard({ article }: FeaturedArticleCardProps) {
         <div className="md:flex">
           <div className="md:w-2/5 flex items-center justify-center">
             <div className="h-80 w-full bg-pink-100/50 relative overflow-hidden">
-              <img 
+              <LazyImage 
                 src={imageSource} 
                 alt={article.title} 
                 className="absolute inset-0 w-full h-full object-contain object-center"
-                onError={(e) => {
-                  const target = e.target as HTMLImageElement;
-                  console.error(`Failed to load image: ${target.src}`);
-                  // Fallback to our local placeholder if image fails to load
-                  target.src = '/api/images/placeholder';
-                }}
+                placeholderSrc="/api/images/placeholder"
+                threshold={0.2}
+                delay={100} // Featured images load first with minimal delay
               />
             </div>
           </div>
