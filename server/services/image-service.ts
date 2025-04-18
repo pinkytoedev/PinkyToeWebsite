@@ -11,10 +11,13 @@ if (!fs.existsSync(UPLOADS_DIR)) {
 
 // Configuration for rate limiting
 const RATE_LIMIT_CONFIG = {
-  imgurRequestsPerMinute: 50, // Conservative limit to avoid rate limiting
-  imgurRequestDelay: 1500, // Delay between consecutive requests in ms
-  urlBatchSize: 10, // How many URLs to process in a batch
-  batchDelayMs: 20000, // Delay between batches in ms
+  imgurRequestsPerMinute: 40, // Very conservative limit to avoid rate limiting
+  imgurRequestDelay: 2500, // Delay between consecutive requests in ms
+  urlBatchSize: 5, // Smaller batches to reduce risk of rate limiting
+  batchDelayMs: 30000, // Longer delay between batches in ms
+  rateLimitBackoffFactor: 2, // When rate limited, multiply delay by this factor
+  maxBatchDelayMs: 120000, // Maximum delay between batches (2 minutes)
+  currentBatchDelayMs: 30000, // Current delay, which can be adjusted dynamically
 };
 
 // Keep track of ongoing requests to avoid duplication
@@ -202,6 +205,12 @@ export class ImageService {
         const response = await fetch(url);
         if (!response.ok) {
           if (response.status === 429) {
+            // Increase delay for future batches when rate limited
+            RATE_LIMIT_CONFIG.currentBatchDelayMs = Math.min(
+              RATE_LIMIT_CONFIG.currentBatchDelayMs * RATE_LIMIT_CONFIG.rateLimitBackoffFactor,
+              RATE_LIMIT_CONFIG.maxBatchDelayMs
+            );
+            console.log(`Rate limited! Increasing batch delay to ${RATE_LIMIT_CONFIG.currentBatchDelayMs/1000}s`);
             throw new Error(`Rate limited (429) when fetching image: ${url}`);
           }
           throw new Error(`Failed to fetch image: ${url} (Status: ${response.status})`);
@@ -210,6 +219,16 @@ export class ImageService {
         // Save to disk
         const buffer = await response.buffer();
         fs.writeFileSync(filepath, buffer);
+        
+        // If we got here, we successfully fetched an image, so we can gradually reduce our backoff
+        if (RATE_LIMIT_CONFIG.currentBatchDelayMs > RATE_LIMIT_CONFIG.batchDelayMs) {
+          RATE_LIMIT_CONFIG.currentBatchDelayMs = Math.max(
+            RATE_LIMIT_CONFIG.currentBatchDelayMs / 1.5, // Gradually reduce
+            RATE_LIMIT_CONFIG.batchDelayMs // Don't go below base delay
+          );
+          console.log(`Successfully fetched image, reducing batch delay to ${RATE_LIMIT_CONFIG.currentBatchDelayMs/1000}s`);
+        }
+        
         return filepath;
       } catch (error) {
         console.error(`Error fetching image from ${url}:`, error);
@@ -278,9 +297,10 @@ export class ImageService {
       
       // Add delay between batches
       if (i < batches.length - 1) {
-        console.log(`Waiting ${RATE_LIMIT_CONFIG.batchDelayMs/1000}s before next batch`);
+        // Use the current delay, which may have been increased due to rate limiting
+        console.log(`Waiting ${RATE_LIMIT_CONFIG.currentBatchDelayMs/1000}s before next batch`);
         await new Promise(resolve => 
-          setTimeout(resolve, RATE_LIMIT_CONFIG.batchDelayMs)
+          setTimeout(resolve, RATE_LIMIT_CONFIG.currentBatchDelayMs)
         );
       }
     }
