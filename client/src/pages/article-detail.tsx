@@ -7,8 +7,7 @@ import { formatDate } from "@/lib/utils";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
-import { getImageUrl } from "@/lib/image-helper";
-import { LazyImage } from "@/components/ui/lazy-image";
+import { getImageUrl, getPhotoUrl } from "@/lib/image-helper";
 
 import { useState, useEffect } from "react";
 import { fetchTeamMembers } from "@/lib/api";
@@ -152,13 +151,15 @@ export default function ArticleDetail() {
         ) : article ? (
           <div className="bg-pink-50 rounded-lg shadow-lg overflow-hidden">
             <div className="flex justify-center bg-pink-100/50 py-6">
-              <LazyImage 
+              <img 
                 src={imageSource} 
                 alt={article.title} 
-                className="max-w-full max-h-[650px] object-contain" 
-                placeholderSrc="/api/images/placeholder"
-                threshold={0.2}
-                delay={50} // Load article detail image quickly as it's the main content
+                className="max-w-full max-h-[650px] object-contain"
+                onError={(e) => {
+                  const target = e.target as HTMLImageElement;
+                  console.error(`Failed to load image: ${target.src}`);
+                  target.src = '/api/images/placeholder';
+                }}
               />
             </div>
             <div className="p-6">
