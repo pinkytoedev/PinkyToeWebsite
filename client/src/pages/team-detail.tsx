@@ -8,6 +8,7 @@ import { ArrowLeft } from "lucide-react";
 import { Link } from "wouter";
 import { formatDate } from "@/lib/utils";
 import { getImageUrl } from "@/lib/image-helper";
+import { LazyImage } from "@/components/ui/lazy-image";
 import { Team, Article } from "@shared/schema";
 
 export default function TeamMemberDetail() {
@@ -80,15 +81,13 @@ export default function TeamMemberDetail() {
             <div className="p-6">
               <div className="md:flex">
                 <div className="md:w-1/3 mb-6 md:mb-0 md:pr-6">
-                  <img 
+                  <LazyImage 
                     src={memberImageUrl} 
                     alt={`${teamMember.name} photo`} 
                     className="w-full rounded-lg" 
-                    onError={(e) => {
-                      const target = e.target as HTMLImageElement;
-                      console.error(`Failed to load team image: ${target.src}`);
-                      target.src = '/api/images/placeholder';
-                    }}
+                    placeholderSrc="/api/images/placeholder"
+                    threshold={0.2}
+                    delay={150} // Load team member profile image quickly as it's important
                   />
                   
                   <div className="mt-4">
@@ -124,15 +123,13 @@ export default function TeamMemberDetail() {
                             
                             return (
                               <div key={article.id} className="flex border-b border-gray-200 pb-3">
-                                <img 
+                                <LazyImage 
                                   src={articleImageUrl} 
                                   alt={article.title} 
                                   className="w-20 h-20 object-cover rounded mr-4" 
-                                  onError={(e) => {
-                                    const target = e.target as HTMLImageElement;
-                                    console.error(`Failed to load article image: ${target.src}`);
-                                    target.src = '/api/images/placeholder';
-                                  }}
+                                  placeholderSrc="/api/images/placeholder"
+                                  threshold={0.1}
+                                  delay={article.id ? parseInt(article.id.slice(-2), 16) * 200 + 500 : 700} // Stagger loading with longer delays
                                 />
                                 <div>
                                   <Link href={`/articles/${article.id}`}>
