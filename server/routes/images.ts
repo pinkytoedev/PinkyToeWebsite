@@ -152,6 +152,18 @@ imagesRouter.get('/:id', async (req: Request, res: Response) => {
       // For direct Imgur links, try to use cached version more aggressively due to rate limiting
       console.log('Processing Imgur URL:', decodedId);
     }
+    
+    // Special handling for PostImg URLs
+    if (decodedId.includes('postimg.cc')) {
+      // Convert postimg.cc gallery URL to direct URL
+      if (!decodedId.includes('i.postimg.cc')) {
+        const directUrl = convertPostImgToDirectUrl(decodedId);
+        console.log('Converting postimg.cc gallery URL to direct URL:', directUrl);
+        return await handleUrlImage(directUrl, fileHash, res);
+      }
+      
+      console.log('Processing PostImg URL:', decodedId);
+    }
 
     // If it's a URL (http/https)
     if (decodedId.startsWith('http')) {
@@ -216,6 +228,13 @@ async function handleUrlImage(url: string, fileHash: string, res: Response) {
     }
     
     try {
+      // Handle PostImg URLs - convert gallery URL to direct URL if needed
+      if (fullUrl.includes('postimg.cc') && !fullUrl.includes('i.postimg.cc')) {
+        const directUrl = convertPostImgToDirectUrl(fullUrl);
+        console.log(`Converting postimg.cc gallery URL to direct URL: ${directUrl}`);
+        return await handleUrlImage(directUrl, fileHash, res);
+      }
+      
       // Special handling for Imgur URLs to respect rate limits
       let shouldThrottle = false;
       if (fullUrl.includes('imgur.com')) {
@@ -336,6 +355,37 @@ async function handleUrlImage(url: string, fileHash: string, res: Response) {
 }
 
 /**
+ * Convert a PostImg.cc URL to its direct image URL format
+ * PostImg URLs follow this pattern:
+ * Gallery URL: https://postimg.cc/kRCbhLW1
+ * Direct URL: https://i.postimg.cc/kRCbhLW1/image.jpg
+ */
+function convertPostImgToDirectUrl(url: string): string {
+  // Check if it's already a direct URL
+  if (url.includes('i.postimg.cc')) {
+    return url;
+  }
+  
+  try {
+    // Extract the image ID from the URL
+    // Example: https://postimg.cc/kRCbhLW1 -> kRCbhLW1
+    let imageId = url;
+    if (url.includes('postimg.cc/')) {
+      imageId = url.split('postimg.cc/')[1].split('/')[0].split('?')[0];
+    }
+    
+    // Build direct URL format
+    // Direct postimg URL format is: https://i.postimg.cc/[ID]/image.jpg
+    const directUrl = `https://i.postimg.cc/${imageId}/image.jpg`;
+    console.log(`Converting postimg.cc gallery URL to direct URL: ${directUrl}`);
+    return directUrl;
+  } catch (error) {
+    console.error('Error converting PostImg URL:', error);
+    return url; // Return original URL if conversion fails
+  }
+}
+
+/**
  * Refresh an image in the background without blocking the response
  */
 async function refreshImageInBackground(id: string, fileHash: string) {
@@ -362,6 +412,14 @@ async function refreshImageInBackground(id: string, fileHash: string) {
   try {
     // If the URL doesn't start with http/https, add it
     const fullUrl = id.startsWith('http') ? id : `https://${id}`;
+    
+    // Special handling for PostImg URLs
+    if (fullUrl.includes('postimg.cc') && !fullUrl.includes('i.postimg.cc')) {
+      // Convert to direct URL if it's a gallery URL
+      const directUrl = convertPostImgToDirectUrl(fullUrl);
+      console.log(`Converting postimg.cc gallery URL to direct URL for background refresh: ${directUrl}`);
+      return refreshImageInBackground(directUrl, fileHash);
+    }
     
     // For Imgur URLs, apply additional throttling
     if (fullUrl.includes('imgur.com')) {
