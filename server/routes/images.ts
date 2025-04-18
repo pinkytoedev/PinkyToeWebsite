@@ -152,24 +152,6 @@ imagesRouter.get('/:id', async (req: Request, res: Response) => {
       // For direct Imgur links, try to use cached version more aggressively due to rate limiting
       console.log('Processing Imgur URL:', decodedId);
     }
-    
-    // Special handling for PostImg URLs
-    if (decodedId.includes('postimg.cc')) {
-      // Convert postimg.cc gallery URL to direct URL
-      if (!decodedId.includes('i.postimg.cc')) {
-        try {
-          console.log('Converting postimg.cc gallery URL:', decodedId);
-          const directUrl = await convertPostImgToDirectUrl(decodedId);
-          console.log('Converted to full-size direct URL:', directUrl);
-          return await handleUrlImage(directUrl, fileHash, res);
-        } catch (error) {
-          console.error('Error converting postimg.cc URL:', error);
-          return res.redirect('/api/images/placeholder');
-        }
-      }
-      
-      console.log('Processing direct PostImg URL:', decodedId);
-    }
 
     // If it's a URL (http/https)
     if (decodedId.startsWith('http')) {
@@ -234,19 +216,6 @@ async function handleUrlImage(url: string, fileHash: string, res: Response) {
     }
     
     try {
-      // Handle PostImg URLs - convert gallery URL to direct URL if needed
-      if (fullUrl.includes('postimg.cc') && !fullUrl.includes('i.postimg.cc')) {
-        try {
-          console.log(`Converting postimg.cc gallery URL in handleUrlImage: ${fullUrl}`);
-          const directUrl = await convertPostImgToDirectUrl(fullUrl);
-          console.log(`Converted to full-size direct URL in handleUrlImage: ${directUrl}`);
-          return await handleUrlImage(directUrl, fileHash, res);
-        } catch (error) {
-          console.error(`Error converting postimg.cc URL in handleUrlImage: ${fullUrl}`, error);
-          return res.redirect('/api/images/placeholder');
-        }
-      }
-      
       // Special handling for Imgur URLs to respect rate limits
       let shouldThrottle = false;
       if (fullUrl.includes('imgur.com')) {
@@ -367,69 +336,6 @@ async function handleUrlImage(url: string, fileHash: string, res: Response) {
 }
 
 /**
- * Convert a PostImg.cc URL to its direct image URL format by fetching and parsing the HTML page
- * PostImg URLs follow this pattern:
- * Gallery URL: https://postimg.cc/kRCbhLW1
- * The actual full-size image URL is embedded in the HTML page
- */
-async function convertPostImgToDirectUrl(url: string): Promise<string> {
-  // Check if it's already a direct URL
-  if (url.includes('i.postimg.cc')) {
-    return url;
-  }
-  
-  // Handle URLs that are already proxied through our API
-  if (url.includes('/api/images/')) {
-    // Extract the actual URL from the proxied URL
-    try {
-      const encodedUrl = url.split('/api/images/')[1];
-      const decodedUrl = decodeURIComponent(encodedUrl);
-      return convertPostImgToDirectUrl(decodedUrl);
-    } catch (error) {
-      console.error(`Error extracting URL from proxied URL ${url}:`, error);
-      return url;
-    }
-  }
-  
-  try {
-    // We need to fetch the HTML page to get the actual full-size image URL
-    console.log(`Fetching postimg.cc page to extract full-size image URL: ${url}`);
-    const response = await fetch(url);
-    if (!response.ok) {
-      console.error(`Failed to fetch postimg.cc page: ${url} (Status: ${response.status})`);
-      return url;
-    }
-    
-    const html = await response.text();
-    
-    // Extract the full-size image URL from the HTML
-    const mainImageMatch = html.match(/<img id="main-image" src="([^"]+)"/);
-    if (mainImageMatch && mainImageMatch[1]) {
-      const fullSizeUrl = mainImageMatch[1].startsWith('//') 
-        ? `https:${mainImageMatch[1]}` 
-        : mainImageMatch[1];
-      
-      console.log(`Found full-size image URL: ${fullSizeUrl}`);
-      return fullSizeUrl;
-    }
-    
-    // Fallback to the old method if we couldn't parse the HTML
-    let imageId = url;
-    if (url.includes('postimg.cc/')) {
-      imageId = url.split('postimg.cc/')[1].split('/')[0].split('?')[0];
-    }
-    
-    // Use the fallback URL format
-    const fallbackUrl = `https://i.postimg.cc/${imageId}/image.jpg`;
-    console.log(`Falling back to default URL format: ${fallbackUrl}`);
-    return fallbackUrl;
-  } catch (error) {
-    console.error('Error converting PostImg URL:', error);
-    return url; // Return original URL if conversion fails
-  }
-}
-
-/**
  * Refresh an image in the background without blocking the response
  */
 async function refreshImageInBackground(id: string, fileHash: string) {
@@ -456,22 +362,6 @@ async function refreshImageInBackground(id: string, fileHash: string) {
   try {
     // If the URL doesn't start with http/https, add it
     const fullUrl = id.startsWith('http') ? id : `https://${id}`;
-    
-    // Special handling for PostImg URLs
-    if (fullUrl.includes('postimg.cc') && !fullUrl.includes('i.postimg.cc')) {
-      try {
-        // Convert to direct URL if it's a gallery URL
-        console.log(`Converting postimg.cc gallery URL for background refresh: ${fullUrl}`);
-        const directUrl = await convertPostImgToDirectUrl(fullUrl);
-        console.log(`Converted to full-size direct URL for background refresh: ${directUrl}`);
-        // We have to return void so we use await, not return
-        await refreshImageInBackground(directUrl, fileHash);
-        return;
-      } catch (error) {
-        console.error(`Error converting postimg.cc URL for background refresh: ${fullUrl}`, error);
-        return; // Just return in background mode
-      }
-    }
     
     // For Imgur URLs, apply additional throttling
     if (fullUrl.includes('imgur.com')) {

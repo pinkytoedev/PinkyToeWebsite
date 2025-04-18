@@ -123,26 +123,6 @@ export class RefreshService {
     if (!url.startsWith('http')) return;
     
     try {
-      // Handle postimg.cc gallery URLs
-      if (url.includes('postimg.cc') && !url.includes('i.postimg.cc')) {
-        // We handle these directly in the calling methods now
-        // This is just a defensive check
-        return;
-      }
-      
-      // Handle URLs that are already proxied through our API
-      if (url.includes('/api/images/')) {
-        // This is already a proxied URL, extract the actual URL
-        try {
-          const encodedUrl = url.split('/api/images/')[1];
-          const decodedUrl = decodeURIComponent(encodedUrl);
-          // Replace the proxied URL with the actual URL
-          return this.preCacheImage(decodedUrl);
-        } catch (error) {
-          console.error(`Error extracting URL from proxied URL ${url}:`, error);
-        }
-      }
-      
       // Generate a filename based on URL
       const fileHash = crypto.createHash('md5').update(url).digest('hex');
       
@@ -195,7 +175,6 @@ export class RefreshService {
     if (!articles || !articles.length) return;
     
     const imgurUrls = new Set<string>();
-    const postImgUrls = new Set<string>();
     const otherUrls = new Set<string>();
     
     // First pass: collect all URLs and deduplicate them
@@ -204,8 +183,6 @@ export class RefreshService {
       if (article.imageUrl) {
         if (article.imageUrl.includes('imgur.com')) {
           imgurUrls.add(article.imageUrl);
-        } else if (article.imageUrl.includes('postimg.cc')) {
-          postImgUrls.add(article.imageUrl);
         } else {
           otherUrls.add(article.imageUrl);
         }
@@ -215,8 +192,6 @@ export class RefreshService {
       if (!article.imageUrl && article.imagePath && article.imagePath !== null) {
         if (article.imagePath.includes('imgur.com')) {
           imgurUrls.add(article.imagePath);
-        } else if (article.imagePath.includes('postimg.cc')) {
-          postImgUrls.add(article.imagePath);
         } else {
           otherUrls.add(article.imagePath);
         }
@@ -225,37 +200,19 @@ export class RefreshService {
       // Skip the Airtable attachment structure since we're now using MainImageLink
     }
     
-    console.log(`Found ${imgurUrls.size} unique Imgur URLs, ${postImgUrls.size} PostImg URLs, and ${otherUrls.size} other image URLs`);
+    console.log(`Found ${imgurUrls.size} unique Imgur URLs and ${otherUrls.size} other image URLs`);
     
-    // Process general URLs first (typically less rate-limited)
+    // Process non-Imgur URLs first (typically less rate-limited)
     const otherPromises: Promise<void>[] = [];
     Array.from(otherUrls).forEach(url => {
       otherPromises.push(this.preCacheImage(url));
     });
     
-    // Process other URLs with higher concurrency
+    // Process non-Imgur URLs with higher concurrency
     const otherBatchSize = 5;
     for (let i = 0; i < otherPromises.length; i += otherBatchSize) {
       const batch = otherPromises.slice(i, i + otherBatchSize);
       await Promise.all(batch);
-    }
-    
-    // Process PostImg URLs one at a time to handle async conversion properly
-    for (const url of Array.from(postImgUrls)) {
-      try {
-        // Convert postimg.cc gallery URLs to direct image URLs if needed
-        if (url.includes('postimg.cc') && !url.includes('i.postimg.cc')) {
-          const directUrl = await this.convertPostImgToDirectUrl(url);
-          await this.preCacheImage(directUrl);
-        } else {
-          await this.preCacheImage(url);
-        }
-        
-        // Add a small delay between requests to avoid overwhelming the service
-        await new Promise(resolve => setTimeout(resolve, 200));
-      } catch (error) {
-        console.error(`Error processing postimg URL ${url}:`, error);
-      }
     }
     
     // Process Imgur URLs with much lower concurrency to respect rate limits
@@ -276,70 +233,7 @@ export class RefreshService {
       }
     }
     
-    console.log(`Pre-cached ${imgurUrls.size + postImgUrls.size + otherUrls.size} unique images from articles`);
-  }
-  
-  /**
-   * Convert a PostImg.cc URL to its direct image URL format by fetching and parsing the HTML page
-   * PostImg URLs follow this pattern:
-   * Gallery URL: https://postimg.cc/kRCbhLW1
-   * The actual full-size image URL is embedded in the HTML page
-   */
-  private static async convertPostImgToDirectUrl(url: string): Promise<string> {
-    // Check if it's already a direct URL
-    if (url.includes('i.postimg.cc')) {
-      return url;
-    }
-    
-    // Handle URLs that are already proxied through our API
-    if (url.includes('/api/images/')) {
-      // Extract the actual URL from the proxied URL
-      try {
-        const encodedUrl = url.split('/api/images/')[1];
-        const decodedUrl = decodeURIComponent(encodedUrl);
-        return this.convertPostImgToDirectUrl(decodedUrl);
-      } catch (error) {
-        console.error(`Error extracting URL from proxied URL ${url}:`, error);
-        return url;
-      }
-    }
-    
-    try {
-      // We need to fetch the HTML page to get the actual full-size image URL
-      console.log(`Fetching postimg.cc page to extract full-size image URL: ${url}`);
-      const response = await fetch(url);
-      if (!response.ok) {
-        console.error(`Failed to fetch postimg.cc page: ${url} (Status: ${response.status})`);
-        return url;
-      }
-      
-      const html = await response.text();
-      
-      // Extract the full-size image URL from the HTML
-      const mainImageMatch = html.match(/<img id="main-image" src="([^"]+)"/);
-      if (mainImageMatch && mainImageMatch[1]) {
-        const fullSizeUrl = mainImageMatch[1].startsWith('//') 
-          ? `https:${mainImageMatch[1]}` 
-          : mainImageMatch[1];
-        
-        console.log(`Found full-size image URL: ${fullSizeUrl}`);
-        return fullSizeUrl;
-      }
-      
-      // Fallback to the old method if we couldn't parse the HTML
-      let imageId = url;
-      if (url.includes('postimg.cc/')) {
-        imageId = url.split('postimg.cc/')[1].split('/')[0].split('?')[0];
-      }
-      
-      // Use the fallback URL format
-      const fallbackUrl = `https://i.postimg.cc/${imageId}/image.jpg`;
-      console.log(`Falling back to default URL format: ${fallbackUrl}`);
-      return fallbackUrl;
-    } catch (error) {
-      console.error('Error converting PostImg URL:', error);
-      return url; // Return original URL if conversion fails
-    }
+    console.log(`Pre-cached ${otherUrls.size + imgurUrls.size} unique images from articles`);
   }
   
   /**
@@ -350,7 +244,6 @@ export class RefreshService {
     if (!teamMembers || !teamMembers.length) return;
     
     const imgurUrls = new Set<string>();
-    const postImgUrls = new Set<string>();
     const otherUrls = new Set<string>();
     
     // First pass: collect all URLs and deduplicate them
@@ -359,8 +252,6 @@ export class RefreshService {
       if (member.imageUrl) {
         if (member.imageUrl.includes('imgur.com')) {
           imgurUrls.add(member.imageUrl);
-        } else if (member.imageUrl.includes('postimg.cc')) {
-          postImgUrls.add(member.imageUrl);
         } else {
           otherUrls.add(member.imageUrl);
         }
@@ -370,8 +261,6 @@ export class RefreshService {
       if (!member.imageUrl && member.imagePath && member.imagePath !== null) {
         if (member.imagePath.includes('imgur.com')) {
           imgurUrls.add(member.imagePath);
-        } else if (member.imagePath.includes('postimg.cc')) {
-          postImgUrls.add(member.imagePath);
         } else {
           otherUrls.add(member.imagePath);
         }
@@ -380,37 +269,19 @@ export class RefreshService {
       // Skip the Airtable attachment structure since we're now using MainImageLink
     }
     
-    console.log(`Found ${imgurUrls.size} unique Imgur URLs, ${postImgUrls.size} PostImg URLs, and ${otherUrls.size} other image URLs for team members`);
+    console.log(`Found ${imgurUrls.size} unique Imgur URLs and ${otherUrls.size} other image URLs for team members`);
     
-    // Process non-Imgur/PostImg URLs first (typically less rate-limited)
+    // Process non-Imgur URLs first (typically less rate-limited)
     const otherPromises: Promise<void>[] = [];
     Array.from(otherUrls).forEach(url => {
       otherPromises.push(this.preCacheImage(url));
     });
     
-    // Process other URLs with higher concurrency
+    // Process non-Imgur URLs with higher concurrency
     const otherBatchSize = 5;
     for (let i = 0; i < otherPromises.length; i += otherBatchSize) {
       const batch = otherPromises.slice(i, i + otherBatchSize);
       await Promise.all(batch);
-    }
-    
-    // Process PostImg URLs one at a time to handle async conversion properly
-    for (const url of Array.from(postImgUrls)) {
-      try {
-        // Convert postimg.cc gallery URLs to direct image URLs if needed
-        if (url.includes('postimg.cc') && !url.includes('i.postimg.cc')) {
-          const directUrl = await this.convertPostImgToDirectUrl(url);
-          await this.preCacheImage(directUrl);
-        } else {
-          await this.preCacheImage(url);
-        }
-        
-        // Add a small delay between requests to avoid overwhelming the service
-        await new Promise(resolve => setTimeout(resolve, 200));
-      } catch (error) {
-        console.error(`Error processing postimg URL ${url}:`, error);
-      }
     }
     
     // Process Imgur URLs with much lower concurrency to respect rate limits
@@ -431,7 +302,7 @@ export class RefreshService {
       }
     }
     
-    console.log(`Pre-cached ${otherUrls.size + postImgUrls.size + imgurUrls.size} unique images from team members`);
+    console.log(`Pre-cached ${otherUrls.size + imgurUrls.size} unique images from team members`);
   }
 
   /**
