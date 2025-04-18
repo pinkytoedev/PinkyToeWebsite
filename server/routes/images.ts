@@ -437,7 +437,9 @@ async function refreshImageInBackground(id: string, fileHash: string) {
       // Convert to direct URL if it's a gallery URL
       const directUrl = await convertPostImgToDirectUrl(fullUrl);
       console.log(`Converting postimg.cc gallery URL to direct URL for background refresh: ${directUrl}`);
-      return refreshImageInBackground(directUrl, fileHash);
+      // We have to return void so we use await, not return
+      await refreshImageInBackground(directUrl, fileHash);
+      return;
     }
     
     // For Imgur URLs, apply additional throttling
