@@ -13,6 +13,13 @@ export function FeaturedArticleCard({ article }: FeaturedArticleCardProps) {
   let imageSource = article.imageUrl ? getImageUrl(article.imageUrl) : '/api/images/placeholder';
   console.log(`Featured article ${article.id} - Using imageUrl: ${article.imageUrl || 'Not available, using placeholder'}`);
   
+  // Make sure the image is going through our proxy if it's an external URL
+  if (imageSource && !imageSource.startsWith('/api/images/') && (imageSource.startsWith('http://') || imageSource.startsWith('https://'))) {
+    // Create a hash of the URL to use as an ID for the proxy
+    const encodedUrl = encodeURIComponent(imageSource);
+    imageSource = `/api/images/${encodedUrl}`;
+  }
+  
   return (
     <Link href={`/articles/${article.id}`} className="block">
       <div className="article-card bg-pink-50 rounded-lg shadow-lg overflow-hidden cursor-pointer hover:shadow-xl transition-shadow">
@@ -22,7 +29,7 @@ export function FeaturedArticleCard({ article }: FeaturedArticleCardProps) {
               <img 
                 src={imageSource} 
                 alt={article.title} 
-                className="absolute inset-0 w-full h-full object-cover object-center"
+                className="absolute inset-0 w-full h-full object-contain object-center"
                 onError={(e) => {
                   const target = e.target as HTMLImageElement;
                   console.error(`Failed to load image: ${target.src}`);
