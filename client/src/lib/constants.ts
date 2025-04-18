@@ -13,9 +13,9 @@ export const API_ROUTES = {
   ARTICLES: "/api/articles",
   FEATURED_ARTICLES: "/api/articles/featured",
   RECENT_ARTICLES: "/api/articles/recent",
-  ARTICLE_BY_ID: (id: string) => `/api/articles/${id}`,
+  ARTICLE_BY_ID: (id: string | undefined) => id ? `/api/articles/${id}` : "/api/articles",
   TEAM: "/api/team",
-  TEAM_MEMBER_BY_ID: (id: string) => `/api/team/${id}`,
+  TEAM_MEMBER_BY_ID: (id: string | undefined) => id ? `/api/team/${id}` : "/api/team",
   QUOTES: "/api/quotes",
   QUOTE_OF_DAY: "/api/quotes/daily",
 };
