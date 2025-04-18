@@ -123,6 +123,12 @@ export class RefreshService {
     if (!url.startsWith('http')) return;
     
     try {
+      // Handle postimg.cc gallery URLs
+      if (url.includes('postimg.cc') && !url.includes('i.postimg.cc')) {
+        const directUrl = this.convertPostImgToDirectUrl(url);
+        return this.preCacheImage(directUrl);
+      }
+      
       // Generate a filename based on URL
       const fileHash = crypto.createHash('md5').update(url).digest('hex');
       
@@ -175,6 +181,7 @@ export class RefreshService {
     if (!articles || !articles.length) return;
     
     const imgurUrls = new Set<string>();
+    const postImgUrls = new Set<string>();
     const otherUrls = new Set<string>();
     
     // First pass: collect all URLs and deduplicate them
@@ -183,6 +190,8 @@ export class RefreshService {
       if (article.imageUrl) {
         if (article.imageUrl.includes('imgur.com')) {
           imgurUrls.add(article.imageUrl);
+        } else if (article.imageUrl.includes('postimg.cc')) {
+          postImgUrls.add(article.imageUrl);
         } else {
           otherUrls.add(article.imageUrl);
         }
@@ -192,6 +201,8 @@ export class RefreshService {
       if (!article.imageUrl && article.imagePath && article.imagePath !== null) {
         if (article.imagePath.includes('imgur.com')) {
           imgurUrls.add(article.imagePath);
+        } else if (article.imagePath.includes('postimg.cc')) {
+          postImgUrls.add(article.imagePath);
         } else {
           otherUrls.add(article.imagePath);
         }
@@ -200,19 +211,43 @@ export class RefreshService {
       // Skip the Airtable attachment structure since we're now using MainImageLink
     }
     
-    console.log(`Found ${imgurUrls.size} unique Imgur URLs and ${otherUrls.size} other image URLs`);
+    console.log(`Found ${imgurUrls.size} unique Imgur URLs, ${postImgUrls.size} PostImg URLs, and ${otherUrls.size} other image URLs`);
     
-    // Process non-Imgur URLs first (typically less rate-limited)
+    // Process general URLs first (typically less rate-limited)
     const otherPromises: Promise<void>[] = [];
     Array.from(otherUrls).forEach(url => {
       otherPromises.push(this.preCacheImage(url));
     });
     
-    // Process non-Imgur URLs with higher concurrency
+    // Process other URLs with higher concurrency
     const otherBatchSize = 5;
     for (let i = 0; i < otherPromises.length; i += otherBatchSize) {
       const batch = otherPromises.slice(i, i + otherBatchSize);
       await Promise.all(batch);
+    }
+    
+    // Process PostImg URLs with moderate concurrency
+    const postImgPromises: Promise<void>[] = [];
+    Array.from(postImgUrls).forEach(url => {
+      // Convert postimg.cc gallery URLs to direct image URLs if needed
+      if (url.includes('postimg.cc') && !url.includes('i.postimg.cc')) {
+        const directUrl = this.convertPostImgToDirectUrl(url);
+        postImgPromises.push(this.preCacheImage(directUrl));
+      } else {
+        postImgPromises.push(this.preCacheImage(url));
+      }
+    });
+    
+    // Process PostImg URLs with moderate batch size
+    const postImgBatchSize = 3;
+    for (let i = 0; i < postImgPromises.length; i += postImgBatchSize) {
+      const batch = postImgPromises.slice(i, i + postImgBatchSize);
+      await Promise.all(batch);
+      
+      // Add a short delay between batches
+      if (i + postImgBatchSize < postImgPromises.length) {
+        await new Promise(resolve => setTimeout(resolve, 1000));
+      }
     }
     
     // Process Imgur URLs with much lower concurrency to respect rate limits
@@ -233,7 +268,38 @@ export class RefreshService {
       }
     }
     
-    console.log(`Pre-cached ${otherUrls.size + imgurUrls.size} unique images from articles`);
+    console.log(`Pre-cached ${imgurUrls.size + postImgUrls.size + otherUrls.size} unique images from articles`);
+  }
+  
+  /**
+   * Convert a PostImg.cc URL to its direct image URL format
+   * PostImg URLs follow this pattern:
+   * Gallery URL: https://postimg.cc/kRCbhLW1
+   * Direct URL: https://i.postimg.cc/kRCbhLW1/image.jpg
+   */
+  private static convertPostImgToDirectUrl(url: string): string {
+    // Check if it's already a direct URL
+    if (url.includes('i.postimg.cc')) {
+      return url;
+    }
+    
+    try {
+      // Extract the image ID from the URL
+      // Example: https://postimg.cc/kRCbhLW1 -> kRCbhLW1
+      let imageId = url;
+      if (url.includes('postimg.cc/')) {
+        imageId = url.split('postimg.cc/')[1].split('/')[0].split('?')[0];
+      }
+      
+      // Build direct URL format
+      // Direct postimg URL format is: https://i.postimg.cc/[ID]/image.jpg
+      const directUrl = `https://i.postimg.cc/${imageId}/image.jpg`;
+      console.log(`Converting postimg.cc gallery URL to direct URL: ${directUrl}`);
+      return directUrl;
+    } catch (error) {
+      console.error('Error converting PostImg URL:', error);
+      return url; // Return original URL if conversion fails
+    }
   }
   
   /**
@@ -244,6 +310,7 @@ export class RefreshService {
     if (!teamMembers || !teamMembers.length) return;
     
     const imgurUrls = new Set<string>();
+    const postImgUrls = new Set<string>();
     const otherUrls = new Set<string>();
     
     // First pass: collect all URLs and deduplicate them
@@ -252,6 +319,8 @@ export class RefreshService {
       if (member.imageUrl) {
         if (member.imageUrl.includes('imgur.com')) {
           imgurUrls.add(member.imageUrl);
+        } else if (member.imageUrl.includes('postimg.cc')) {
+          postImgUrls.add(member.imageUrl);
         } else {
           otherUrls.add(member.imageUrl);
         }
@@ -261,6 +330,8 @@ export class RefreshService {
       if (!member.imageUrl && member.imagePath && member.imagePath !== null) {
         if (member.imagePath.includes('imgur.com')) {
           imgurUrls.add(member.imagePath);
+        } else if (member.imagePath.includes('postimg.cc')) {
+          postImgUrls.add(member.imagePath);
         } else {
           otherUrls.add(member.imagePath);
         }
@@ -269,19 +340,43 @@ export class RefreshService {
       // Skip the Airtable attachment structure since we're now using MainImageLink
     }
     
-    console.log(`Found ${imgurUrls.size} unique Imgur URLs and ${otherUrls.size} other image URLs for team members`);
+    console.log(`Found ${imgurUrls.size} unique Imgur URLs, ${postImgUrls.size} PostImg URLs, and ${otherUrls.size} other image URLs for team members`);
     
-    // Process non-Imgur URLs first (typically less rate-limited)
+    // Process non-Imgur/PostImg URLs first (typically less rate-limited)
     const otherPromises: Promise<void>[] = [];
     Array.from(otherUrls).forEach(url => {
       otherPromises.push(this.preCacheImage(url));
     });
     
-    // Process non-Imgur URLs with higher concurrency
+    // Process other URLs with higher concurrency
     const otherBatchSize = 5;
     for (let i = 0; i < otherPromises.length; i += otherBatchSize) {
       const batch = otherPromises.slice(i, i + otherBatchSize);
       await Promise.all(batch);
+    }
+    
+    // Process PostImg URLs with moderate concurrency
+    const postImgPromises: Promise<void>[] = [];
+    Array.from(postImgUrls).forEach(url => {
+      // Convert postimg.cc gallery URLs to direct image URLs if needed
+      if (url.includes('postimg.cc') && !url.includes('i.postimg.cc')) {
+        const directUrl = this.convertPostImgToDirectUrl(url);
+        postImgPromises.push(this.preCacheImage(directUrl));
+      } else {
+        postImgPromises.push(this.preCacheImage(url));
+      }
+    });
+    
+    // Process PostImg URLs with moderate batch size
+    const postImgBatchSize = 3;
+    for (let i = 0; i < postImgPromises.length; i += postImgBatchSize) {
+      const batch = postImgPromises.slice(i, i + postImgBatchSize);
+      await Promise.all(batch);
+      
+      // Add a short delay between batches
+      if (i + postImgBatchSize < postImgPromises.length) {
+        await new Promise(resolve => setTimeout(resolve, 1000));
+      }
     }
     
     // Process Imgur URLs with much lower concurrency to respect rate limits
@@ -302,7 +397,7 @@ export class RefreshService {
       }
     }
     
-    console.log(`Pre-cached ${otherUrls.size + imgurUrls.size} unique images from team members`);
+    console.log(`Pre-cached ${otherUrls.size + postImgUrls.size + imgurUrls.size} unique images from team members`);
   }
 
   /**
