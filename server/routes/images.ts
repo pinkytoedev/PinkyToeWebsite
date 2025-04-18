@@ -153,6 +153,25 @@ imagesRouter.get('/:id', async (req: Request, res: Response) => {
       console.log('Processing Imgur URL:', decodedId);
     }
 
+    // Special handling for postimg.cc URLs
+    if (decodedId.includes('postimg.cc')) {
+      try {
+        // If this is a gallery URL (not a direct image URL)
+        if (!decodedId.includes('i.postimg.cc')) {
+          // Extract the image ID and construct a direct image URL
+          const postImgId = decodedId.split('/').pop();
+          if (postImgId) {
+            const directUrl = `https://i.postimg.cc/${postImgId}/image.jpg`;
+            console.log(`Converting postimg.cc gallery URL to direct URL: ${directUrl}`);
+            return await handleUrlImage(directUrl, fileHash, res);
+          }
+        }
+      } catch (postImgError: any) {
+        console.error('Error handling postimg.cc URL:', postImgError);
+        // Continue with normal processing if special handling fails
+      }
+    }
+    
     // If it's a URL (http/https)
     if (decodedId.startsWith('http')) {
       return await handleUrlImage(decodedId, fileHash, res);

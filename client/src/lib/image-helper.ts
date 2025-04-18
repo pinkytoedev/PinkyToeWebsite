@@ -20,6 +20,15 @@ export function getImageUrl(imageUrl: string | undefined | null | any[]): string
     return getImageUrl(imageUrl[0]);
   }
 
+  // Special handling for postimg.cc gallery URLs
+  if (typeof imageUrl === 'string' && imageUrl.includes('postimg.cc')) {
+    // Extract the image ID and create a direct image URL
+    const postImgId = imageUrl.split('/').pop();
+    if (postImgId) {
+      return `/api/images/${encodeURIComponent(`https://i.postimg.cc/${postImgId}/image.jpg`)}`;
+    }
+  }
+
   // If it's an Airtable record ID (e.g., rec...), apply image proxy
   if (typeof imageUrl === 'string' && imageUrl.startsWith('rec')) {
     return `/api/images/${encodeURIComponent(imageUrl)}`;
