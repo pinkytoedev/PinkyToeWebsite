@@ -204,7 +204,7 @@ export function ArticleDetail({ articleId, onClose }: ArticleDetailProps) {
             <img 
               src={imageSource} 
               alt={article.title} 
-              className="max-w-full max-h-[650px] object-contain"
+              className="max-w-full h-auto max-h-[650px] object-cover"
               onError={(e) => {
                 const target = e.target as HTMLImageElement;
                 console.error(`Failed to load image: ${target.src}`);
