@@ -171,44 +171,46 @@ export class RefreshService {
   
   /**
    * Pre-cache all image URLs from articles
+   * Uses our improved batch loading strategy to avoid rate limiting
    */
   static async preCacheArticleImages(articles: Article[]): Promise<void> {
     if (!articles || !articles.length) return;
     
-    const imagePromises: Promise<void>[] = [];
+    // Collect all image URLs to precache
+    const imageUrls: string[] = [];
     
     for (const article of articles) {
-      // For articles, check both imageUrl and imagePath
+      // For articles with MainImageLink (now stored in imageUrl)
       if (article.imageUrl) {
-        imagePromises.push(this.preCacheImage(article.imageUrl));
+        imageUrls.push(article.imageUrl);
       }
       
+      // Legacy imagePath support
       if (article.imagePath && article.imagePath !== null) {
-        imagePromises.push(this.preCacheImage(article.imagePath));
+        imageUrls.push(article.imagePath);
       }
       
-      // Some articles might have an Airtable attachment structure
-      // This handles cases where Airtable directly returns attachment objects
+      // Any other image URLs hidden in the article data
       const anyArticle = article as any;
       if (anyArticle.attachments && Array.isArray(anyArticle.attachments)) {
         for (const attachment of anyArticle.attachments) {
           if (typeof attachment === 'string') {
-            imagePromises.push(this.preCacheImage(attachment));
+            imageUrls.push(attachment);
           } else if (attachment && typeof attachment === 'object') {
             if (attachment.url) {
-              imagePromises.push(this.preCacheImage(attachment.url));
+              imageUrls.push(attachment.url);
             }
             
             // Also cache thumbnails if available
             if (attachment.thumbnails) {
-              if (attachment.thumbnails.small && attachment.thumbnails.small.url) {
-                imagePromises.push(this.preCacheImage(attachment.thumbnails.small.url));
+              if (attachment.thumbnails.small?.url) {
+                imageUrls.push(attachment.thumbnails.small.url);
               }
-              if (attachment.thumbnails.large && attachment.thumbnails.large.url) {
-                imagePromises.push(this.preCacheImage(attachment.thumbnails.large.url));
+              if (attachment.thumbnails.large?.url) {
+                imageUrls.push(attachment.thumbnails.large.url);
               }
-              if (attachment.thumbnails.full && attachment.thumbnails.full.url) {
-                imagePromises.push(this.preCacheImage(attachment.thumbnails.full.url));
+              if (attachment.thumbnails.full?.url) {
+                imageUrls.push(attachment.thumbnails.full.url);
               }
             }
           }
@@ -216,57 +218,69 @@ export class RefreshService {
       }
     }
     
-    // Run image pre-caching in parallel but limit concurrency
-    const batchSize = 5; // Process 5 images at a time
-    for (let i = 0; i < imagePromises.length; i += batchSize) {
-      const batch = imagePromises.slice(i, i + batchSize);
-      await Promise.all(batch);
+    // Filter out duplicates and empty values
+    const urlSet = new Set<string>();
+    // Add each URL to the set to eliminate duplicates
+    imageUrls.forEach(url => {
+      if (url) urlSet.add(url);
+    });
+    
+    // Convert set to array
+    const uniqueUrls = Array.from(urlSet);
+    
+    if (uniqueUrls.length === 0) {
+      console.log('No article images to preload');
+      return;
     }
     
-    console.log(`Pre-cached ${imagePromises.length} images from articles`);
+    console.log(`Found ${uniqueUrls.length} article images to preload`);
+    
+    // Use the new batch loading method to respect rate limits
+    await ImageService.preloadImageBatch(uniqueUrls);
   }
   
   /**
    * Pre-cache all image URLs from team members
+   * Uses our improved batch loading strategy to avoid rate limiting
    */
   static async preCacheTeamImages(teamMembers: Team[]): Promise<void> {
     if (!teamMembers || !teamMembers.length) return;
     
-    const imagePromises: Promise<void>[] = [];
+    // Collect all image URLs to precache
+    const imageUrls: string[] = [];
     
     for (const member of teamMembers) {
-      // Handle imagePath from the schema
+      // Handle imagePath from the schema (legacy support)
       if (member.imagePath && member.imagePath !== null) {
-        imagePromises.push(this.preCacheImage(member.imagePath));
+        imageUrls.push(member.imagePath);
       }
       
-      // Handle imageUrl from the schema
+      // Handle imageUrl from the schema (MainImageLink field)
       if (member.imageUrl) {
-        imagePromises.push(this.preCacheImage(member.imageUrl));
+        imageUrls.push(member.imageUrl);
       }
       
-      // Some team members might have Airtable attachment structures
-      // This handles cases where Airtable directly returns attachment objects
+      // Any other image URLs hidden in the team member data
       const anyMember = member as any;
       if (anyMember.attachments && Array.isArray(anyMember.attachments)) {
         for (const attachment of anyMember.attachments) {
           if (typeof attachment === 'string') {
-            imagePromises.push(this.preCacheImage(attachment));
+            imageUrls.push(attachment);
           } else if (attachment && typeof attachment === 'object') {
             if (attachment.url) {
-              imagePromises.push(this.preCacheImage(attachment.url));
+              imageUrls.push(attachment.url);
             }
             
             // Also cache thumbnails if available
             if (attachment.thumbnails) {
-              if (attachment.thumbnails.small && attachment.thumbnails.small.url) {
-                imagePromises.push(this.preCacheImage(attachment.thumbnails.small.url));
+              if (attachment.thumbnails.small?.url) {
+                imageUrls.push(attachment.thumbnails.small.url);
               }
-              if (attachment.thumbnails.large && attachment.thumbnails.large.url) {
-                imagePromises.push(this.preCacheImage(attachment.thumbnails.large.url));
+              if (attachment.thumbnails.large?.url) {
+                imageUrls.push(attachment.thumbnails.large.url);
               }
-              if (attachment.thumbnails.full && attachment.thumbnails.full.url) {
-                imagePromises.push(this.preCacheImage(attachment.thumbnails.full.url));
+              if (attachment.thumbnails.full?.url) {
+                imageUrls.push(attachment.thumbnails.full.url);
               }
             }
           }
@@ -274,14 +288,18 @@ export class RefreshService {
       }
     }
     
-    // Run image pre-caching in parallel but limit concurrency
-    const batchSize = 5; // Process 5 images at a time
-    for (let i = 0; i < imagePromises.length; i += batchSize) {
-      const batch = imagePromises.slice(i, i + batchSize);
-      await Promise.all(batch);
+    // Filter out duplicates and empty values
+    const uniqueUrls = Array.from(new Set(imageUrls)).filter(url => url);
+    
+    if (uniqueUrls.length === 0) {
+      console.log('No team member images to preload');
+      return;
     }
     
-    console.log(`Pre-cached ${imagePromises.length} images from team members`);
+    console.log(`Found ${uniqueUrls.length} team member images to preload`);
+    
+    // Use the new batch loading method to respect rate limits
+    await ImageService.preloadImageBatch(uniqueUrls);
   }
 
   /**
