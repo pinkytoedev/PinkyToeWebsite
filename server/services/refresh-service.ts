@@ -15,11 +15,11 @@ if (!fs.existsSync(UPLOADS_DIR)) {
 
 // Define refresh intervals (in milliseconds)
 const REFRESH_INTERVALS = {
-  ARTICLES: 30 * 60 * 1000,          // 30 minutes
-  FEATURED_ARTICLES: 15 * 60 * 1000,  // 15 minutes
-  RECENT_ARTICLES: 10 * 60 * 1000,    // 10 minutes
-  TEAM: 60 * 60 * 1000,               // 60 minutes
-  QUOTES: 60 * 60 * 1000              // 60 minutes
+  ARTICLES: 120 * 60 * 1000,         // 120 minutes (2 hours)
+  FEATURED_ARTICLES: 90 * 60 * 1000,  // 90 minutes (1.5 hours)
+  RECENT_ARTICLES: 60 * 60 * 1000,    // 60 minutes (1 hour)
+  TEAM: 180 * 60 * 1000,              // 180 minutes (3 hours)
+  QUOTES: 180 * 60 * 1000             // 180 minutes (3 hours)
 };
 
 // Track timers for cleanup
@@ -41,7 +41,7 @@ export class RefreshService {
   };
 
   // Minimum time between refreshes (in milliseconds) to prevent overloading Airtable API
-  private static readonly MIN_REFRESH_INTERVAL = 60 * 1000; // 1 minute
+  private static readonly MIN_REFRESH_INTERVAL = 30 * 60 * 1000; // 30 minutes
   
   /**
    * Start all refresh schedules
@@ -91,16 +91,14 @@ export class RefreshService {
   /**
    * Refresh data on demand in background
    * This does not block the response
+   * Only refreshes the most critical data (recent articles) to minimize API calls
    */
   static async refreshOnDemand(): Promise<void> {
-    console.log('Starting on-demand background refresh...');
+    console.log('Starting on-demand background refresh (limited)...');
     
-    // Refresh data in sequence to avoid overwhelming the Airtable API
+    // Just refresh recent articles (most important for user experience)
+    // Skip other refreshes to reduce API load
     await this.refreshRecentArticles();
-    await this.refreshFeaturedArticles();
-    await this.refreshArticles();
-    await this.refreshTeam();
-    await this.refreshQuotes();
     
     console.log('On-demand background refresh completed');
   }
