@@ -3,8 +3,7 @@ import { Article } from "@shared/schema";
 import { ROUTES } from "@/lib/constants";
 import { formatDate } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { getImageUrl } from "@/lib/image-helper";
-import { LazyImage } from "@/components/ui/lazy-image";
+import { getImageUrl, getPhotoUrl } from "@/lib/image-helper";
 
 interface ArticleCardProps {
   article: Article;
@@ -19,12 +18,15 @@ export function ArticleCard({ article }: ArticleCardProps) {
     <Link href={`/articles/${article.id}`} className="block h-full">
       <div className="article-card bg-pink-50 rounded-lg shadow-lg overflow-hidden flex flex-col h-full group cursor-pointer hover:shadow-xl transition-shadow">
         <div className="relative">
-          <LazyImage 
+          <img 
             src={imageSource} 
             alt={article.title} 
             className="h-48 w-full object-contain bg-pink-100/50"
-            placeholderSrc="/api/images/placeholder"
-            delay={article.id ? parseInt(article.id.slice(-2), 16) * 100 : 300} // Stagger loading based on article ID
+            onError={(e) => {
+              const target = e.target as HTMLImageElement;
+              console.error(`Failed to load image: ${target.src}`);
+              target.src = '/api/images/placeholder';
+            }}
           />
           <div className="article-overlay absolute inset-0 bg-primary bg-opacity-40 opacity-0 flex items-center justify-center transition-opacity duration-300 group-hover:opacity-100">
             <div>

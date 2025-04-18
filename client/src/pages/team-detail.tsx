@@ -7,24 +7,19 @@ import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
 import { Link } from "wouter";
 import { formatDate } from "@/lib/utils";
-import { getImageUrl } from "@/lib/image-helper";
-import { LazyImage } from "@/components/ui/lazy-image";
-import { Team, Article } from "@shared/schema";
+import { getImageUrl, getPhotoUrl } from "@/lib/image-helper";
 
 export default function TeamMemberDetail() {
   const { id } = useParams();
   const [, setLocation] = useLocation();
 
-  const teamId = id || '';
-  
-  const { data: teamMember, isLoading: teamLoading, error: teamError } = useQuery<Team>({
-    queryKey: [API_ROUTES.TEAM_MEMBER_BY_ID(teamId)],
-    enabled: !!teamId,
+  const { data: teamMember, isLoading: teamLoading, error: teamError } = useQuery({
+    queryKey: [API_ROUTES.TEAM_MEMBER_BY_ID(id)],
   });
 
-  const { data: articles, isLoading: articlesLoading } = useQuery<Article[]>({
-    queryKey: [`/api/team/${teamId}/articles`],
-    enabled: !!teamMember && !!teamId,
+  const { data: articles, isLoading: articlesLoading } = useQuery({
+    queryKey: [`/api/team/${id}/articles`],
+    enabled: !!teamMember,
   });
 
   const goBack = () => {
@@ -81,13 +76,15 @@ export default function TeamMemberDetail() {
             <div className="p-6">
               <div className="md:flex">
                 <div className="md:w-1/3 mb-6 md:mb-0 md:pr-6">
-                  <LazyImage 
+                  <img 
                     src={memberImageUrl} 
                     alt={`${teamMember.name} photo`} 
                     className="w-full rounded-lg" 
-                    placeholderSrc="/api/images/placeholder"
-                    threshold={0.2}
-                    delay={150} // Load team member profile image quickly as it's important
+                    onError={(e) => {
+                      const target = e.target as HTMLImageElement;
+                      console.error(`Failed to load team image: ${target.src}`);
+                      target.src = '/api/images/placeholder';
+                    }}
                   />
                   
                   <div className="mt-4">
@@ -123,13 +120,15 @@ export default function TeamMemberDetail() {
                             
                             return (
                               <div key={article.id} className="flex border-b border-gray-200 pb-3">
-                                <LazyImage 
+                                <img 
                                   src={articleImageUrl} 
                                   alt={article.title} 
                                   className="w-20 h-20 object-cover rounded mr-4" 
-                                  placeholderSrc="/api/images/placeholder"
-                                  threshold={0.1}
-                                  delay={article.id ? parseInt(article.id.slice(-2), 16) * 200 + 500 : 700} // Stagger loading with longer delays
+                                  onError={(e) => {
+                                    const target = e.target as HTMLImageElement;
+                                    console.error(`Failed to load article image: ${target.src}`);
+                                    target.src = '/api/images/placeholder';
+                                  }}
                                 />
                                 <div>
                                   <Link href={`/articles/${article.id}`}>

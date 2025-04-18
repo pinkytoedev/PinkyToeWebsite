@@ -171,84 +171,44 @@ export class RefreshService {
   
   /**
    * Pre-cache all image URLs from articles
-   * Uses our improved batch loading strategy to avoid rate limiting
    */
   static async preCacheArticleImages(articles: Article[]): Promise<void> {
     if (!articles || !articles.length) return;
     
-    // Collect all image URLs to precache
-    const imageUrls: string[] = [];
+    const imagePromises: Promise<void>[] = [];
     
     for (const article of articles) {
-      // For articles with MainImageLink (now stored in imageUrl)
+      // For articles, check both imageUrl and imagePath
       if (article.imageUrl) {
-        // Make sure we're using the direct URL, not our proxy URL
-        if (article.imageUrl.startsWith('/api/images/')) {
-          try {
-            const directUrl = decodeURIComponent(article.imageUrl.substring('/api/images/'.length));
-            if (directUrl.startsWith('http')) {
-              imageUrls.push(directUrl);
-            }
-          } catch (error) {
-            console.error(`Failed to decode URL ${article.imageUrl}:`, error);
-          }
-        } else if (article.imageUrl.startsWith('http')) {
-          // Already a direct URL
-          imageUrls.push(article.imageUrl);
-        }
+        imagePromises.push(this.preCacheImage(article.imageUrl));
       }
       
-      // Legacy imagePath support
       if (article.imagePath && article.imagePath !== null) {
-        // Make sure we're using the direct URL, not our proxy URL
-        if (article.imagePath.startsWith('/api/images/')) {
-          try {
-            const directUrl = decodeURIComponent(article.imagePath.substring('/api/images/'.length));
-            if (directUrl.startsWith('http')) {
-              imageUrls.push(directUrl);
-            }
-          } catch (error) {
-            console.error(`Failed to decode URL ${article.imagePath}:`, error);
-          }
-        } else if (article.imagePath.startsWith('http')) {
-          // Already a direct URL
-          imageUrls.push(article.imagePath);
-        }
+        imagePromises.push(this.preCacheImage(article.imagePath));
       }
       
-      // Any other image URLs hidden in the article data
+      // Some articles might have an Airtable attachment structure
+      // This handles cases where Airtable directly returns attachment objects
       const anyArticle = article as any;
       if (anyArticle.attachments && Array.isArray(anyArticle.attachments)) {
         for (const attachment of anyArticle.attachments) {
           if (typeof attachment === 'string') {
-            // Handle potential proxy URLs in attachment strings
-            if (attachment.startsWith('/api/images/')) {
-              try {
-                const directUrl = decodeURIComponent(attachment.substring('/api/images/'.length));
-                if (directUrl.startsWith('http')) {
-                  imageUrls.push(directUrl);
-                }
-              } catch (error) {
-                console.error(`Failed to decode URL ${attachment}:`, error);
-              }
-            } else if (attachment.startsWith('http')) {
-              imageUrls.push(attachment);
-            }
+            imagePromises.push(this.preCacheImage(attachment));
           } else if (attachment && typeof attachment === 'object') {
             if (attachment.url) {
-              imageUrls.push(attachment.url);
+              imagePromises.push(this.preCacheImage(attachment.url));
             }
             
             // Also cache thumbnails if available
             if (attachment.thumbnails) {
-              if (attachment.thumbnails.small?.url) {
-                imageUrls.push(attachment.thumbnails.small.url);
+              if (attachment.thumbnails.small && attachment.thumbnails.small.url) {
+                imagePromises.push(this.preCacheImage(attachment.thumbnails.small.url));
               }
-              if (attachment.thumbnails.large?.url) {
-                imageUrls.push(attachment.thumbnails.large.url);
+              if (attachment.thumbnails.large && attachment.thumbnails.large.url) {
+                imagePromises.push(this.preCacheImage(attachment.thumbnails.large.url));
               }
-              if (attachment.thumbnails.full?.url) {
-                imageUrls.push(attachment.thumbnails.full.url);
+              if (attachment.thumbnails.full && attachment.thumbnails.full.url) {
+                imagePromises.push(this.preCacheImage(attachment.thumbnails.full.url));
               }
             }
           }
@@ -256,107 +216,57 @@ export class RefreshService {
       }
     }
     
-    // Filter out duplicates and empty values
-    const urlSet = new Set<string>();
-    // Add each URL to the set to eliminate duplicates
-    imageUrls.forEach(url => {
-      if (url) urlSet.add(url);
-    });
-    
-    // Convert set to array
-    const uniqueUrls = Array.from(urlSet);
-    
-    if (uniqueUrls.length === 0) {
-      console.log('No article images to preload');
-      return;
+    // Run image pre-caching in parallel but limit concurrency
+    const batchSize = 5; // Process 5 images at a time
+    for (let i = 0; i < imagePromises.length; i += batchSize) {
+      const batch = imagePromises.slice(i, i + batchSize);
+      await Promise.all(batch);
     }
     
-    console.log(`Found ${uniqueUrls.length} article images to preload`);
-    
-    // Use the new batch loading method to respect rate limits
-    await ImageService.preloadImageBatch(uniqueUrls);
+    console.log(`Pre-cached ${imagePromises.length} images from articles`);
   }
   
   /**
    * Pre-cache all image URLs from team members
-   * Uses our improved batch loading strategy to avoid rate limiting
    */
   static async preCacheTeamImages(teamMembers: Team[]): Promise<void> {
     if (!teamMembers || !teamMembers.length) return;
     
-    // Collect all image URLs to precache
-    const imageUrls: string[] = [];
+    const imagePromises: Promise<void>[] = [];
     
     for (const member of teamMembers) {
-      // Handle imagePath from the schema (legacy support)
+      // Handle imagePath from the schema
       if (member.imagePath && member.imagePath !== null) {
-        // Make sure we're using the direct URL, not our proxy URL
-        if (member.imagePath.startsWith('/api/images/')) {
-          try {
-            const directUrl = decodeURIComponent(member.imagePath.substring('/api/images/'.length));
-            if (directUrl.startsWith('http')) {
-              imageUrls.push(directUrl);
-            }
-          } catch (error) {
-            console.error(`Failed to decode URL ${member.imagePath}:`, error);
-          }
-        } else if (member.imagePath.startsWith('http')) {
-          // Already a direct URL
-          imageUrls.push(member.imagePath);
-        }
+        imagePromises.push(this.preCacheImage(member.imagePath));
       }
       
-      // Handle imageUrl from the schema (MainImageLink field)
+      // Handle imageUrl from the schema
       if (member.imageUrl) {
-        // Make sure we're using the direct URL, not our proxy URL
-        if (member.imageUrl.startsWith('/api/images/')) {
-          try {
-            const directUrl = decodeURIComponent(member.imageUrl.substring('/api/images/'.length));
-            if (directUrl.startsWith('http')) {
-              imageUrls.push(directUrl);
-            }
-          } catch (error) {
-            console.error(`Failed to decode URL ${member.imageUrl}:`, error);
-          }
-        } else if (member.imageUrl.startsWith('http')) {
-          // Already a direct URL
-          imageUrls.push(member.imageUrl);
-        }
+        imagePromises.push(this.preCacheImage(member.imageUrl));
       }
       
-      // Any other image URLs hidden in the team member data
+      // Some team members might have Airtable attachment structures
+      // This handles cases where Airtable directly returns attachment objects
       const anyMember = member as any;
       if (anyMember.attachments && Array.isArray(anyMember.attachments)) {
         for (const attachment of anyMember.attachments) {
           if (typeof attachment === 'string') {
-            // Handle potential proxy URLs in attachment strings
-            if (attachment.startsWith('/api/images/')) {
-              try {
-                const directUrl = decodeURIComponent(attachment.substring('/api/images/'.length));
-                if (directUrl.startsWith('http')) {
-                  imageUrls.push(directUrl);
-                }
-              } catch (error) {
-                console.error(`Failed to decode URL ${attachment}:`, error);
-              }
-            } else if (attachment.startsWith('http')) {
-              imageUrls.push(attachment);
-            }
+            imagePromises.push(this.preCacheImage(attachment));
           } else if (attachment && typeof attachment === 'object') {
             if (attachment.url) {
-              imageUrls.push(attachment.url);
+              imagePromises.push(this.preCacheImage(attachment.url));
             }
             
             // Also cache thumbnails if available
             if (attachment.thumbnails) {
-              if (attachment.thumbnails.small?.url) {
-                imageUrls.push(attachment.thumbnails.small.url);
+              if (attachment.thumbnails.small && attachment.thumbnails.small.url) {
+                imagePromises.push(this.preCacheImage(attachment.thumbnails.small.url));
               }
-              if (attachment.thumbnails.large?.url) {
-                imageUrls.push(attachment.thumbnails.large.url);
+              if (attachment.thumbnails.large && attachment.thumbnails.large.url) {
+                imagePromises.push(this.preCacheImage(attachment.thumbnails.large.url));
               }
-              if (attachment.thumbnails.full?.url) {
-                imageUrls.push(attachment.thumbnails.full.url);
+              if (attachment.thumbnails.full && attachment.thumbnails.full.url) {
+                imagePromises.push(this.preCacheImage(attachment.thumbnails.full.url));
               }
             }
           }
@@ -364,25 +274,14 @@ export class RefreshService {
       }
     }
     
-    // Filter out duplicates and empty values
-    const urlSet = new Set<string>();
-    // Add each URL to the set to eliminate duplicates
-    imageUrls.forEach(url => {
-      if (url) urlSet.add(url);
-    });
-    
-    // Convert set to array
-    const uniqueUrls = Array.from(urlSet);
-    
-    if (uniqueUrls.length === 0) {
-      console.log('No team member images to preload');
-      return;
+    // Run image pre-caching in parallel but limit concurrency
+    const batchSize = 5; // Process 5 images at a time
+    for (let i = 0; i < imagePromises.length; i += batchSize) {
+      const batch = imagePromises.slice(i, i + batchSize);
+      await Promise.all(batch);
     }
     
-    console.log(`Found ${uniqueUrls.length} team member images to preload`);
-    
-    // Use the new batch loading method to respect rate limits
-    await ImageService.preloadImageBatch(uniqueUrls);
+    console.log(`Pre-cached ${imagePromises.length} images from team members`);
   }
 
   /**
