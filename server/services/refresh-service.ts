@@ -125,8 +125,9 @@ export class RefreshService {
     try {
       // Handle postimg.cc gallery URLs
       if (url.includes('postimg.cc') && !url.includes('i.postimg.cc')) {
-        const directUrl = this.convertPostImgToDirectUrl(url);
-        return this.preCacheImage(directUrl);
+        // We handle these directly in the calling methods now
+        // This is just a defensive check
+        return;
       }
       
       // Generate a filename based on URL
@@ -226,27 +227,21 @@ export class RefreshService {
       await Promise.all(batch);
     }
     
-    // Process PostImg URLs with moderate concurrency
-    const postImgPromises: Promise<void>[] = [];
-    Array.from(postImgUrls).forEach(url => {
-      // Convert postimg.cc gallery URLs to direct image URLs if needed
-      if (url.includes('postimg.cc') && !url.includes('i.postimg.cc')) {
-        const directUrl = this.convertPostImgToDirectUrl(url);
-        postImgPromises.push(this.preCacheImage(directUrl));
-      } else {
-        postImgPromises.push(this.preCacheImage(url));
-      }
-    });
-    
-    // Process PostImg URLs with moderate batch size
-    const postImgBatchSize = 3;
-    for (let i = 0; i < postImgPromises.length; i += postImgBatchSize) {
-      const batch = postImgPromises.slice(i, i + postImgBatchSize);
-      await Promise.all(batch);
-      
-      // Add a short delay between batches
-      if (i + postImgBatchSize < postImgPromises.length) {
-        await new Promise(resolve => setTimeout(resolve, 1000));
+    // Process PostImg URLs one at a time to handle async conversion properly
+    for (const url of Array.from(postImgUrls)) {
+      try {
+        // Convert postimg.cc gallery URLs to direct image URLs if needed
+        if (url.includes('postimg.cc') && !url.includes('i.postimg.cc')) {
+          const directUrl = await this.convertPostImgToDirectUrl(url);
+          await this.preCacheImage(directUrl);
+        } else {
+          await this.preCacheImage(url);
+        }
+        
+        // Add a small delay between requests to avoid overwhelming the service
+        await new Promise(resolve => setTimeout(resolve, 200));
+      } catch (error) {
+        console.error(`Error processing postimg URL ${url}:`, error);
       }
     }
     
@@ -272,30 +267,49 @@ export class RefreshService {
   }
   
   /**
-   * Convert a PostImg.cc URL to its direct image URL format
+   * Convert a PostImg.cc URL to its direct image URL format by fetching and parsing the HTML page
    * PostImg URLs follow this pattern:
    * Gallery URL: https://postimg.cc/kRCbhLW1
-   * Direct URL: https://i.postimg.cc/kRCbhLW1/image.jpg
+   * The actual full-size image URL is embedded in the HTML page
    */
-  private static convertPostImgToDirectUrl(url: string): string {
+  private static async convertPostImgToDirectUrl(url: string): Promise<string> {
     // Check if it's already a direct URL
     if (url.includes('i.postimg.cc')) {
       return url;
     }
     
     try {
-      // Extract the image ID from the URL
-      // Example: https://postimg.cc/kRCbhLW1 -> kRCbhLW1
+      // We need to fetch the HTML page to get the actual full-size image URL
+      console.log(`Fetching postimg.cc page to extract full-size image URL: ${url}`);
+      const response = await fetch(url);
+      if (!response.ok) {
+        console.error(`Failed to fetch postimg.cc page: ${url} (Status: ${response.status})`);
+        return url;
+      }
+      
+      const html = await response.text();
+      
+      // Extract the full-size image URL from the HTML
+      const mainImageMatch = html.match(/<img id="main-image" src="([^"]+)"/);
+      if (mainImageMatch && mainImageMatch[1]) {
+        const fullSizeUrl = mainImageMatch[1].startsWith('//') 
+          ? `https:${mainImageMatch[1]}` 
+          : mainImageMatch[1];
+        
+        console.log(`Found full-size image URL: ${fullSizeUrl}`);
+        return fullSizeUrl;
+      }
+      
+      // Fallback to the old method if we couldn't parse the HTML
       let imageId = url;
       if (url.includes('postimg.cc/')) {
         imageId = url.split('postimg.cc/')[1].split('/')[0].split('?')[0];
       }
       
-      // Build direct URL format
-      // Direct postimg URL format is: https://i.postimg.cc/[ID]/image.jpg
-      const directUrl = `https://i.postimg.cc/${imageId}/image.jpg`;
-      console.log(`Converting postimg.cc gallery URL to direct URL: ${directUrl}`);
-      return directUrl;
+      // Use the fallback URL format
+      const fallbackUrl = `https://i.postimg.cc/${imageId}/image.jpg`;
+      console.log(`Falling back to default URL format: ${fallbackUrl}`);
+      return fallbackUrl;
     } catch (error) {
       console.error('Error converting PostImg URL:', error);
       return url; // Return original URL if conversion fails
@@ -355,27 +369,21 @@ export class RefreshService {
       await Promise.all(batch);
     }
     
-    // Process PostImg URLs with moderate concurrency
-    const postImgPromises: Promise<void>[] = [];
-    Array.from(postImgUrls).forEach(url => {
-      // Convert postimg.cc gallery URLs to direct image URLs if needed
-      if (url.includes('postimg.cc') && !url.includes('i.postimg.cc')) {
-        const directUrl = this.convertPostImgToDirectUrl(url);
-        postImgPromises.push(this.preCacheImage(directUrl));
-      } else {
-        postImgPromises.push(this.preCacheImage(url));
-      }
-    });
-    
-    // Process PostImg URLs with moderate batch size
-    const postImgBatchSize = 3;
-    for (let i = 0; i < postImgPromises.length; i += postImgBatchSize) {
-      const batch = postImgPromises.slice(i, i + postImgBatchSize);
-      await Promise.all(batch);
-      
-      // Add a short delay between batches
-      if (i + postImgBatchSize < postImgPromises.length) {
-        await new Promise(resolve => setTimeout(resolve, 1000));
+    // Process PostImg URLs one at a time to handle async conversion properly
+    for (const url of Array.from(postImgUrls)) {
+      try {
+        // Convert postimg.cc gallery URLs to direct image URLs if needed
+        if (url.includes('postimg.cc') && !url.includes('i.postimg.cc')) {
+          const directUrl = await this.convertPostImgToDirectUrl(url);
+          await this.preCacheImage(directUrl);
+        } else {
+          await this.preCacheImage(url);
+        }
+        
+        // Add a small delay between requests to avoid overwhelming the service
+        await new Promise(resolve => setTimeout(resolve, 200));
+      } catch (error) {
+        console.error(`Error processing postimg URL ${url}:`, error);
       }
     }
     
