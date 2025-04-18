@@ -9,6 +9,25 @@ if (!fs.existsSync(UPLOADS_DIR)) {
   fs.mkdirSync(UPLOADS_DIR, { recursive: true });
 }
 
+// Configuration for rate limiting
+const RATE_LIMIT_CONFIG = {
+  imgurRequestsPerMinute: 50, // Conservative limit to avoid rate limiting
+  imgurRequestDelay: 1500, // Delay between consecutive requests in ms
+  urlBatchSize: 10, // How many URLs to process in a batch
+  batchDelayMs: 20000, // Delay between batches in ms
+};
+
+// Keep track of ongoing requests to avoid duplication
+const ongoingRequests = new Map<string, Promise<any>>();
+
+// Track Imgur API request timing
+const imgurRequestTimestamps: number[] = [];
+
+// Helper function to check if a URL is from Imgur
+function isImgurUrl(url: string): boolean {
+  return url.includes('imgur.com');
+}
+
 interface AirtableAttachment {
   id: string;
   url: string;
@@ -100,7 +119,52 @@ export class ImageService {
   }
 
   /**
-   * Fetch an image from a URL and cache it locally
+   * Check if we should throttle Imgur requests based on recent activity
+   * This helps avoid hitting rate limits by spacing out requests
+   */
+  private static shouldThrottleImgurRequest(): boolean {
+    const now = Date.now();
+    
+    // Clean up old timestamps (older than 1 minute)
+    const oneMinuteAgo = now - 60000;
+    while (imgurRequestTimestamps.length > 0 && 
+           imgurRequestTimestamps[0] < oneMinuteAgo) {
+      imgurRequestTimestamps.shift();
+    }
+    
+    // Check if we're over the limit
+    return imgurRequestTimestamps.length >= RATE_LIMIT_CONFIG.imgurRequestsPerMinute;
+  }
+  
+  /**
+   * Add a delay if this is an Imgur URL to respect rate limits
+   */
+  private static async applyRateLimitDelay(url: string): Promise<void> {
+    if (!isImgurUrl(url)) return;
+    
+    // If we're over the limit, wait until we're under it
+    while (this.shouldThrottleImgurRequest()) {
+      console.log(`Rate limiting Imgur request for ${url}`);
+      await new Promise(resolve => setTimeout(resolve, 2000));
+    }
+    
+    // Add a delay between consecutive Imgur requests
+    if (isImgurUrl(url) && imgurRequestTimestamps.length > 0) {
+      const lastRequestTime = imgurRequestTimestamps[imgurRequestTimestamps.length - 1];
+      const timeSinceLastRequest = Date.now() - lastRequestTime;
+      
+      if (timeSinceLastRequest < RATE_LIMIT_CONFIG.imgurRequestDelay) {
+        const delayNeeded = RATE_LIMIT_CONFIG.imgurRequestDelay - timeSinceLastRequest;
+        await new Promise(resolve => setTimeout(resolve, delayNeeded));
+      }
+    }
+    
+    // Record this request
+    imgurRequestTimestamps.push(Date.now());
+  }
+
+  /**
+   * Fetch an image from a URL and cache it locally with rate limiting
    */
   static async fetchAndCacheImage(url: string, id: string): Promise<string> {
     // Generate a filename based on ID
@@ -113,22 +177,94 @@ export class ImageService {
     if (fs.existsSync(filepath)) {
       return filepath;
     }
-
-    try {
-      // Fetch the image
-      const response = await fetch(url);
-      if (!response.ok) {
-        throw new Error(`Failed to fetch image: ${response.status} ${response.statusText}`);
+    
+    // Check if there's already an ongoing request for this URL
+    const requestKey = `fetch-${url}`;
+    if (ongoingRequests.has(requestKey)) {
+      try {
+        await ongoingRequests.get(requestKey);
+        // If the file exists after the request completes, return it
+        if (fs.existsSync(filepath)) {
+          return filepath;
+        }
+      } catch (error) {
+        // The previous request failed, we'll try again
       }
-
-      // Save to disk
-      const buffer = await response.buffer();
-      fs.writeFileSync(filepath, buffer);
-
-      return filepath;
-    } catch (error) {
-      console.error('Error fetching and caching image:', error);
-      throw error;
     }
+
+    // Create a new request promise
+    const requestPromise = (async () => {
+      try {
+        // Apply rate limiting if it's an Imgur URL
+        await this.applyRateLimitDelay(url);
+        
+        // Fetch the image
+        const response = await fetch(url);
+        if (!response.ok) {
+          if (response.status === 429) {
+            throw new Error(`Rate limited (429) when fetching image: ${url}`);
+          }
+          throw new Error(`Failed to fetch image: ${url} (Status: ${response.status})`);
+        }
+
+        // Save to disk
+        const buffer = await response.buffer();
+        fs.writeFileSync(filepath, buffer);
+        return filepath;
+      } catch (error) {
+        console.error(`Error fetching image from ${url}:`, error);
+        throw error;
+      } finally {
+        // Remove from ongoing requests
+        ongoingRequests.delete(requestKey);
+      }
+    })();
+
+    // Store the promise
+    ongoingRequests.set(requestKey, requestPromise);
+    
+    return await requestPromise;
+  }
+  
+  /**
+   * Preload and cache a batch of images
+   * This helps avoid rate limiting by spreading out requests
+   */
+  static async preloadImageBatch(urls: string[]): Promise<void> {
+    console.log(`Preloading batch of ${urls.length} images`);
+    
+    // Process URLs in smaller batches to avoid overwhelming the server
+    const batches = [];
+    for (let i = 0; i < urls.length; i += RATE_LIMIT_CONFIG.urlBatchSize) {
+      batches.push(urls.slice(i, i + RATE_LIMIT_CONFIG.urlBatchSize));
+    }
+    
+    for (let i = 0; i < batches.length; i++) {
+      const batch = batches[i];
+      console.log(`Processing batch ${i+1}/${batches.length} (${batch.length} URLs)`);
+      
+      // Process each URL in the batch with rate limiting
+      await Promise.allSettled(
+        batch.map(async (url) => {
+          try {
+            const fileHash = crypto.createHash('md5').update(url).digest('hex');
+            await this.fetchAndCacheImage(url, url);
+          } catch (error) {
+            console.error(`Failed to preload ${url}:`, error);
+            // Continue with other URLs
+          }
+        })
+      );
+      
+      // Add delay between batches
+      if (i < batches.length - 1) {
+        console.log(`Waiting ${RATE_LIMIT_CONFIG.batchDelayMs/1000}s before next batch`);
+        await new Promise(resolve => 
+          setTimeout(resolve, RATE_LIMIT_CONFIG.batchDelayMs)
+        );
+      }
+    }
+    
+    console.log(`Preloaded ${urls.length} images`);
   }
 }
