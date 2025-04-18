@@ -12,12 +12,14 @@ export const imagesRouter = Router();
  * Serves a SVG placeholder when no image is available
  */
 imagesRouter.get('/placeholder', (req: Request, res: Response) => {
-  // Create a simple SVG placeholder
+  // Create a nicer SVG placeholder
   const svg = `<svg width="400" height="300" xmlns="http://www.w3.org/2000/svg">
-    <rect width="400" height="300" fill="#f0f0f0" />
-    <text x="50%" y="50%" font-family="Arial" font-size="20" text-anchor="middle" fill="#666">
+    <rect width="400" height="300" fill="#fdf2f8" />
+    <rect width="400" height="60" y="120" fill="#ec4899" fill-opacity="0.8" />
+    <text x="50%" y="155" font-family="Arial" font-size="18" text-anchor="middle" fill="#ffffff">
       Image Not Available
     </text>
+    <path d="M200 85 L230 115 L200 145 L170 115 Z" fill="#ec4899" fill-opacity="0.5" />
   </svg>`;
   
   res.setHeader('Content-Type', 'image/svg+xml');
@@ -112,11 +114,12 @@ imagesRouter.get('/:id', async (req: Request, res: Response) => {
         
         // If this is a MainImage field Airtable record ID
         const svg = `<svg width="400" height="300" xmlns="http://www.w3.org/2000/svg">
-          <rect width="400" height="300" fill="#f5f3ff" />
-          <rect width="400" height="60" y="120" fill="#8b5cf6" />
-          <text x="50%" y="160" font-family="Arial" font-size="16" text-anchor="middle" fill="#ffffff">
-            Airtable Image: ${decodedId}
+          <rect width="400" height="300" fill="#fdf2f8" />
+          <rect width="400" height="60" y="120" fill="#ec4899" fill-opacity="0.8" />
+          <text x="50%" y="155" font-family="Arial" font-size="16" text-anchor="middle" fill="#ffffff">
+            Image ID: ${decodedId.substring(0, 8)}...
           </text>
+          <path d="M200 85 L230 115 L200 145 L170 115 Z" fill="#ec4899" fill-opacity="0.5" />
         </svg>`;
         
         try {
@@ -137,6 +140,19 @@ imagesRouter.get('/:id', async (req: Request, res: Response) => {
       }
     }
     
+    // Special handling for Imgur URLs
+    if (decodedId.includes('imgur.com')) {
+      // Check if it's a direct i.imgur.com link or an album link
+      if (!decodedId.includes('i.imgur.com') && decodedId.includes('/a/')) {
+        console.log('Processing Imgur album link:', decodedId);
+        // For album links, redirect to placeholder since we can't grab the image directly
+        return res.redirect('/api/images/placeholder');
+      }
+
+      // For direct Imgur links, try to use cached version more aggressively due to rate limiting
+      console.log('Processing Imgur URL:', decodedId);
+    }
+
     // If it's a URL (http/https)
     if (decodedId.startsWith('http')) {
       return await handleUrlImage(decodedId, fileHash, res);
@@ -176,6 +192,49 @@ async function handleUrlImage(url: string, fileHash: string, res: Response) {
     try {
       // Fetch the image
       const response = await fetch(fullUrl);
+      
+      // Handle rate limiting (429) specially
+      if (response.status === 429) {
+        console.error(`Rate limited when fetching image: ${fullUrl}`);
+        
+        // If this is an Imgur URL, create a special placeholder for it
+        if (fullUrl.includes('imgur.com')) {
+          // Extract the image ID from the URL
+          let imgurId = 'unknown';
+          if (fullUrl.includes('i.imgur.com/')) {
+            imgurId = fullUrl.split('i.imgur.com/')[1].split('.')[0];
+          }
+          
+          const svg = `<svg width="400" height="300" xmlns="http://www.w3.org/2000/svg">
+            <rect width="400" height="300" fill="#fdf2f8" />
+            <rect width="400" height="80" y="110" fill="#ec4899" fill-opacity="0.8" />
+            <text x="50%" y="140" font-family="Arial" font-size="16" text-anchor="middle" fill="#ffffff">
+              Imgur Image: ${imgurId}
+            </text>
+            <text x="50%" y="165" font-family="Arial" font-size="14" text-anchor="middle" fill="#ffffff">
+              (Rate Limited - Try Again Later)
+            </text>
+            <path d="M200 55 L230 85 L200 115 L170 85 Z" fill="#ec4899" fill-opacity="0.5" />
+          </svg>`;
+          
+          // Save this SVG for future requests
+          try {
+            const filepath = path.join(UPLOADS_DIR, `${fileHash}_ratelimited.svg`);
+            fs.writeFileSync(filepath, svg);
+          } catch (writeError: any) {
+            console.error('Failed to save SVG placeholder:', writeError);
+          }
+          
+          res.setHeader('Content-Type', 'image/svg+xml');
+          res.setHeader('Cache-Control', 'public, max-age=3600'); // Cache for 1 hour
+          return res.send(svg);
+        }
+        
+        // For non-Imgur rate limited requests, redirect to placeholder
+        return res.redirect('/api/images/placeholder');
+      }
+      
+      // Handle other failed responses
       if (!response.ok) {
         console.error(`Failed to fetch image: ${fullUrl} (Status: ${response.status})`);
         return res.redirect('/api/images/placeholder');
