@@ -8,6 +8,7 @@
  * - Handles array of authors/images from Airtable
  * - Returns a default placeholder if no image is available
  * - Properly proxies Airtable record IDs and external URLs
+ * - Ensures full-size images for postimg.cc URLs
  */
 export function getImageUrl(imageUrl: string | undefined | null | any[]): string {
   // If empty/undefined, use a placeholder
@@ -28,6 +29,14 @@ export function getImageUrl(imageUrl: string | undefined | null | any[]): string
   // If the URL is already proxied or is a local path, return it as is
   if (typeof imageUrl === 'string' && (imageUrl.startsWith('/api/images') || imageUrl.startsWith('/'))) {
     return imageUrl;
+  }
+
+  // Special handling for PostImg URLs to ensure we get full-size images
+  if (typeof imageUrl === 'string' && imageUrl.includes('postimg.cc')) {
+    // Our server will extract the full-size URL from gallery pages
+    const proxyUrl = `/api/images/${encodeURIComponent(imageUrl)}`;
+    console.log(`Proxying PostImg URL: ${imageUrl} → ${proxyUrl}`);
+    return proxyUrl;
   }
 
   // For external URLs, proxy to avoid CORS issues
