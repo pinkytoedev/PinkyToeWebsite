@@ -8,8 +8,9 @@ interface TeamCardProps {
 }
 
 export function TeamCard({ teamMember }: TeamCardProps) {
-  // Get the image URL using our helper
-  const imageSource = getImageUrl(teamMember.imageUrl);
+  // Get the image URL from MainImageLink or fall back to placeholder
+  const imageSource = teamMember.imageUrl ? getImageUrl(teamMember.imageUrl) : '/api/images/placeholder';
+  console.log(`Team member ${teamMember.id} - Using imageUrl: ${teamMember.imageUrl || 'Not available, using placeholder'}`);
   
   return (
     <div className="team-card bg-pink-50 rounded-lg shadow-lg overflow-hidden">
@@ -18,6 +19,11 @@ export function TeamCard({ teamMember }: TeamCardProps) {
           src={imageSource} 
           alt={`${teamMember.name} photo`} 
           className="h-64 w-full object-cover"
+          onError={(e) => {
+            const target = e.target as HTMLImageElement;
+            console.error(`Failed to load team image: ${target.src}`);
+            target.src = '/api/images/placeholder';
+          }}
         />
         <div className="team-overlay absolute inset-0 bg-primary bg-opacity-40 opacity-0 flex items-center justify-center transition-opacity duration-300">
           <div>

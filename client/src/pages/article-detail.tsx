@@ -68,10 +68,14 @@ export default function ArticleDetail() {
   };
 
 
-  // Get the image URL if article is available
-  const imageSource = article 
-    ? (article.imageUrl ? getImageUrl(article.imageUrl) : getPhotoUrl(article.photo))
-    : '';
+  // Get the image URL from MainImageLink if article is available, or use placeholder
+  const imageSource = article && article.imageUrl 
+    ? getImageUrl(article.imageUrl)
+    : '/api/images/placeholder';
+    
+  if (article) {
+    console.log(`Article detail ${article.id} - Using imageUrl: ${article.imageUrl || 'Not available, using placeholder'}`);
+  }
     
   // Get team member IDs if available
   const authorTeamMember = article?.name ? findTeamMemberByName(article.name) : undefined;

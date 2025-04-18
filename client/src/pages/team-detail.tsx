@@ -26,8 +26,14 @@ export default function TeamMemberDetail() {
     setLocation('/team');
   };
 
-  // Get the member image URL if available
-  const memberImageUrl = teamMember ? getImageUrl(teamMember.imageUrl) : '';
+  // Get the member image URL from MainImageLink if available, or use placeholder
+  const memberImageUrl = teamMember && teamMember.imageUrl 
+    ? getImageUrl(teamMember.imageUrl) 
+    : '/api/images/placeholder';
+    
+  if (teamMember) {
+    console.log(`Team member ${teamMember.id} - Using imageUrl: ${teamMember.imageUrl || 'Not available, using placeholder'}`);
+  }
 
   return (
     <Layout>
@@ -74,6 +80,11 @@ export default function TeamMemberDetail() {
                     src={memberImageUrl} 
                     alt={`${teamMember.name} photo`} 
                     className="w-full rounded-lg" 
+                    onError={(e) => {
+                      const target = e.target as HTMLImageElement;
+                      console.error(`Failed to load team image: ${target.src}`);
+                      target.src = '/api/images/placeholder';
+                    }}
                   />
                   
                   <div className="mt-4">
@@ -102,8 +113,10 @@ export default function TeamMemberDetail() {
                           </div>
                         ) : (
                           articles.map((article: any) => {
-                            // Get proper image URL for article
-                            const articleImageUrl = article.imageUrl ? getImageUrl(article.imageUrl) : getPhotoUrl(article.photo);
+                            // Get proper image URL for article from MainImageLink or use placeholder
+                            const articleImageUrl = article.imageUrl 
+                              ? getImageUrl(article.imageUrl) 
+                              : '/api/images/placeholder';
                             
                             return (
                               <div key={article.id} className="flex border-b border-gray-200 pb-3">
@@ -111,6 +124,11 @@ export default function TeamMemberDetail() {
                                   src={articleImageUrl} 
                                   alt={article.title} 
                                   className="w-20 h-20 object-cover rounded mr-4" 
+                                  onError={(e) => {
+                                    const target = e.target as HTMLImageElement;
+                                    console.error(`Failed to load article image: ${target.src}`);
+                                    target.src = '/api/images/placeholder';
+                                  }}
                                 />
                                 <div>
                                   <Link href={`/articles/${article.id}`}>
