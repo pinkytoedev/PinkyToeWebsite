@@ -21,10 +21,11 @@ export function Marquee({
   const [isPaused, setIsPaused] = React.useState(false);
   const [childrenArray, setChildrenArray] = React.useState<React.ReactNode[]>([]);
 
-  // Convert children to array so we can cycle through them
+  // Convert children to array once when they change
   React.useEffect(() => {
     // Handle both array and single child case
     const childArray = React.Children.toArray(children);
+    // Simply set the array without trying to compare objects (which can have circular refs)
     setChildrenArray(childArray);
   }, [children]);
 
@@ -38,7 +39,7 @@ export function Marquee({
     }, intervalTime);
     
     return () => clearInterval(interval);
-  }, [childrenArray]);
+  }, [childrenArray.length]); // Only depend on the length, not the entire array
 
   const handleMouseEnter = () => {
     if (pauseOnHover) {
