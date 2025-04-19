@@ -2,10 +2,12 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { cachedStorage } from "./index";
 import { imagesRouter } from "./routes/images";
+import { adminRouter } from "./routes/admin";
 
 export async function registerRoutes(app: Express): Promise<Server> {
-  // Register the images router
+  // Register the routers
   app.use('/api/images', imagesRouter);
+  app.use('/api/admin', adminRouter);
   // API routes for articles
   app.get("/api/articles", async (req, res) => {
     try {
