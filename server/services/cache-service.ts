@@ -236,6 +236,46 @@ export class CacheService {
   }
 
   /**
+   * Invalidate a specific cache
+   * @param cacheType The type of cache to invalidate ('articles', 'featuredArticles', 'recentArticles', 'team', 'quotes')
+   */
+  static invalidateCache(cacheType: string): void {
+    try {
+      let cacheFile: string | null = null;
+      
+      switch (cacheType) {
+        case 'articles':
+          cacheFile = ARTICLES_CACHE_FILE;
+          break;
+        case 'featuredArticles':
+          cacheFile = FEATURED_ARTICLES_CACHE_FILE;
+          break;
+        case 'recentArticles':
+          cacheFile = RECENT_ARTICLES_CACHE_FILE;
+          break;
+        case 'team':
+          cacheFile = TEAM_CACHE_FILE;
+          break;
+        case 'quotes':
+          cacheFile = QUOTES_CACHE_FILE;
+          break;
+        default:
+          console.warn(`Unknown cache type: ${cacheType}`);
+          return;
+      }
+      
+      if (cacheFile && fs.existsSync(cacheFile)) {
+        fs.unlinkSync(cacheFile);
+        console.log(`Cache invalidated: ${cacheType}`);
+      } else {
+        console.log(`Cache file not found for: ${cacheType}`);
+      }
+    } catch (error) {
+      console.error(`Error invalidating cache for ${cacheType}:`, error);
+    }
+  }
+  
+  /**
    * Invalidate all caches
    */
   static invalidateAllCaches(): void {
