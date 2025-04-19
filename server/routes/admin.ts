@@ -54,49 +54,28 @@ adminRouter.post('/refresh/:entity', async (req: Request, res: Response) => {
     // Handle the specific entity refresh
     switch (entity) {
       case 'articles':
-        // Delete the specific cache file
-        if (CacheService.invalidateCache) {
-          CacheService.invalidateCache('articles');
-        } else {
-          // Fallback if specific invalidation is not available
-          CacheService.invalidateAllCaches();
-        }
+        // Invalidate the specific cache and refresh the data
+        CacheService.invalidateCache('articles');
         await RefreshService.refreshArticles();
         break;
         
       case 'featuredArticles':
-        if (CacheService.invalidateCache) {
-          CacheService.invalidateCache('featuredArticles');
-        } else {
-          CacheService.invalidateAllCaches();
-        }
+        CacheService.invalidateCache('featuredArticles');
         await RefreshService.refreshFeaturedArticles();
         break;
         
       case 'recentArticles':
-        if (CacheService.invalidateCache) {
-          CacheService.invalidateCache('recentArticles');
-        } else {
-          CacheService.invalidateAllCaches();
-        }
+        CacheService.invalidateCache('recentArticles');
         await RefreshService.refreshRecentArticles();
         break;
         
       case 'team':
-        if (CacheService.invalidateCache) {
-          CacheService.invalidateCache('team');
-        } else {
-          CacheService.invalidateAllCaches();
-        }
+        CacheService.invalidateCache('team');
         await RefreshService.refreshTeam();
         break;
         
       case 'quotes':
-        if (CacheService.invalidateCache) {
-          CacheService.invalidateCache('quotes');
-        } else {
-          CacheService.invalidateAllCaches();
-        }
+        CacheService.invalidateCache('quotes');
         await RefreshService.refreshQuotes();
         break;
     }
