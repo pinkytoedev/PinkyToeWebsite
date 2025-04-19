@@ -15,6 +15,13 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel";
 
+// Add window property for quote logging state
+declare global {
+  interface Window {
+    __quotesLogged?: boolean;
+  }
+}
+
 export default function Home() {
   const [autoPlayInterval, setAutoPlayInterval] = useState<NodeJS.Timeout | null>(null);
   const carouselRef = useRef<{ scrollNext: () => void } | null>(null);
@@ -36,17 +43,18 @@ export default function Home() {
   const quotes = Array.isArray(allQuotes) ? allQuotes : [];
   const philoQuotes = quotes.filter((quote: CarouselQuote) => quote.carousel === "philo");
   
-  // Log quotes when they change
+  // For debugging purposes, only log on initial load
   useEffect(() => {
-    if (quotes.length > 0) {
+    if (quotes.length > 0 && !window.__quotesLogged) {
+      window.__quotesLogged = true;
       console.log("All quotes loaded:", quotes);
       console.log("Philo quotes:", philoQuotes);
     }
-  }, [quotes, philoQuotes]);
+  }, [quotes.length > 0]);
 
   // Set up auto-play for the carousel
   useEffect(() => {
-    if (philoQuotes.length > 0 && carouselRef.current) {
+    if (philoQuotes.length > 0) {
       // Start auto-play
       const interval = setInterval(() => {
         if (carouselRef.current) {
@@ -63,7 +71,7 @@ export default function Home() {
         }
       };
     }
-  }, [philoQuotes, carouselRef.current]);
+  }, [philoQuotes.length]); // Only depend on the quotes length, not the ref
 
   return (
     <Layout>
