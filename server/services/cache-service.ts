@@ -44,6 +44,29 @@ export class CacheService {
       
       // Check if cache is expired
       if (Date.now() - cache.timestamp > CACHE_EXPIRY.ARTICLES) {
+        console.log('Articles cache expired, returning null');
+        return null;
+      }
+      
+      // Validate cache integrity
+      if (!cache.data || !cache.data.articles || !Array.isArray(cache.data.articles)) {
+        console.error('Articles cache structure is invalid, returning null');
+        return null;
+      }
+      
+      // Check if total makes sense compared to array length
+      if (typeof cache.data.total !== 'number' || cache.data.total < cache.data.articles.length) {
+        console.error('Articles cache has inconsistent total count, returning null');
+        return null;
+      }
+      
+      // Ensure every article has required fields
+      const invalidArticles = cache.data.articles.filter(article => 
+        !article || !article.id || !article.title
+      );
+      
+      if (invalidArticles.length > 0) {
+        console.error(`Found ${invalidArticles.length} invalid articles in cache, returning null`);
         return null;
       }
       
@@ -68,6 +91,23 @@ export class CacheService {
       
       // Check if cache is expired
       if (Date.now() - cache.timestamp > CACHE_EXPIRY.ARTICLES) {
+        console.log('Featured articles cache expired, returning null');
+        return null;
+      }
+      
+      // Validate cache integrity
+      if (!cache.data || !Array.isArray(cache.data)) {
+        console.error('Featured articles cache structure is invalid, returning null');
+        return null;
+      }
+      
+      // Ensure every article has required fields
+      const invalidArticles = cache.data.filter(article => 
+        !article || !article.id || !article.title
+      );
+      
+      if (invalidArticles.length > 0) {
+        console.error(`Found ${invalidArticles.length} invalid featured articles in cache, returning null`);
         return null;
       }
       
@@ -92,6 +132,23 @@ export class CacheService {
       
       // Check if cache is expired
       if (Date.now() - cache.timestamp > CACHE_EXPIRY.ARTICLES) {
+        console.log('Recent articles cache expired, returning null');
+        return null;
+      }
+      
+      // Validate cache integrity
+      if (!cache.data || !Array.isArray(cache.data)) {
+        console.error('Recent articles cache structure is invalid, returning null');
+        return null;
+      }
+      
+      // Ensure every article has required fields
+      const invalidArticles = cache.data.filter(article => 
+        !article || !article.id || !article.title
+      );
+      
+      if (invalidArticles.length > 0) {
+        console.error(`Found ${invalidArticles.length} invalid recent articles in cache, returning null`);
         return null;
       }
       
