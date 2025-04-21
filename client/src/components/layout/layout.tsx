@@ -63,7 +63,7 @@ export function Layout({ children }: LayoutProps) {
       
       {/* Main content with improved styling */}
       <main className="flex-grow container mx-auto px-4 py-8 md:py-12 relative z-10">
-        <div className="bg-primary/75 backdrop-blur-sm rounded-xl shadow-lg p-6 md:p-8 scale-in border border-primary/30 text-white">
+        <div className="bg-white/90 backdrop-blur-sm rounded-xl shadow-lg p-6 md:p-8 scale-in border border-pink-200/30">
           {children}
         </div>
       </main>
