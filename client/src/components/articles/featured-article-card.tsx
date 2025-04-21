@@ -22,10 +22,10 @@ export function FeaturedArticleCard({ article }: FeaturedArticleCardProps) {
   
   return (
     <Link href={`/articles/${article.id}`} className="block">
-      <div className="article-card bg-pink-700 rounded-lg shadow-lg overflow-hidden cursor-pointer hover:shadow-xl transition-shadow text-white">
+      <div className="article-card bg-primary rounded-lg shadow-lg overflow-hidden cursor-pointer hover:shadow-xl transition-shadow text-white">
         <div className="md:flex">
           <div className="md:w-2/5 flex items-center justify-center">
-            <div className="h-80 w-full bg-pink-600/50 relative overflow-hidden">
+            <div className="h-80 w-full bg-primary/80 relative overflow-hidden">
               <img 
                 src={imageSource} 
                 alt={article.title} 
@@ -54,7 +54,7 @@ export function FeaturedArticleCard({ article }: FeaturedArticleCardProps) {
               </div>
             </div>
             <div className="mt-4">
-              <Button className="bg-pink-600 hover:bg-pink-500 text-white font-quicksand font-bold py-2 px-4 rounded transition-colors">
+              <Button className="bg-primary hover:bg-primary/80 text-white font-quicksand font-bold py-2 px-4 rounded transition-colors">
                 Read More
               </Button>
             </div>
