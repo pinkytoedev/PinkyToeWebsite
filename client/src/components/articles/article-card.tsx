@@ -16,12 +16,12 @@ export function ArticleCard({ article }: ArticleCardProps) {
 
   return (
     <Link href={`/articles/${article.id}`} className="block h-full">
-      <div className="article-card bg-pink-900 rounded-lg shadow-lg overflow-hidden flex flex-col h-full group cursor-pointer hover:shadow-xl transition-shadow text-white">
+      <div className="article-card bg-pink-700 rounded-lg shadow-lg overflow-hidden flex flex-col h-full group cursor-pointer hover:shadow-xl transition-shadow text-white">
         <div className="relative">
           <img 
             src={imageSource} 
             alt={article.title} 
-            className="h-48 w-full object-contain bg-pink-800/50"
+            className="h-48 w-full object-contain bg-pink-600/50"
             onError={(e) => {
               const target = e.target as HTMLImageElement;
               console.error(`Failed to load image: ${target.src}`);
