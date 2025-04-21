@@ -2,7 +2,7 @@
 
 /* Body background with pattern */
 body {
-  background-color: #fff5f8;
+  background-color: #631c39; /* Darker pink background */
   background-image: url('/attached_assets/background for pinky website.png');
   background-attachment: fixed;
   background-size: 250px;
@@ -50,10 +50,11 @@ body {
 
 /* Glass morphism effects */
 .glass-effect {
-  background: rgba(255, 255, 255, 0.85);
+  background: rgba(99, 28, 57, 0.85);
   backdrop-filter: blur(8px);
-  border: 1px solid rgba(255, 255, 255, 0.5);
-  box-shadow: 0 8px 32px rgba(255, 77, 141, 0.1);
+  border: 1px solid rgba(232, 78, 137, 0.5);
+  box-shadow: 0 8px 32px rgba(255, 77, 141, 0.3);
+  color: white;
 }
 
 /* Gradient overlay for images */
@@ -65,10 +66,10 @@ body {
   height: 100%;
   background: linear-gradient(
     to bottom,
-    rgba(255, 77, 141, 0) 0%,
-    rgba(255, 77, 141, 0.7) 100%
+    rgba(99, 28, 57, 0) 0%,
+    rgba(99, 28, 57, 0.8) 100%
   );
-  opacity: 0.6;
+  opacity: 0.7;
   transition: opacity 0.3s ease;
 }
 
@@ -82,14 +83,14 @@ body {
 }
 
 ::-webkit-scrollbar-track {
-  background: #f5f5f5;
+  background: #4a1629;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(255, 77, 141, 0.6);
+  background: rgba(232, 78, 137, 0.7);
   border-radius: 6px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 77, 141, 0.8);
+  background: rgba(232, 78, 137, 0.9);
 }
