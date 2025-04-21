@@ -9,8 +9,9 @@ interface FeaturedArticleCardProps {
 }
 
 export function FeaturedArticleCard({ article }: FeaturedArticleCardProps) {
-  // Use photo if imageUrl is not available
-  let imageSource = article.imageUrl ? getImageUrl(article.imageUrl) : getPhotoUrl(article.photo);
+  // Use imageUrl from MainImageLink or fall back to placeholder
+  let imageSource = article.imageUrl ? getImageUrl(article.imageUrl) : '/api/images/placeholder';
+  console.log(`Featured article ${article.id} - Using imageUrl: ${article.imageUrl || 'Not available, using placeholder'}`);
   
   // Make sure the image is going through our proxy if it's an external URL
   if (imageSource && !imageSource.startsWith('/api/images/') && (imageSource.startsWith('http://') || imageSource.startsWith('https://'))) {
@@ -21,10 +22,10 @@ export function FeaturedArticleCard({ article }: FeaturedArticleCardProps) {
   
   return (
     <Link href={`/articles/${article.id}`} className="block">
-      <div className="article-card bg-white rounded-lg shadow-lg overflow-hidden cursor-pointer hover:shadow-xl transition-shadow">
+      <div className="article-card bg-pink-50 rounded-lg shadow-lg overflow-hidden cursor-pointer hover:shadow-xl transition-shadow">
         <div className="md:flex">
           <div className="md:w-2/5 flex items-center justify-center">
-            <div className="h-80 w-full bg-gray-50 relative overflow-hidden">
+            <div className="h-80 w-full bg-pink-100/50 relative overflow-hidden">
               <img 
                 src={imageSource} 
                 alt={article.title} 

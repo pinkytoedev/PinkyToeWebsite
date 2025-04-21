@@ -15,11 +15,11 @@ if (!fs.existsSync(UPLOADS_DIR)) {
 
 // Define refresh intervals (in milliseconds)
 const REFRESH_INTERVALS = {
-  ARTICLES: 30 * 60 * 1000,          // 30 minutes
-  FEATURED_ARTICLES: 15 * 60 * 1000,  // 15 minutes
-  RECENT_ARTICLES: 10 * 60 * 1000,    // 10 minutes
-  TEAM: 60 * 60 * 1000,               // 60 minutes
-  QUOTES: 60 * 60 * 1000              // 60 minutes
+  ARTICLES: 120 * 60 * 1000,         // 120 minutes (2 hours)
+  FEATURED_ARTICLES: 90 * 60 * 1000,  // 90 minutes (1.5 hours)
+  RECENT_ARTICLES: 60 * 60 * 1000,    // 60 minutes (1 hour)
+  TEAM: 180 * 60 * 1000,              // 180 minutes (3 hours)
+  QUOTES: 180 * 60 * 1000             // 180 minutes (3 hours)
 };
 
 // Track timers for cleanup
@@ -41,7 +41,7 @@ export class RefreshService {
   };
 
   // Minimum time between refreshes (in milliseconds) to prevent overloading Airtable API
-  private static readonly MIN_REFRESH_INTERVAL = 60 * 1000; // 1 minute
+  private static readonly MIN_REFRESH_INTERVAL = 30 * 60 * 1000; // 30 minutes
   
   /**
    * Start all refresh schedules
@@ -91,16 +91,14 @@ export class RefreshService {
   /**
    * Refresh data on demand in background
    * This does not block the response
+   * Only refreshes the most critical data (recent articles) to minimize API calls
    */
   static async refreshOnDemand(): Promise<void> {
-    console.log('Starting on-demand background refresh...');
+    console.log('Starting on-demand background refresh (limited)...');
     
-    // Refresh data in sequence to avoid overwhelming the Airtable API
+    // Just refresh recent articles (most important for user experience)
+    // Skip other refreshes to reduce API load
     await this.refreshRecentArticles();
-    await this.refreshFeaturedArticles();
-    await this.refreshArticles();
-    await this.refreshTeam();
-    await this.refreshQuotes();
     
     console.log('On-demand background refresh completed');
   }
@@ -171,117 +169,140 @@ export class RefreshService {
   
   /**
    * Pre-cache all image URLs from articles
+   * Optimized to minimize Imgur API requests and respect rate limits
    */
   static async preCacheArticleImages(articles: Article[]): Promise<void> {
     if (!articles || !articles.length) return;
     
-    const imagePromises: Promise<void>[] = [];
+    const imgurUrls = new Set<string>();
+    const otherUrls = new Set<string>();
     
+    // First pass: collect all URLs and deduplicate them
     for (const article of articles) {
-      // For articles, check both imageUrl and imagePath
+      // Prioritize the primary imageUrl
       if (article.imageUrl) {
-        imagePromises.push(this.preCacheImage(article.imageUrl));
-      }
-      
-      if (article.imagePath && article.imagePath !== null) {
-        imagePromises.push(this.preCacheImage(article.imagePath));
-      }
-      
-      // Some articles might have an Airtable attachment structure
-      // This handles cases where Airtable directly returns attachment objects
-      const anyArticle = article as any;
-      if (anyArticle.attachments && Array.isArray(anyArticle.attachments)) {
-        for (const attachment of anyArticle.attachments) {
-          if (typeof attachment === 'string') {
-            imagePromises.push(this.preCacheImage(attachment));
-          } else if (attachment && typeof attachment === 'object') {
-            if (attachment.url) {
-              imagePromises.push(this.preCacheImage(attachment.url));
-            }
-            
-            // Also cache thumbnails if available
-            if (attachment.thumbnails) {
-              if (attachment.thumbnails.small && attachment.thumbnails.small.url) {
-                imagePromises.push(this.preCacheImage(attachment.thumbnails.small.url));
-              }
-              if (attachment.thumbnails.large && attachment.thumbnails.large.url) {
-                imagePromises.push(this.preCacheImage(attachment.thumbnails.large.url));
-              }
-              if (attachment.thumbnails.full && attachment.thumbnails.full.url) {
-                imagePromises.push(this.preCacheImage(attachment.thumbnails.full.url));
-              }
-            }
-          }
+        if (article.imageUrl.includes('imgur.com')) {
+          imgurUrls.add(article.imageUrl);
+        } else {
+          otherUrls.add(article.imageUrl);
         }
       }
+      
+      // Only use imagePath as fallback if imageUrl doesn't exist
+      if (!article.imageUrl && article.imagePath && article.imagePath !== null) {
+        if (article.imagePath.includes('imgur.com')) {
+          imgurUrls.add(article.imagePath);
+        } else {
+          otherUrls.add(article.imagePath);
+        }
+      }
+      
+      // Skip the Airtable attachment structure since we're now using MainImageLink
     }
     
-    // Run image pre-caching in parallel but limit concurrency
-    const batchSize = 5; // Process 5 images at a time
-    for (let i = 0; i < imagePromises.length; i += batchSize) {
-      const batch = imagePromises.slice(i, i + batchSize);
+    console.log(`Found ${imgurUrls.size} unique Imgur URLs and ${otherUrls.size} other image URLs`);
+    
+    // Process non-Imgur URLs first (typically less rate-limited)
+    const otherPromises: Promise<void>[] = [];
+    Array.from(otherUrls).forEach(url => {
+      otherPromises.push(this.preCacheImage(url));
+    });
+    
+    // Process non-Imgur URLs with higher concurrency
+    const otherBatchSize = 5;
+    for (let i = 0; i < otherPromises.length; i += otherBatchSize) {
+      const batch = otherPromises.slice(i, i + otherBatchSize);
       await Promise.all(batch);
     }
     
-    console.log(`Pre-cached ${imagePromises.length} images from articles`);
+    // Process Imgur URLs with much lower concurrency to respect rate limits
+    const imgurPromises: Promise<void>[] = [];
+    Array.from(imgurUrls).forEach(url => {
+      imgurPromises.push(this.preCacheImage(url));
+    });
+    
+    // Very small batch size for Imgur to avoid rate limiting
+    const imgurBatchSize = 2;
+    for (let i = 0; i < imgurPromises.length; i += imgurBatchSize) {
+      const batch = imgurPromises.slice(i, i + imgurBatchSize);
+      await Promise.all(batch);
+      
+      // Add a 3 second delay between batches to avoid overwhelming Imgur
+      if (i + imgurBatchSize < imgurPromises.length) {
+        await new Promise(resolve => setTimeout(resolve, 3000));
+      }
+    }
+    
+    console.log(`Pre-cached ${otherUrls.size + imgurUrls.size} unique images from articles`);
   }
   
   /**
    * Pre-cache all image URLs from team members
+   * Optimized to minimize Imgur API requests and respect rate limits
    */
   static async preCacheTeamImages(teamMembers: Team[]): Promise<void> {
     if (!teamMembers || !teamMembers.length) return;
     
-    const imagePromises: Promise<void>[] = [];
+    const imgurUrls = new Set<string>();
+    const otherUrls = new Set<string>();
     
+    // First pass: collect all URLs and deduplicate them
     for (const member of teamMembers) {
-      // Handle imagePath from the schema
-      if (member.imagePath && member.imagePath !== null) {
-        imagePromises.push(this.preCacheImage(member.imagePath));
-      }
-      
-      // Handle imageUrl from the schema
+      // Prioritize the primary imageUrl
       if (member.imageUrl) {
-        imagePromises.push(this.preCacheImage(member.imageUrl));
-      }
-      
-      // Some team members might have Airtable attachment structures
-      // This handles cases where Airtable directly returns attachment objects
-      const anyMember = member as any;
-      if (anyMember.attachments && Array.isArray(anyMember.attachments)) {
-        for (const attachment of anyMember.attachments) {
-          if (typeof attachment === 'string') {
-            imagePromises.push(this.preCacheImage(attachment));
-          } else if (attachment && typeof attachment === 'object') {
-            if (attachment.url) {
-              imagePromises.push(this.preCacheImage(attachment.url));
-            }
-            
-            // Also cache thumbnails if available
-            if (attachment.thumbnails) {
-              if (attachment.thumbnails.small && attachment.thumbnails.small.url) {
-                imagePromises.push(this.preCacheImage(attachment.thumbnails.small.url));
-              }
-              if (attachment.thumbnails.large && attachment.thumbnails.large.url) {
-                imagePromises.push(this.preCacheImage(attachment.thumbnails.large.url));
-              }
-              if (attachment.thumbnails.full && attachment.thumbnails.full.url) {
-                imagePromises.push(this.preCacheImage(attachment.thumbnails.full.url));
-              }
-            }
-          }
+        if (member.imageUrl.includes('imgur.com')) {
+          imgurUrls.add(member.imageUrl);
+        } else {
+          otherUrls.add(member.imageUrl);
         }
       }
+      
+      // Only use imagePath as fallback if imageUrl doesn't exist
+      if (!member.imageUrl && member.imagePath && member.imagePath !== null) {
+        if (member.imagePath.includes('imgur.com')) {
+          imgurUrls.add(member.imagePath);
+        } else {
+          otherUrls.add(member.imagePath);
+        }
+      }
+      
+      // Skip the Airtable attachment structure since we're now using MainImageLink
     }
     
-    // Run image pre-caching in parallel but limit concurrency
-    const batchSize = 5; // Process 5 images at a time
-    for (let i = 0; i < imagePromises.length; i += batchSize) {
-      const batch = imagePromises.slice(i, i + batchSize);
+    console.log(`Found ${imgurUrls.size} unique Imgur URLs and ${otherUrls.size} other image URLs for team members`);
+    
+    // Process non-Imgur URLs first (typically less rate-limited)
+    const otherPromises: Promise<void>[] = [];
+    Array.from(otherUrls).forEach(url => {
+      otherPromises.push(this.preCacheImage(url));
+    });
+    
+    // Process non-Imgur URLs with higher concurrency
+    const otherBatchSize = 5;
+    for (let i = 0; i < otherPromises.length; i += otherBatchSize) {
+      const batch = otherPromises.slice(i, i + otherBatchSize);
       await Promise.all(batch);
     }
     
-    console.log(`Pre-cached ${imagePromises.length} images from team members`);
+    // Process Imgur URLs with much lower concurrency to respect rate limits
+    const imgurPromises: Promise<void>[] = [];
+    Array.from(imgurUrls).forEach(url => {
+      imgurPromises.push(this.preCacheImage(url));
+    });
+    
+    // Very small batch size for Imgur to avoid rate limiting
+    const imgurBatchSize = 2;
+    for (let i = 0; i < imgurPromises.length; i += imgurBatchSize) {
+      const batch = imgurPromises.slice(i, i + imgurBatchSize);
+      await Promise.all(batch);
+      
+      // Add a 3 second delay between batches to avoid overwhelming Imgur
+      if (i + imgurBatchSize < imgurPromises.length) {
+        await new Promise(resolve => setTimeout(resolve, 3000));
+      }
+    }
+    
+    console.log(`Pre-cached ${otherUrls.size + imgurUrls.size} unique images from team members`);
   }
 
   /**

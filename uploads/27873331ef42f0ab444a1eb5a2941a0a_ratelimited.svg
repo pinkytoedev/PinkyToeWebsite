@@ -1,0 +1,14 @@
+<svg width="400" height="300" xmlns="http://www.w3.org/2000/svg">
+            <rect width="400" height="300" fill="#fdf2f8" />
+            <rect width="400" height="90" y="105" fill="#ec4899" fill-opacity="0.8" />
+            <text x="50%" y="135" font-family="Arial" font-size="16" text-anchor="middle" fill="#ffffff">
+              Imgur Image: deQo8xD
+            </text>
+            <text x="50%" y="160" font-family="Arial" font-size="14" text-anchor="middle" fill="#ffffff">
+              (Rate Limited - Try Again Later)
+            </text>
+            <text x="50%" y="185" font-family="Arial" font-size="12" text-anchor="middle" fill="#ffffff">
+              Imgur limits to 520 requests/hour
+            </text>
+            <path d="M200 55 L230 85 L200 115 L170 85 Z" fill="#ec4899" fill-opacity="0.5" />
+          </svg>

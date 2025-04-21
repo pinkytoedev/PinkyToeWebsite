@@ -3,18 +3,33 @@
     {
       "id": 1,
       "carousel": "main",
-      "quote": "idgaf ok idgaf"
-    },
-    {
-      "id": 2,
-      "carousel": "main",
-      "quote": "heyyyyyyyyyy"
+      "quote": "You should be locking in... "
     },
     {
       "id": 3,
       "carousel": "main",
-      "quote": "Wyd for spring break?"
+      "quote": "Brown Paper Bag x Baggu"
+    },
+    {
+      "id": 5,
+      "carousel": "main",
+      "quote": "Latina Mode off"
+    },
+    {
+      "id": 2,
+      "carousel": "philo",
+      "quote": "Time Discovered To Be Revolutionary Treatment That Heal All Wounds"
+    },
+    {
+      "id": 4,
+      "carousel": "philo",
+      "quote": "Down to do hard drugs, on the fence about hinge"
+    },
+    {
+      "id": 6,
+      "carousel": "philo",
+      "quote": "Moo Deng dies in Southeast Asia earthquake. It's true!"
     }
   ],
-  "timestamp": 1743057780705
+  "timestamp": 1745196711666
 }

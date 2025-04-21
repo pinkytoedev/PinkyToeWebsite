@@ -277,18 +277,18 @@ export class AirtableStorage implements IStorage {
           }
         }
         
-        // Check if the record has a "Philo" field
-        if ('Philo' in record.fields) {
-          const philoQuoteText = record.get('Philo');
+        // Check if the record has a "philo" field
+        if ('philo' in record.fields) {
+          const philoQuoteText = record.get('philo');
           if (philoQuoteText && String(philoQuoteText).trim() !== '') {
             philoQuotes.push({
               id: quoteId++,
-              carousel: 'Philo',
+              carousel: 'philo',
               quote: String(philoQuoteText)
             });
-            console.log(`Found Philo quote: "${philoQuoteText}"`);
+            console.log(`Found philo quote: "${philoQuoteText}"`);
           } else {
-            console.log(`Record has empty "Philo" field`);
+            console.log(`Record has empty "philo" field`);
           }
         }
       });
@@ -362,32 +362,32 @@ export class AirtableStorage implements IStorage {
     const createdString = record.get('createdAt') || record.get('Created Date') || record.get('created');
     const createdDate = createdString ? new Date(createdString as string) : new Date();
     
-    // Check if MainImage exists and log its contents
-    if (record.get('MainImage')) {
-      console.log('MainImage field found:', record.get('MainImage'));
+    // Check if MainImageLink exists and log its contents
+    if (record.get('MainImageLink')) {
+      console.log('MainImageLink field found:', record.get('MainImageLink'));
     }
     
-    // Handle image attachments - check for MainImage field first
+    // Use MainImageLink as the primary source for image URLs
     let imageUrl = '';
-    const imageField = record.get('MainImage') || record.get('mainImage') || record.get('Image') || record.get('image') || record.get('Banner') || record.get('banner');
     
-    if (imageField) {
-      console.log(`Found image field for article "${record.get('Name') || record.id}":`, typeof imageField, Array.isArray(imageField) ? 'Array' : '');
-      
-      // Try to extract attachment data
-      const attachment = ImageService.extractAttachmentFromField(imageField);
-      if (attachment) {
-        console.log(`Found image attachment for article "${record.get('Name') || record.id}":`, attachment.url);
-        // Get the best URL from the attachment
-        const bestUrl = ImageService.getBestAttachmentUrl(attachment);
-        // Create a proxy URL using the actual image URL
-        imageUrl = ImageService.getProxyUrl(bestUrl);
-      }
-    }
+    // Prioritize MainImageLink field
+    const mainImageLink = record.get('MainImageLink') as string;
     
-    // Fallback to URL fields if no attachment
-    if (!imageUrl) {
-      const directUrl = record.get('imageUrl') as string || record.get('Image URL') as string || '';
+    if (mainImageLink) {
+      console.log(`Found MainImageLink for article "${record.get('Name') || record.id}":`, mainImageLink);
+      // Create a proxy URL using the MainImageLink URL
+      imageUrl = ImageService.getProxyUrl(mainImageLink);
+    } 
+    // Fallback to other URL fields if MainImageLink is not available
+    else {
+      const directUrl = record.get('imageUrl') as string || 
+                      record.get('Image URL') as string || 
+                      record.get('Image') as string || 
+                      record.get('image') as string || 
+                      record.get('Banner') as string || 
+                      record.get('banner') as string || 
+                      '';
+                       
       if (directUrl) {
         console.log(`Using direct URL for article "${record.get('Name') || record.id}":`, directUrl);
         // Proxy the direct URL as well
@@ -428,32 +428,30 @@ export class AirtableStorage implements IStorage {
     console.log('Processing Airtable team record:', record.id);
     console.log('Available team member fields:', Object.keys(record.fields));
     
-    // Check if MainImage exists and log its contents
-    if (record.get('MainImage')) {
-      console.log('MainImage field found for team member:', record.get('MainImage'));
+    // Check if MainImageLink exists and log its contents
+    if (record.get('MainImageLink')) {
+      console.log('MainImageLink field found for team member:', record.get('MainImageLink'));
     }
     
-    // Handle image attachments - check for MainImage field first
+    // Use MainImageLink as the primary source for image URLs
     let imageUrl = '';
-    const imageField = record.get('MainImage') || record.get('mainImage') || record.get('Image') || record.get('image') || record.get('Photo') || record.get('photo');
     
-    if (imageField) {
-      console.log(`Found image field for team member "${record.get('Name') || record.id}":`, typeof imageField, Array.isArray(imageField) ? 'Array' : '');
-      
-      // Try to extract attachment data
-      const attachment = ImageService.extractAttachmentFromField(imageField);
-      if (attachment) {
-        console.log(`Found image attachment for team member "${record.get('Name') || record.id}":`, attachment.url);
-        // Get the best URL from the attachment
-        const bestUrl = ImageService.getBestAttachmentUrl(attachment);
-        // Create a proxy URL using the actual image URL
-        imageUrl = ImageService.getProxyUrl(bestUrl);
-      }
-    }
+    // Prioritize MainImageLink field
+    const mainImageLink = record.get('MainImageLink') as string;
     
-    // Fallback to URL fields if no attachment
-    if (!imageUrl) {
-      const directUrl = record.get('imageUrl') as string || record.get('Image URL') as string || '';
+    if (mainImageLink) {
+      console.log(`Found MainImageLink for team member "${record.get('Name') || record.id}":`, mainImageLink);
+      // Create a proxy URL using the MainImageLink URL
+      imageUrl = ImageService.getProxyUrl(mainImageLink);
+    } 
+    // Fallback to other URL fields if MainImageLink is not available
+    else {
+      const directUrl = record.get('imageUrl') as string || 
+                      record.get('Image URL') as string || 
+                      record.get('Image') as string || 
+                      record.get('image') as string || 
+                      '';
+                       
       if (directUrl) {
         console.log(`Using direct URL for team member "${record.get('Name') || record.id}":`, directUrl);
         // Proxy the direct URL as well

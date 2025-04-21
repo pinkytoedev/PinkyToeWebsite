@@ -25,10 +25,34 @@ export class CachedStorage implements IStorage {
       if (cachedArticles) {
         console.log('Serving articles from cache');
         
+        // Validate page number
+        if (page < 1) {
+          console.warn('Invalid page number requested:', page);
+          page = 1;
+        }
+        
         // Apply pagination to cached data
         const start = (page - 1) * limit;
-        const end = start + limit;
+        
+        // Ensure that we're not trying to access beyond the end of the array
+        if (start >= cachedArticles.articles.length) {
+          console.warn(`Requested page ${page} is beyond available data (total: ${cachedArticles.total})`);
+          return {
+            articles: [],
+            total: cachedArticles.total
+          };
+        }
+        
+        const end = Math.min(start + limit, cachedArticles.articles.length);
+        console.log(`Pagination: serving articles from index ${start} to ${end-1} (page ${page}, limit ${limit})`);
+        
         const pagedArticles = cachedArticles.articles.slice(start, end);
+        
+        // Double-check integrity of paged results
+        if (!pagedArticles || !Array.isArray(pagedArticles)) {
+          console.error('Failed to paginate articles correctly, fetching from original storage');
+          throw new Error('Article pagination failed');
+        }
         
         return {
           articles: pagedArticles,
@@ -39,6 +63,12 @@ export class CachedStorage implements IStorage {
       // If not in cache, get from original storage
       console.log('Cache miss for articles, fetching from original storage');
       const result = await this.originalStorage.getArticles(page, limit, search);
+      
+      // Validate result before caching
+      if (!result || !result.articles || !Array.isArray(result.articles)) {
+        console.error('Invalid result from original storage, not caching');
+        return { articles: [], total: 0 };
+      }
       
       // Cache the result for future use
       CacheService.cacheArticles(result);
@@ -51,9 +81,26 @@ export class CachedStorage implements IStorage {
       if (cachedArticles) {
         console.log('Serving articles from cache after error');
         
-        // Apply pagination to cached data
+        // Validate page number
+        if (page < 1) {
+          console.warn('Invalid page number requested:', page);
+          page = 1;
+        }
+        
+        // Apply pagination to cached data with improved safety
         const start = (page - 1) * limit;
-        const end = start + limit;
+        
+        if (start >= cachedArticles.articles.length) {
+          console.warn(`Requested page ${page} is beyond available data (total: ${cachedArticles.total})`);
+          return {
+            articles: [],
+            total: cachedArticles.total
+          };
+        }
+        
+        const end = Math.min(start + limit, cachedArticles.articles.length);
+        console.log(`Pagination (fallback): serving articles from index ${start} to ${end-1} (page ${page}, limit ${limit})`);
+        
         const pagedArticles = cachedArticles.articles.slice(start, end);
         
         return {
@@ -62,8 +109,9 @@ export class CachedStorage implements IStorage {
         };
       }
       
-      // If no cache available, rethrow
-      throw error;
+      // If no cache available, return empty result instead of throwing error
+      console.error('No cache available and original storage failed, returning empty result');
+      return { articles: [], total: 0 };
     }
   }
   
@@ -73,12 +121,25 @@ export class CachedStorage implements IStorage {
       const cachedArticles = CacheService.getCachedFeaturedArticles();
       if (cachedArticles) {
         console.log('Serving featured articles from cache');
+        
+        // Double-check integrity of results
+        if (!Array.isArray(cachedArticles)) {
+          console.error('Featured articles cache is not an array, fetching from original storage');
+          throw new Error('Invalid featured articles cache format');
+        }
+        
         return cachedArticles;
       }
       
       // If not in cache, get from original storage
       console.log('Cache miss for featured articles, fetching from original storage');
       const articles = await this.originalStorage.getFeaturedArticles();
+      
+      // Validate before caching
+      if (!articles || !Array.isArray(articles)) {
+        console.error('Invalid featured articles from original storage, not caching');
+        return [];
+      }
       
       // Cache the result for future use
       CacheService.cacheFeaturedArticles(articles);
@@ -90,20 +151,41 @@ export class CachedStorage implements IStorage {
       const cachedArticles = CacheService.getCachedFeaturedArticles();
       if (cachedArticles) {
         console.log('Serving featured articles from cache after error');
+        
+        // Double-check integrity of results even in fallback path
+        if (!Array.isArray(cachedArticles)) {
+          console.error('Featured articles cache is not an array, returning empty array');
+          return [];
+        }
+        
         return cachedArticles;
       }
       
-      // If no cache available, rethrow
-      throw error;
+      // If no cache available, return empty array instead of throwing
+      console.error('No featured articles cache available and original storage failed, returning empty array');
+      return [];
     }
   }
   
   async getRecentArticles(limit: number): Promise<Article[]> {
     try {
+      // Ensure limit is valid
+      if (limit <= 0) {
+        console.warn('Invalid limit requested for recent articles:', limit);
+        limit = 4; // Default to reasonable value
+      }
+      
       // Try to get from cache first
       const cachedArticles = CacheService.getCachedRecentArticles();
       if (cachedArticles) {
         console.log('Serving recent articles from cache');
+        
+        // Double-check integrity of results
+        if (!Array.isArray(cachedArticles)) {
+          console.error('Recent articles cache is not an array, fetching from original storage');
+          throw new Error('Invalid recent articles cache format');
+        }
+        
         // Apply limit to cached data
         return cachedArticles.slice(0, limit);
       }
@@ -111,6 +193,12 @@ export class CachedStorage implements IStorage {
       // If not in cache, get from original storage
       console.log('Cache miss for recent articles, fetching from original storage');
       const articles = await this.originalStorage.getRecentArticles(limit);
+      
+      // Validate before caching
+      if (!articles || !Array.isArray(articles)) {
+        console.error('Invalid recent articles from original storage, not caching');
+        return [];
+      }
       
       // Cache the result for future use
       CacheService.cacheRecentArticles(articles);
@@ -122,11 +210,19 @@ export class CachedStorage implements IStorage {
       const cachedArticles = CacheService.getCachedRecentArticles();
       if (cachedArticles) {
         console.log('Serving recent articles from cache after error');
+        
+        // Double-check integrity of results even in fallback path
+        if (!Array.isArray(cachedArticles)) {
+          console.error('Recent articles cache is not an array, returning empty array');
+          return [];
+        }
+        
         return cachedArticles.slice(0, limit);
       }
       
-      // If no cache available, rethrow
-      throw error;
+      // If no cache available, return empty array instead of throwing
+      console.error('No recent articles cache available and original storage failed, returning empty array');
+      return [];
     }
   }
   

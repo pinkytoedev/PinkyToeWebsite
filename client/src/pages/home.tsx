@@ -15,6 +15,13 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel";
 
+// Add window property for quote logging state
+declare global {
+  interface Window {
+    __quotesLogged?: boolean;
+  }
+}
+
 export default function Home() {
   const [autoPlayInterval, setAutoPlayInterval] = useState<NodeJS.Timeout | null>(null);
   const carouselRef = useRef<{ scrollNext: () => void } | null>(null);
@@ -27,13 +34,27 @@ export default function Home() {
     queryKey: [API_ROUTES.RECENT_ARTICLES],
   });
 
-  const { data: quotes = [], isLoading: quotesLoading } = useQuery<CarouselQuote[]>({
-    queryKey: [API_ROUTES.QUOTES],
+  // We'll share the quotes query with Layout using the same query key
+  const { data: allQuotes = [], isLoading: quotesLoading } = useQuery<CarouselQuote[]>({
+    queryKey: ["/api/quotes"]
   });
+  
+  // Filter the philo quotes
+  const quotes = Array.isArray(allQuotes) ? allQuotes : [];
+  const philoQuotes = quotes.filter((quote: CarouselQuote) => quote.carousel === "philo");
+  
+  // For debugging purposes, only log on initial load
+  useEffect(() => {
+    if (quotes.length > 0 && !window.__quotesLogged) {
+      window.__quotesLogged = true;
+      console.log("All quotes loaded:", quotes);
+      console.log("Philo quotes:", philoQuotes);
+    }
+  }, [quotes.length > 0]);
 
   // Set up auto-play for the carousel
   useEffect(() => {
-    if (quotes && quotes.length > 0 && carouselRef.current) {
+    if (philoQuotes.length > 0) {
       // Start auto-play
       const interval = setInterval(() => {
         if (carouselRef.current) {
@@ -50,7 +71,7 @@ export default function Home() {
         }
       };
     }
-  }, [quotes, carouselRef.current]);
+  }, [philoQuotes.length]); // Only depend on the quotes length, not the ref
 
   return (
     <Layout>
@@ -104,7 +125,7 @@ export default function Home() {
         {/* Sidebar Column (30%) */}
         <div className="lg:col-span-4">
           {/* Recent Articles Section */}
-          <div className="bg-white rounded-lg shadow-lg overflow-hidden mb-8">
+          <div className="bg-pink-50 rounded-lg shadow-lg overflow-hidden mb-8">
             <div className="bg-primary text-white py-3 px-4">
               <h2 className="font-quicksand font-bold text-xl">Recent Articles</h2>
             </div>
@@ -137,12 +158,12 @@ export default function Home() {
           </div>
 
           {/* Quotes Carousel Section */}
-          <div className="bg-white rounded-lg shadow-lg overflow-hidden">
+          <div className="bg-pink-50 rounded-lg shadow-lg overflow-hidden">
             <div className="bg-primary text-white py-3 px-4">
               <h2 className="font-quicksand font-bold text-xl">Quotes</h2>
             </div>
             <div className="p-6" style={{backgroundImage: 'url("/assets/pink-toe-pattern.png")', backgroundSize: '400px'}}>
-              <div className="bg-white bg-opacity-85 p-5 rounded-lg">
+              <div className="bg-pink-50 bg-opacity-85 p-5 rounded-lg">
                 {quotesLoading ? (
                   <div className="space-y-3">
                     <Skeleton className="h-5 w-full" />
@@ -152,44 +173,48 @@ export default function Home() {
                       <Skeleton className="h-4 w-40 ml-auto" />
                     </div>
                   </div>
-                ) : quotes && quotes.length > 0 ? (
-                  <div className="relative">
-                    <Carousel
-                      opts={{
-                        align: "center",
-                        loop: true,
-                        slidesToScroll: 1,
-                        containScroll: "trimSnaps",
-                        duration: 30,
-                      }}
-                      setApi={(api) => {
-                        if (api) {
-                          carouselRef.current = api;
-                        }
-                      }}
-                    >
-                      <CarouselContent>
-                        {quotes
-                          .filter(quote => quote.carousel === "Philo")
-                          .map((quote) => (
-                            <CarouselItem key={quote.id} className="pt-1 md:basis-full">
-                              <div className="py-2">
-                                <blockquote className="italic text-lg font-pacifico text-pinky-dark min-h-[6rem] flex items-center">
-                                  "{quote.quote}"
-                                </blockquote>
-                                <div className="mt-3 text-right text-primary font-quicksand font-semibold">
-                                  - The Pinky Toe Team
+                ) : philoQuotes.length > 0 ? (
+                  <>
+                    <div className="text-xs text-gray-500 mb-2">
+                      Debug: Total quotes: {quotes.length}, 
+                      Philo quotes: {philoQuotes.length}
+                    </div>
+                    <div className="relative">
+                      <Carousel
+                        opts={{
+                          align: "center",
+                          loop: true,
+                          slidesToScroll: 1,
+                          containScroll: "trimSnaps",
+                          duration: 30,
+                        }}
+                        setApi={(api) => {
+                          if (api) {
+                            carouselRef.current = api;
+                          }
+                        }}
+                      >
+                        <CarouselContent>
+                          {philoQuotes.map((quote: CarouselQuote) => (
+                              <CarouselItem key={quote.id} className="pt-1 md:basis-full">
+                                <div className="py-2">
+                                  <blockquote className="italic text-lg font-pacifico text-pinky-dark min-h-[6rem] flex items-center">
+                                    "{quote.quote}"
+                                  </blockquote>
+                                  <div className="mt-3 text-right text-primary font-quicksand font-semibold">
+                                    - The Pinky Toe Team
+                                  </div>
                                 </div>
-                              </div>
-                            </CarouselItem>
-                          ))}
-                      </CarouselContent>
-                      <div className="flex justify-center mt-4">
-                        <CarouselPrevious className="relative static mr-2" />
-                        <CarouselNext className="relative static ml-2" />
-                      </div>
-                    </Carousel>
-                  </div>
+                              </CarouselItem>
+                            ))}
+                        </CarouselContent>
+                        <div className="flex justify-center mt-4">
+                          <CarouselPrevious className="relative static mr-2" />
+                          <CarouselNext className="relative static ml-2" />
+                        </div>
+                      </Carousel>
+                    </div>
+                  </>
                 ) : (
                   <>
                     <blockquote className="italic text-lg font-pacifico text-pinky-dark">

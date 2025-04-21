@@ -68,10 +68,14 @@ export default function ArticleDetail() {
   };
 
 
-  // Get the image URL if article is available
-  const imageSource = article 
-    ? (article.imageUrl ? getImageUrl(article.imageUrl) : getPhotoUrl(article.photo))
-    : '';
+  // Get the image URL from MainImageLink if article is available, or use placeholder
+  const imageSource = article && article.imageUrl 
+    ? getImageUrl(article.imageUrl)
+    : '/api/images/placeholder';
+    
+  if (article) {
+    console.log(`Article detail ${article.id} - Using imageUrl: ${article.imageUrl || 'Not available, using placeholder'}`);
+  }
     
   // Get team member IDs if available
   const authorTeamMember = article?.name ? findTeamMemberByName(article.name) : undefined;
@@ -145,8 +149,8 @@ export default function ArticleDetail() {
             <p className="text-gray-700">Failed to load article. Please try again later.</p>
           </div>
         ) : article ? (
-          <div className="bg-white rounded-lg shadow-lg overflow-hidden">
-            <div className="flex justify-center bg-gray-50 py-6">
+          <div className="bg-pink-50 rounded-lg shadow-lg overflow-hidden">
+            <div className="flex justify-center bg-pink-100/50 py-6">
               <img 
                 src={imageSource} 
                 alt={article.title} 
