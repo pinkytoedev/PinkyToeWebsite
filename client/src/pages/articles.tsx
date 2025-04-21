@@ -58,7 +58,7 @@ export default function Articles() {
 
   return (
     <Layout>
-      <h1 className="font-quicksand font-bold text-3xl md:text-4xl text-white mb-6">All Articles</h1>
+      <h1 className="font-quicksand font-bold text-3xl md:text-4xl text-primary mb-6">All Articles</h1>
       
       {/* Search Bar */}
       <div className="bg-white rounded-lg shadow-lg p-4 mb-8">

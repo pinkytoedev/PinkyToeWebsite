@@ -78,7 +78,7 @@ export default function Home() {
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
         {/* Main Content Column (70%) */}
         <div className="lg:col-span-8">
-          <h1 className="font-quicksand font-bold text-3xl md:text-4xl text-white mb-6">Featured Articles</h1>
+          <h1 className="font-quicksand font-bold text-3xl md:text-4xl text-primary mb-6">Featured Articles</h1>
 
           {featuredLoading ? (
             <div className="space-y-8">
@@ -126,7 +126,7 @@ export default function Home() {
         <div className="lg:col-span-4">
           {/* Recent Articles Section */}
           <div className="bg-pink-50 rounded-lg shadow-lg overflow-hidden mb-8">
-            <div className="bg-primary/80 text-white py-3 px-4">
+            <div className="bg-primary text-white py-3 px-4">
               <h2 className="font-quicksand font-bold text-xl">Recent Articles</h2>
             </div>
             <div className="p-4 space-y-4">
@@ -159,7 +159,7 @@ export default function Home() {
 
           {/* Quotes Carousel Section */}
           <div className="bg-pink-50 rounded-lg shadow-lg overflow-hidden">
-            <div className="bg-primary/80 text-white py-3 px-4">
+            <div className="bg-primary text-white py-3 px-4">
               <h2 className="font-quicksand font-bold text-xl">Quotes</h2>
             </div>
             <div className="p-6" style={{backgroundImage: 'url("/assets/pink-toe-pattern.png")', backgroundSize: '400px'}}>
