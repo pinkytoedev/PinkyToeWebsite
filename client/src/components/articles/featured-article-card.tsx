@@ -22,10 +22,10 @@ export function FeaturedArticleCard({ article }: FeaturedArticleCardProps) {
   
   return (
     <Link href={`/articles/${article.id}`} className="block">
-      <div className="article-card bg-primary rounded-lg shadow-lg overflow-hidden cursor-pointer hover:shadow-xl transition-shadow text-white">
+      <div className="article-card bg-primary/80 rounded-lg shadow-lg overflow-hidden cursor-pointer hover:shadow-xl transition-shadow text-white">
         <div className="md:flex">
           <div className="md:w-2/5 flex items-center justify-center">
-            <div className="h-80 w-full bg-primary/80 relative overflow-hidden">
+            <div className="h-80 w-full bg-primary/60 relative overflow-hidden">
               <img 
                 src={imageSource} 
                 alt={article.title} 
@@ -40,17 +40,17 @@ export function FeaturedArticleCard({ article }: FeaturedArticleCardProps) {
             </div>
           </div>
           <div className="p-6 md:w-3/5">
-            <div className="uppercase tracking-wide text-sm text-pink-300 font-semibold">Featured</div>
+            <div className="uppercase tracking-wide text-sm text-white font-semibold">Featured</div>
             <h2 className="font-quicksand font-bold text-2xl mt-2 mb-4 text-white">
               {article.title}
             </h2>
-            <p className="text-pink-100 mb-4">
+            <p className="text-white mb-4">
               {article.description}
             </p>
             <div className="flex items-center">
               <div className="text-sm">
-                <p className="text-pink-300 font-semibold">{article.name}</p>
-                <p className="text-pink-200">{formatDate(article.publishedAt)}</p>
+                <p className="text-white font-semibold">{article.name}</p>
+                <p className="text-pink-100">{formatDate(article.publishedAt)}</p>
               </div>
             </div>
             <div className="mt-4">

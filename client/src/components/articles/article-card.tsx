@@ -16,12 +16,12 @@ export function ArticleCard({ article }: ArticleCardProps) {
 
   return (
     <Link href={`/articles/${article.id}`} className="block h-full">
-      <div className="article-card bg-primary rounded-lg shadow-lg overflow-hidden flex flex-col h-full group cursor-pointer hover:shadow-xl transition-shadow text-white">
+      <div className="article-card bg-primary/80 rounded-lg shadow-lg overflow-hidden flex flex-col h-full group cursor-pointer hover:shadow-xl transition-shadow text-white">
         <div className="relative">
           <img 
             src={imageSource} 
             alt={article.title} 
-            className="h-48 w-full object-contain bg-primary/80"
+            className="h-48 w-full object-contain bg-primary/60"
             onError={(e) => {
               const target = e.target as HTMLImageElement;
               console.error(`Failed to load image: ${target.src}`);
@@ -42,14 +42,14 @@ export function ArticleCard({ article }: ArticleCardProps) {
           <h2 className="font-quicksand font-bold text-xl mb-2 text-white min-h-[3rem] line-clamp-2">
             {article.title}
           </h2>
-          <p className="text-pink-100 text-sm mb-4 min-h-[4rem] line-clamp-3">
+          <p className="text-white text-sm mb-4 min-h-[4rem] line-clamp-3">
             {article.description}
           </p>
         </div>
         <div className="px-4 pb-4 mt-auto flex justify-between items-center">
           <div className="text-xs">
-            <p className="text-pink-300 font-semibold">{article.name}</p>
-            <p className="text-pink-200">{formatDate(article.publishedAt)}</p>
+            <p className="text-white font-semibold">{article.name}</p>
+            <p className="text-pink-100">{formatDate(article.publishedAt)}</p>
           </div>
         </div>
       </div>
