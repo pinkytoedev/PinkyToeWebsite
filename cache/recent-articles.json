@@ -4,7 +4,7 @@
       "id": "reczb1AUBnpSNbxYl",
       "title": "This White Ass Bar Got Me Feeling Like Grammy Award Winning Musician Alessia Cara",
       "description": "You know what? I’m not sorry if I seem uninterested. Or I’m not listening. Or I’m indifferent. Because truly I ain’t got no business here, but since my friends are here, I just came to kick it. Or at least I attempted to.",
-      "content": "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n  <meta charset=\"UTF-8\">\n  <title>Night Out in Boston</title>\n  <style>\n    body {\n      font-family: Arial, sans-serif;\n      line-height: 1.6;\n      padding: 2rem;\n      background-color: #f8f8f8;\n      color: #333;\n    }\n    p {\n      margin-bottom: 1.5rem;\n    }\n  </style>\n</head>\n<body>\n\n  <p>You know what? I’m not sorry if I seem uninterested. Or I’m not listening. Or I’m indifferent. Because truly I ain’t got no business here, but since my friends are here, I just came to kick it. Or at least I attempted to.</p>\n\n  <p><strong>Boston, Massachusetts</strong> does not have many good things going for it at the moment. The weather sucks, the captain of their hockey team got traded, and —worst of all— the nightlife is atrocious. Which brings us back to this white ass bar and me, someone who is famously <em>not</em> white.</p>\n\n  <p>Going nonverbal is an understatement. I’m trying very hard to develop superpowers in order to hide in the walls. But also… if one more slightly balding student athlete who isn’t even going to make it to the league bumps into me, I may have to develop superpowers to explode him with my mind.</p>\n\n  <p>I know we all made fun of Alessia Cara for making what was once described as an anthem for introverts, but have we never once considered that she was tapping into the oppression she faced as a light-skinned passing Italian? Like, they literally stuck ol’ girl in a function where she couldn’t kick it and just listen to some music with the message like she usually does.</p>\n\n  <p>So as bottle blondes blatantly step in front of me at the bar to try and score free drinks from the guy who routinely cheats on his girlfriend while <strong>Tate McRae</strong> blasts from the speakers on what is supposed to be <em>“Afro-House”</em> night, I understand Ms. Caracciolo more and more.</p>\n\n  <p>And while I’m not congregating next to the refrigerator, some girl is definitely talking ‘bout her haters but she ain’t got none! Except, she does now. It’s me. There’s something rushing through my veins that’s making me volatile, so unlike the boy who’s throwing up cause he can’t take what’s in his cup no more, the whiskey sour in my hands is making me <em>thisss</em> close to putting my hands on someone. Just because I’m an (alleged) pacifist does not mean I’m unwilling to pass a fist.</p>\n\n</body>\n</html>\n",
+      "content": "  <style>\n    body {\n      font-family: Arial, sans-serif;\n      line-height: 1.6;\n      background-color: #f8f8f8;\n      color: #333;\n    }\n    p {\n      margin-bottom: 1.5rem;\n    }\n  </style>\n</head>\n<body>\n\n  <p>You know what? I’m not sorry if I seem uninterested. Or I’m not listening. Or I’m indifferent. Because truly I ain’t got no business here, but since my friends are here, I just came to kick it. Or at least I attempted to.</p>\n\n  <p><strong>Boston, Massachusetts</strong> does not have many good things going for it at the moment. The weather sucks, the captain of their hockey team got traded, and —worst of all— the nightlife is atrocious. Which brings us back to this white ass bar and me, someone who is famously <em>not</em> white.</p>\n\n  <p>Going nonverbal is an understatement. I’m trying very hard to develop superpowers in order to hide in the walls. But also… if one more slightly balding student athlete who isn’t even going to make it to the league bumps into me, I may have to develop superpowers to explode him with my mind.</p>\n\n  <p>I know we all made fun of Alessia Cara for making what was once described as an anthem for introverts, but have we never once considered that she was tapping into the oppression she faced as a light-skinned passing Italian? Like, they literally stuck ol’ girl in a function where she couldn’t kick it and just listen to some music with the message like she usually does.</p>\n\n  <p>So as bottle blondes blatantly step in front of me at the bar to try and score free drinks from the guy who routinely cheats on his girlfriend while <strong>Tate McRae</strong> blasts from the speakers on what is supposed to be <em>“Afro-House”</em> night, I understand Ms. Caracciolo more and more.</p>\n\n  <p>And while I’m not congregating next to the refrigerator, some girl is definitely talking ‘bout her haters but she ain’t got none! Except, she does now. It’s me. There’s something rushing through my veins that’s making me volatile, so unlike the boy who’s throwing up cause he can’t take what’s in his cup no more, the whiskey sour in my hands is making me <em>thisss</em> close to putting my hands on someone. Just because I’m an (alleged) pacifist does not mean I’m unwilling to pass a fist.</p>\n\n</body>\n</html>\n",
       "contentFormat": "html",
       "imageUrl": "/api/images/https%3A%2F%2Fi.ibb.co%2F7tt2kX52%2FThis-White-Ass-Bar-Got-Me-Feeling-Like-Grammy-Award-Winning-Musician-Alessia-Cara-jpg.jpg",
       "imageType": "url",
@@ -20,7 +20,7 @@
       "name_photo": [
         "Elizabeth Morearty"
       ],
-      "createdAt": "2025-04-19T22:16:17.479Z"
+      "createdAt": "2025-04-21T00:23:40.922Z"
     },
     {
       "id": "recRV7JdEc7Y9OaIa",
@@ -32,7 +32,7 @@
       "imageType": "url",
       "imagePath": null,
       "featured": false,
-      "publishedAt": "2025-04-16T16:53:00.000Z",
+      "publishedAt": "2025-04-16T12:53:00.000Z",
       "name": [
         "Martin Akamine"
       ],
@@ -42,7 +42,7 @@
       "name_photo": [
         "Elizabeth Morearty"
       ],
-      "createdAt": "2025-04-19T22:16:17.480Z"
+      "createdAt": "2025-04-21T00:23:40.923Z"
     },
     {
       "id": "recscaECzXSMnY1ND",
@@ -54,7 +54,7 @@
       "imageType": "url",
       "imagePath": null,
       "featured": false,
-      "publishedAt": "2025-04-15T18:56:00.000Z",
+      "publishedAt": "2025-04-15T14:56:00.000Z",
       "name": [
         "Emma Santos"
       ],
@@ -64,7 +64,7 @@
       "name_photo": [
         "Elana Felig "
       ],
-      "createdAt": "2025-04-19T22:16:17.480Z"
+      "createdAt": "2025-04-21T00:23:40.923Z"
     },
     {
       "id": "recQgVsmzZrsLuhEb",
@@ -76,7 +76,7 @@
       "imageType": "url",
       "imagePath": null,
       "featured": false,
-      "publishedAt": "2025-04-14T17:53:00.000Z",
+      "publishedAt": "2025-04-14T13:53:00.000Z",
       "name": [
         "Ariana Beck"
       ],
@@ -86,7 +86,7 @@
       "name_photo": [
         "Elizabeth Morearty"
       ],
-      "createdAt": "2025-04-19T22:16:17.481Z"
+      "createdAt": "2025-04-21T00:23:40.924Z"
     },
     {
       "id": "recE5pKivsH3syL0L",
@@ -98,7 +98,7 @@
       "imageType": "url",
       "imagePath": null,
       "featured": false,
-      "publishedAt": "2025-04-14T17:50:00.000Z",
+      "publishedAt": "2025-04-14T13:50:00.000Z",
       "name": [
         "Mandy"
       ],
@@ -108,7 +108,7 @@
       "name_photo": [
         "Elizabeth Morearty"
       ],
-      "createdAt": "2025-04-19T22:16:17.482Z"
+      "createdAt": "2025-04-21T00:23:40.924Z"
     },
     {
       "id": "rec8UnN6O1G6w7iwG",
@@ -120,7 +120,7 @@
       "imageType": "url",
       "imagePath": null,
       "featured": false,
-      "publishedAt": "2025-04-14T17:47:00.000Z",
+      "publishedAt": "2025-04-14T13:47:00.000Z",
       "name": [
         "Paige Schwartz"
       ],
@@ -130,7 +130,7 @@
       "name_photo": [
         "Adrianna Uykan"
       ],
-      "createdAt": "2025-04-19T22:16:17.482Z"
+      "createdAt": "2025-04-21T00:23:40.924Z"
     },
     {
       "id": "rec9VM3surMszV913",
@@ -142,7 +142,7 @@
       "imageType": "url",
       "imagePath": null,
       "featured": false,
-      "publishedAt": "2025-04-10T16:59:30.179Z",
+      "publishedAt": "2025-04-10T12:59:30.179Z",
       "name": [
         "Maya Bride"
       ],
@@ -152,7 +152,7 @@
       "name_photo": [
         "ā̶͖̮̯̙̦̻̬̜͇͕̀̽̓̏̈́̏̓̄n̵̬̔̐o̷̱̯̳͔̱̒͗̇̇ͅn̸̛̤̰̈́̓̒̓͊̈͆̏͠y̸̨̢̰̠̳̝͚͈̙͉̒̀̑̔͆̅̏͝m̶̤̾̒̈́͆͋̈o̶̡̨̘̺̘̣̎͐̀̈̕͜͠u̸̬̬͈̺̩̺͎̐̃ś̴̛̛͖̺̠̼͎͛͒͐͌͆̚"
       ],
-      "createdAt": "2025-04-19T22:16:17.483Z"
+      "createdAt": "2025-04-21T00:23:40.925Z"
     },
     {
       "id": "recfGgRSmED4MuRce",
@@ -164,7 +164,7 @@
       "imageType": "url",
       "imagePath": null,
       "featured": false,
-      "publishedAt": "2025-04-09T17:34:22.716Z",
+      "publishedAt": "2025-04-09T13:34:22.716Z",
       "name": [
         "Claire Zhang"
       ],
@@ -174,8 +174,8 @@
       "name_photo": [
         "ā̶͖̮̯̙̦̻̬̜͇͕̀̽̓̏̈́̏̓̄n̵̬̔̐o̷̱̯̳͔̱̒͗̇̇ͅn̸̛̤̰̈́̓̒̓͊̈͆̏͠y̸̨̢̰̠̳̝͚͈̙͉̒̀̑̔͆̅̏͝m̶̤̾̒̈́͆͋̈o̶̡̨̘̺̘̣̎͐̀̈̕͜͠u̸̬̬͈̺̩̺͎̐̃ś̴̛̛͖̺̠̼͎͛͒͐͌͆̚"
       ],
-      "createdAt": "2025-04-19T22:16:17.483Z"
+      "createdAt": "2025-04-21T00:23:40.925Z"
     }
   ],
-  "timestamp": 1745100977483
+  "timestamp": 1745195020925
 }
