@@ -22,10 +22,10 @@ export function FeaturedArticleCard({ article }: FeaturedArticleCardProps) {
   
   return (
     <Link href={`/articles/${article.id}`} className="block">
-      <div className="article-card bg-pink-50 rounded-lg shadow-lg overflow-hidden cursor-pointer hover:shadow-xl transition-shadow">
+      <div className="article-card bg-pink-900 rounded-lg shadow-lg overflow-hidden cursor-pointer hover:shadow-xl transition-shadow text-white">
         <div className="md:flex">
           <div className="md:w-2/5 flex items-center justify-center">
-            <div className="h-80 w-full bg-pink-100/50 relative overflow-hidden">
+            <div className="h-80 w-full bg-pink-800/50 relative overflow-hidden">
               <img 
                 src={imageSource} 
                 alt={article.title} 
@@ -40,21 +40,21 @@ export function FeaturedArticleCard({ article }: FeaturedArticleCardProps) {
             </div>
           </div>
           <div className="p-6 md:w-3/5">
-            <div className="uppercase tracking-wide text-sm text-primary font-semibold">Featured</div>
-            <h2 className="font-quicksand font-bold text-2xl mt-2 mb-4 text-pinky-dark">
+            <div className="uppercase tracking-wide text-sm text-pink-300 font-semibold">Featured</div>
+            <h2 className="font-quicksand font-bold text-2xl mt-2 mb-4 text-white">
               {article.title}
             </h2>
-            <p className="text-gray-600 mb-4">
+            <p className="text-pink-100 mb-4">
               {article.description}
             </p>
             <div className="flex items-center">
               <div className="text-sm">
-                <p className="text-primary font-semibold">{article.name}</p>
-                <p className="text-gray-500">{formatDate(article.publishedAt)}</p>
+                <p className="text-pink-300 font-semibold">{article.name}</p>
+                <p className="text-pink-200">{formatDate(article.publishedAt)}</p>
               </div>
             </div>
             <div className="mt-4">
-              <Button className="bg-primary hover:bg-pinky-dark text-white font-quicksand font-bold py-2 px-4 rounded transition-colors">
+              <Button className="bg-pink-600 hover:bg-pink-500 text-white font-quicksand font-bold py-2 px-4 rounded transition-colors">
                 Read More
               </Button>
             </div>

@@ -16,22 +16,22 @@ export function ArticleCard({ article }: ArticleCardProps) {
 
   return (
     <Link href={`/articles/${article.id}`} className="block h-full">
-      <div className="article-card bg-pink-50 rounded-lg shadow-lg overflow-hidden flex flex-col h-full group cursor-pointer hover:shadow-xl transition-shadow">
+      <div className="article-card bg-pink-900 rounded-lg shadow-lg overflow-hidden flex flex-col h-full group cursor-pointer hover:shadow-xl transition-shadow text-white">
         <div className="relative">
           <img 
             src={imageSource} 
             alt={article.title} 
-            className="h-48 w-full object-contain bg-pink-100/50"
+            className="h-48 w-full object-contain bg-pink-800/50"
             onError={(e) => {
               const target = e.target as HTMLImageElement;
               console.error(`Failed to load image: ${target.src}`);
               target.src = '/api/images/placeholder';
             }}
           />
-          <div className="article-overlay absolute inset-0 bg-primary bg-opacity-40 opacity-0 flex items-center justify-center transition-opacity duration-300 group-hover:opacity-100">
+          <div className="article-overlay absolute inset-0 bg-pink-500 bg-opacity-40 opacity-0 flex items-center justify-center transition-opacity duration-300 group-hover:opacity-100">
             <div>
               <Button 
-                className="bg-white text-primary font-quicksand font-bold py-2 px-4 rounded-full shadow-lg transition-colors hover:bg-pinky-dark hover:text-white"
+                className="bg-white text-pink-800 font-quicksand font-bold py-2 px-4 rounded-full shadow-lg transition-colors hover:bg-pink-600 hover:text-white"
               >
                 Read More
               </Button>
@@ -39,17 +39,17 @@ export function ArticleCard({ article }: ArticleCardProps) {
           </div>
         </div>
         <div className="p-4 flex-grow">
-          <h2 className="font-quicksand font-bold text-xl mb-2 text-pinky-dark min-h-[3rem] line-clamp-2">
+          <h2 className="font-quicksand font-bold text-xl mb-2 text-white min-h-[3rem] line-clamp-2">
             {article.title}
           </h2>
-          <p className="text-gray-600 text-sm mb-4 min-h-[4rem] line-clamp-3">
+          <p className="text-pink-100 text-sm mb-4 min-h-[4rem] line-clamp-3">
             {article.description}
           </p>
         </div>
         <div className="px-4 pb-4 mt-auto flex justify-between items-center">
           <div className="text-xs">
-            <p className="text-primary font-semibold">{article.name}</p>
-            <p className="text-gray-500">{formatDate(article.publishedAt)}</p>
+            <p className="text-pink-300 font-semibold">{article.name}</p>
+            <p className="text-pink-200">{formatDate(article.publishedAt)}</p>
           </div>
         </div>
       </div>
