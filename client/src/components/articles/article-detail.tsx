@@ -191,16 +191,16 @@ export function ArticleDetail({ articleId, onClose }: ArticleDetailProps) {
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center" onClick={handleBackdropClick}>
-      <div className="bg-white rounded-lg max-w-4xl w-full max-h-screen overflow-y-auto mx-4" onClick={e => e.stopPropagation()}>
-        <div className="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 flex justify-between items-center">
-          <h2 className="font-quicksand font-bold text-2xl text-primary">{article.title}</h2>
-          <button onClick={onClose} className="text-pinky-dark hover:text-primary text-2xl">
+    <div className="fixed inset-0 bg-black bg-opacity-70 z-50 flex items-center justify-center" onClick={handleBackdropClick}>
+      <div className="bg-primary/75 backdrop-blur-sm text-white rounded-lg max-w-4xl w-full max-h-screen overflow-y-auto mx-4" onClick={e => e.stopPropagation()}>
+        <div className="sticky top-0 bg-primary/90 border-b border-primary/30 px-6 py-4 flex justify-between items-center">
+          <h2 className="font-quicksand font-bold text-2xl text-white">{article.title}</h2>
+          <button onClick={onClose} className="text-white hover:text-pink-200 text-2xl">
             <X />
           </button>
         </div>
         <div className="p-6">
-          <div className="flex justify-center bg-gray-50 py-6 rounded-lg mb-6">
+          <div className="flex justify-center bg-primary/60 py-6 rounded-lg mb-6">
             <img 
               src={imageSource} 
               alt={article.title} 
@@ -217,7 +217,7 @@ export function ArticleDetail({ articleId, onClose }: ArticleDetailProps) {
             <div className="text-sm">
               {authorTeamMember ? (
                 <p 
-                  className="text-primary font-semibold cursor-pointer hover:underline" 
+                  className="text-white font-semibold cursor-pointer hover:underline" 
                   onClick={(e) => {
                     e.stopPropagation();
                     navigateToTeamMember(authorTeamMember.id);
@@ -226,13 +226,13 @@ export function ArticleDetail({ articleId, onClose }: ArticleDetailProps) {
                   {article.name} {/* Clickable author name */}
                 </p>
               ) : (
-                <p className="text-primary font-semibold">{article.name}</p>
+                <p className="text-white font-semibold">{article.name}</p>
               )}
-              <p className="text-gray-500">{formatDate(article.publishedAt)}</p>
+              <p className="text-pink-100">{formatDate(article.publishedAt)}</p>
               {article.name_photo && (
                 photoTeamMember ? (
                   <p 
-                    className="text-gray-500 text-xs mt-1 cursor-pointer hover:underline" 
+                    className="text-pink-100 text-xs mt-1 cursor-pointer hover:underline" 
                     onClick={(e) => {
                       e.stopPropagation();
                       navigateToTeamMember(photoTeamMember.id);
@@ -245,7 +245,7 @@ export function ArticleDetail({ articleId, onClose }: ArticleDetailProps) {
                         : ''}
                   </p>
                 ) : (
-                  <p className="text-gray-500 text-xs mt-1">
+                  <p className="text-pink-100 text-xs mt-1">
                     Photo Credit: {typeof article.name_photo === 'string' 
                       ? article.name_photo 
                       : Array.isArray(article.name_photo) 
@@ -257,11 +257,11 @@ export function ArticleDetail({ articleId, onClose }: ArticleDetailProps) {
             </div>
           </div>
           
-          <div className="prose prose-lg max-w-none prose-headings:text-primary prose-a:text-primary hover:prose-a:text-pinky-dark prose-hr:border-gray-300">
+          <div className="prose prose-lg max-w-none prose-headings:text-white prose-a:text-pink-100 hover:prose-a:text-white prose-hr:border-gray-300 prose-p:text-white prose-strong:text-white prose-em:text-white">
             {article.contentFormat === "html" ? (
               <div dangerouslySetInnerHTML={{ __html: article.content }} />
             ) : (
-              <p className="whitespace-pre-line">{article.content}</p>
+              <p className="whitespace-pre-line text-white">{article.content}</p>
             )}
           </div>
         </div>
