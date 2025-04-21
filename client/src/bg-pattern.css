@@ -2,7 +2,7 @@
 
 /* Body background with pattern */
 body {
-  background-color: #631c39; /* Darker pink background */
+  background-color: #b83760; /* Medium-dark pink background */
   background-image: url('/attached_assets/background for pinky website.png');
   background-attachment: fixed;
   background-size: 250px;
@@ -50,7 +50,7 @@ body {
 
 /* Glass morphism effects */
 .glass-effect {
-  background: rgba(99, 28, 57, 0.85);
+  background: rgba(184, 55, 96, 0.85);
   backdrop-filter: blur(8px);
   border: 1px solid rgba(232, 78, 137, 0.5);
   box-shadow: 0 8px 32px rgba(255, 77, 141, 0.3);
@@ -66,8 +66,8 @@ body {
   height: 100%;
   background: linear-gradient(
     to bottom,
-    rgba(99, 28, 57, 0) 0%,
-    rgba(99, 28, 57, 0.8) 100%
+    rgba(184, 55, 96, 0) 0%,
+    rgba(184, 55, 96, 0.8) 100%
   );
   opacity: 0.7;
   transition: opacity 0.3s ease;
@@ -83,7 +83,7 @@ body {
 }
 
 ::-webkit-scrollbar-track {
-  background: #4a1629;
+  background: #973052;
 }
 
 ::-webkit-scrollbar-thumb {
