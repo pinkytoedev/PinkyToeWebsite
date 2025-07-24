@@ -1,4 +1,5 @@
 import { QueryClient, QueryFunction } from "@tanstack/react-query";
+import { persistQueryClient } from "@tanstack/react-query-persist-client";
 
 async function throwIfResNotOk(res: Response) {
   if (!res.ok) {
@@ -49,9 +50,79 @@ export const queryClient = new QueryClient({
       refetchOnWindowFocus: false,
       staleTime: Infinity,
       retry: false,
+      gcTime: 1000 * 60 * 60 * 24, // 24 hours
     },
     mutations: {
       retry: false,
     },
   },
 });
+
+// Check if localStorage is available
+function isLocalStorageAvailable(): boolean {
+  try {
+    const test = '__localStorage_test__';
+    window.localStorage.setItem(test, test);
+    window.localStorage.removeItem(test);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+// Create a simple localStorage persister
+const createLocalStoragePersister = (storage: Storage, key: string) => ({
+  persistClient: async (client: any) => {
+    try {
+      storage.setItem(key, JSON.stringify(client));
+    } catch (error) {
+      console.warn('Failed to persist client to localStorage:', error);
+    }
+  },
+  restoreClient: async (): Promise<any> => {
+    try {
+      const storedClient = storage.getItem(key);
+      return storedClient ? JSON.parse(storedClient) : undefined;
+    } catch (error) {
+      console.warn('Failed to restore client from localStorage:', error);
+      return undefined;
+    }
+  },
+  removeClient: async () => {
+    try {
+      storage.removeItem(key);
+    } catch (error) {
+      console.warn('Failed to remove client from localStorage:', error);
+    }
+  },
+});
+
+// Initialize persistence only if localStorage is available
+if (isLocalStorageAvailable()) {
+  try {
+    const localStoragePersister = createLocalStoragePersister(
+      window.localStorage,
+      "PINKY_TOE_CACHE"
+    );
+
+    // Persist the query client
+    persistQueryClient({
+      queryClient,
+      persister: localStoragePersister,
+      maxAge: 1000 * 60 * 60 * 24, // 24 hours
+      hydrateOptions: {},
+      dehydrateOptions: {
+        shouldDehydrateQuery: (query) => {
+          // Only persist successful queries that have data
+          return query.state.status === 'success' && query.state.data !== undefined;
+        },
+      },
+    });
+    
+    console.log('React Query persistence initialized with localStorage');
+  } catch (error) {
+    console.warn('Failed to initialize React Query persistence:', error);
+  }
+} else {
+  console.warn('localStorage not available, React Query persistence disabled');
+}
