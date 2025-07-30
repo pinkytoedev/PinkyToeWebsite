@@ -1,9 +1,13 @@
+// Import config first to ensure environment variables are loaded
+import "./config";
+
 import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
 import { storage } from "./storage";
 import { CachedStorage } from "./storage-cached";
 import { RefreshService } from "./services/refresh-service";
+import { findAvailablePort } from "./utils/port-manager";
 
 // Create cached storage wrapper around the original storage
 export const cachedStorage = new CachedStorage(storage);
@@ -75,29 +79,55 @@ app.use((req, res, next) => {
     serveStatic(app);
   }
 
-  // ALWAYS serve the app on port 5000
-  // this serves both the API and the client.
-  // It is the only port that is not firewalled.
-  const port = 5000;
-  server.listen({
-    port,
-    host: "0.0.0.0",
-    reusePort: true,
-  }, () => {
-    log(`serving on port ${port}`);
-    
-    // Start background refresh service once server is running
-    RefreshService.startRefreshSchedules();
-    
-    // Setup graceful shutdown
-    const shutdown = () => {
-      log('Shutting down refresh service...');
-      RefreshService.stopRefreshSchedules();
-      process.exit(0);
-    };
-    
-    // Listen for termination signals
-    process.on('SIGINT', shutdown);
-    process.on('SIGTERM', shutdown);
-  });
+  // Get port from environment variable or use default
+  const defaultPort = parseInt(process.env.PORT || '5000', 10);
+  const host = process.env.HOST || '0.0.0.0';
+
+  try {
+    // Find an available port
+    const port = await findAvailablePort(defaultPort, 10, host);
+
+    server.listen({
+      port,
+      host,
+    }, () => {
+      log(`Server is running on http://${host}:${port}`);
+
+      if (app.get('env') === 'development') {
+        log(`Client: http://localhost:${port}`);
+        log(`API: http://localhost:${port}/api`);
+      }
+
+      // Start background refresh service once server is running
+      RefreshService.startRefreshSchedules();
+
+      // Setup graceful shutdown
+      const shutdown = () => {
+        log('Shutting down refresh service...');
+        RefreshService.stopRefreshSchedules();
+        server.close(() => {
+          log('Server closed');
+          process.exit(0);
+        });
+      };
+
+      // Listen for termination signals
+      process.on('SIGINT', shutdown);
+      process.on('SIGTERM', shutdown);
+    });
+
+    // Handle server errors
+    server.on('error', (error: any) => {
+      if (error.code === 'EADDRINUSE') {
+        log(`Port ${port} is already in use`);
+        process.exit(1);
+      } else {
+        log(`Server error: ${error.message}`);
+        throw error;
+      }
+    });
+  } catch (error) {
+    log(`Failed to start server: ${error}`);
+    process.exit(1);
+  }
 })();

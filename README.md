@@ -70,13 +70,24 @@ PinkyToeWebsite/
 
 | Command | Description |
 |---------|-------------|
-| `npm run dev` | Start development server with hot reload |
+| `npm run dev` | Start development server with hot reload (auto-finds available port) |
+| `npm run dev:interactive` | Start dev server with interactive port conflict resolution |
+| `npm run dev:port` | Start dev server on port 5001 (alternative port) |
 | `npm run build` | Build for production |
 | `npm start` | Start production server |
 | `npm run check` | Type check with TypeScript |
 | `npm test` | Run unit tests |
 | `npm run test:watch` | Run tests in watch mode |
 | `npm run test:coverage` | Run tests with coverage report |
+
+### Port Management
+
+The development server intelligently handles port conflicts:
+
+- **Automatic Port Selection**: If port 5000 is busy, the server automatically tries the next available port
+- **Environment Variable**: Set a custom port with `PORT=3000 npm run dev`
+- **Interactive Mode**: Use `npm run dev:interactive` for manual control over port conflicts
+- **Check Port Usage**: Run `node scripts/check-port.js 5000` to see what's using a specific port
 
 ## 🔧 Configuration
 
@@ -91,7 +102,8 @@ AIRTABLE_BASE_ID=your_airtable_base_id_here
 
 # Server Configuration
 NODE_ENV=development  # or 'production'
-PORT=5000            # Server port (default: 5000)
+PORT=5000            # Server port (default: 5000, auto-increments if busy)
+HOST=0.0.0.0         # Server host (default: 0.0.0.0)
 ```
 
 ### Development vs Production
