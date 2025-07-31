@@ -4,8 +4,8 @@ interface LogoProps {
   className?: string;
 }
 
-// Base path for GitHub Pages
-const BASE_PATH = '/PinkyToeWebsite';
+// Base path for custom domain GitHub Pages
+const BASE_PATH = '';
 
 // Small logo for mobile and footer using TransparentLogo.png
 export const PinkyToeLogo: React.FC<LogoProps> = ({ className }) => {
