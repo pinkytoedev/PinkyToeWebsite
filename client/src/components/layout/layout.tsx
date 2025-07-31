@@ -7,6 +7,7 @@ import { fetchQuotes } from "@/lib/api";
 import { Skeleton } from "@/components/ui/skeleton";
 import { CarouselQuote } from "@shared/schema";
 import { getAssetPath } from "@/lib/config";
+import { API_ROUTES } from "@/lib/constants";
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -14,7 +15,8 @@ interface LayoutProps {
 
 export function Layout({ children }: LayoutProps) {
   const { data: quotes, isLoading, error } = useQuery<CarouselQuote[]>({
-    queryKey: ["/api/quotes"],
+    queryKey: [API_ROUTES.QUOTES],
+    queryFn: fetchQuotes,
   });
   
   const [mounted, setMounted] = useState(false);

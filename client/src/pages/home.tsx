@@ -8,6 +8,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Link } from "wouter";
 import { CarouselQuote } from "@shared/schema";
 import { getAssetPath } from "@/lib/config";
+import { fetchFeaturedArticles, fetchRecentArticles, fetchQuotes } from "@/lib/api";
 import {
   Carousel,
   CarouselContent,
@@ -29,15 +30,18 @@ export default function Home() {
 
   const { data: featuredArticles = [], isLoading: featuredLoading } = useQuery<any[]>({
     queryKey: [API_ROUTES.FEATURED_ARTICLES],
+    queryFn: fetchFeaturedArticles,
   });
 
   const { data: recentArticles = [], isLoading: recentLoading } = useQuery<any[]>({
     queryKey: [API_ROUTES.RECENT_ARTICLES],
+    queryFn: fetchRecentArticles,
   });
 
   // We'll share the quotes query with Layout using the same query key
   const { data: allQuotes = [], isLoading: quotesLoading } = useQuery<CarouselQuote[]>({
-    queryKey: ["/api/quotes"]
+    queryKey: [API_ROUTES.QUOTES],
+    queryFn: fetchQuotes,
   });
   
   // Filter the philo quotes
