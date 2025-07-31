@@ -1,8 +1,8 @@
 import { Article, CarouselQuote, Team } from "@shared/schema";
 import { ITEMS_PER_PAGE } from "@/lib/constants";
 
-// Base path for GitHub Pages
-const BASE_PATH = '/PinkyToeWebsite';
+// Base path for custom domain GitHub Pages
+const BASE_PATH = '';
 
 // Helper function to fetch static JSON files
 async function fetchStaticJSON(path: string) {

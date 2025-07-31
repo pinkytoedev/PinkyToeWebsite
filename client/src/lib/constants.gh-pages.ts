@@ -9,17 +9,17 @@ export const ROUTES = {
   TEAM_MEMBER: "/team/:id",
 };
 
-// These are not used in GitHub Pages since we read from static files directly
+// API routes for custom domain GitHub Pages deployment
 export const API_ROUTES = {
-  ARTICLES: "/PinkyToeWebsite/data/articles.json",
-  FEATURED_ARTICLES: "/PinkyToeWebsite/data/featured-articles.json",
-  RECENT_ARTICLES: "/PinkyToeWebsite/data/recent-articles.json",
-  ARTICLE_BY_ID: (id: string) => `/PinkyToeWebsite/data/articles.json`,
-  TEAM: "/PinkyToeWebsite/data/team.json",
-  TEAM_MEMBER_BY_ID: (id: string) => `/PinkyToeWebsite/data/team.json`,
-  ARTICLES_BY_TEAM_MEMBER: (id: string) => `/PinkyToeWebsite/data/articles.json`,
-  QUOTES: "/PinkyToeWebsite/data/quotes.json",
-  QUOTE_OF_DAY: "/PinkyToeWebsite/data/quotes.json",
+  ARTICLES: "/data/articles.json",
+  FEATURED_ARTICLES: "/data/featured-articles.json",
+  RECENT_ARTICLES: "/data/recent-articles.json",
+  ARTICLE_BY_ID: (id: string) => `/data/articles.json`,
+  TEAM: "/data/team.json",
+  TEAM_MEMBER_BY_ID: (id: string) => `/data/team.json`,
+  ARTICLES_BY_TEAM_MEMBER: (id: string) => `/data/articles.json`,
+  QUOTES: "/data/quotes.json",
+  QUOTE_OF_DAY: "/data/quotes.json",
 };
 
 export const ITEMS_PER_PAGE = 6;

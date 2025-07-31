@@ -1,8 +1,8 @@
-// GitHub Pages specific configuration
-export const BASE_PATH = '/PinkyToeWebsite';
+// GitHub Pages specific configuration for custom domain
+export const BASE_PATH = '';
 
 export const getAssetPath = (path: string) => {
-  // Remove leading slash if present
-  const cleanPath = path.startsWith('/') ? path.substring(1) : path;
-  return `${BASE_PATH}/${cleanPath}`;
+  // For custom domain, use root path
+  const cleanPath = path.startsWith('/') ? path : `/${path}`;
+  return cleanPath;
 };
