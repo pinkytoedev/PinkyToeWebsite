@@ -44,6 +44,9 @@ jobs:
           
       - name: Copy .nojekyll file
         run: cp client/public/.nojekyll dist/public/.nojekyll
+        
+      - name: Create CNAME file for custom domain
+        run: echo "www.pinkytoepaper.com" > dist/public/CNAME
           
       - name: Setup Pages
         uses: actions/configure-pages@v4
