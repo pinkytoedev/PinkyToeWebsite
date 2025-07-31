@@ -16,4 +16,4 @@ coverage/
 *.lcov
 
 # Temporary files
-/tmp/
+/tmp/# GitHub Pages deployment fix
