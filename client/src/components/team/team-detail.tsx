@@ -7,6 +7,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { X } from "lucide-react";
 import { Link } from "wouter";
 import { getImageUrl, getPhotoUrl } from "@/lib/image-helper";
+import { fetchTeamMemberById, fetchArticlesByTeamMemberId } from "@/lib/api";
 
 interface TeamDetailProps {
   teamMemberId: string;
@@ -16,10 +17,13 @@ interface TeamDetailProps {
 export function TeamDetail({ teamMemberId, onClose }: TeamDetailProps) {
   const { data: teamMember, isLoading: teamLoading, error: teamError } = useQuery<Team>({
     queryKey: [API_ROUTES.TEAM_MEMBER_BY_ID(teamMemberId)],
+    queryFn: () => fetchTeamMemberById(teamMemberId),
+    enabled: !!teamMemberId,
   });
 
   const { data: articles, isLoading: articlesLoading } = useQuery<Article[]>({
     queryKey: [`/api/team/${teamMemberId}/articles`],
+    queryFn: () => fetchArticlesByTeamMemberId(teamMemberId),
     enabled: !!teamMember,
   });
 

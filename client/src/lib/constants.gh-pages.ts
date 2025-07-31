@@ -17,6 +17,7 @@ export const API_ROUTES = {
   ARTICLE_BY_ID: (id: string) => `/PinkyToeWebsite/data/articles.json`,
   TEAM: "/PinkyToeWebsite/data/team.json",
   TEAM_MEMBER_BY_ID: (id: string) => `/PinkyToeWebsite/data/team.json`,
+  ARTICLES_BY_TEAM_MEMBER: (id: string) => `/PinkyToeWebsite/data/articles.json`,
   QUOTES: "/PinkyToeWebsite/data/quotes.json",
   QUOTE_OF_DAY: "/PinkyToeWebsite/data/quotes.json",
 };

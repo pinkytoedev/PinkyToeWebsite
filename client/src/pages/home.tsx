@@ -34,8 +34,10 @@ export default function Home() {
   });
 
   const { data: recentArticles = [], isLoading: recentLoading } = useQuery<any[]>({
-    queryKey: [API_ROUTES.RECENT_ARTICLES],
-    queryFn: fetchRecentArticles,
+    queryKey: [API_ROUTES.RECENT_ARTICLES, 3],
+    queryFn: () => fetchRecentArticles(3),
+    staleTime: 0, // Always refetch to ensure fresh data
+    refetchOnWindowFocus: true,
   });
 
   // We'll share the quotes query with Layout using the same query key
@@ -43,11 +45,11 @@ export default function Home() {
     queryKey: [API_ROUTES.QUOTES],
     queryFn: fetchQuotes,
   });
-  
+
   // Filter the philo quotes
   const quotes = Array.isArray(allQuotes) ? allQuotes : [];
   const philoQuotes = quotes.filter((quote: CarouselQuote) => quote.carousel === "philo");
-  
+
   // For debugging purposes, only log on initial load
   useEffect(() => {
     if (quotes.length > 0 && !window.__quotesLogged) {
@@ -132,7 +134,7 @@ export default function Home() {
           {/* Recent Articles Section */}
           <div className="bg-pink-50 rounded-lg shadow-lg overflow-hidden mb-8">
             <div className="bg-primary text-white py-3 px-4">
-              <h2 className="font-quicksand font-bold text-xl">Recent Articles</h2>
+              <h2 className="font-quicksand font-bold text-xl text-white">Recent Articles</h2>
             </div>
             <div className="p-4 space-y-4">
               {recentLoading ? (
@@ -167,7 +169,7 @@ export default function Home() {
             <div className="bg-primary text-white py-3 px-4">
               <h2 className="font-quicksand font-bold text-xl">Quotes</h2>
             </div>
-            <div className="p-6" style={{backgroundImage: `url("${getAssetPath("/attached_assets/background for pinky website.png")}")`, backgroundSize: '400px'}}>
+            <div className="p-6" style={{ backgroundImage: `url("${getAssetPath("/attached_assets/background for pinky website.png")}")`, backgroundSize: '400px' }}>
               <div className="bg-pink-50 bg-opacity-85 p-5 rounded-lg">
                 {quotesLoading ? (
                   <div className="space-y-3">
@@ -181,7 +183,7 @@ export default function Home() {
                 ) : philoQuotes.length > 0 ? (
                   <>
                     <div className="text-xs text-gray-500 mb-2">
-                      Debug: Total quotes: {quotes.length}, 
+                      Debug: Total quotes: {quotes.length},
                       Philo quotes: {philoQuotes.length}
                     </div>
                     <div className="relative">
@@ -201,17 +203,17 @@ export default function Home() {
                       >
                         <CarouselContent>
                           {philoQuotes.map((quote: CarouselQuote) => (
-                              <CarouselItem key={quote.id} className="pt-1 md:basis-full">
-                                <div className="py-2">
-                                  <blockquote className="italic text-lg font-pacifico text-pinky-dark min-h-[6rem] flex items-center">
-                                    "{quote.quote}"
-                                  </blockquote>
-                                  <div className="mt-3 text-right text-primary font-quicksand font-semibold">
-                                    - The Pinky Toe Team
-                                  </div>
+                            <CarouselItem key={quote.id} className="pt-1 md:basis-full">
+                              <div className="py-2">
+                                <blockquote className="italic text-lg font-pacifico text-pinky-dark min-h-[6rem] flex items-center">
+                                  "{quote.quote}"
+                                </blockquote>
+                                <div className="mt-3 text-right text-primary font-quicksand font-semibold">
+                                  - The Pinky Toe Team
                                 </div>
-                              </CarouselItem>
-                            ))}
+                              </div>
+                            </CarouselItem>
+                          ))}
                         </CarouselContent>
                         <div className="flex justify-center mt-4">
                           <CarouselPrevious className="relative static mr-2" />

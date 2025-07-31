@@ -27,7 +27,7 @@ export function RecentArticleCard({ article }: RecentArticleCardProps) {
             }}
           />
           <div>
-            <h3 className="font-quicksand font-bold text-sm text-pinky-dark">
+            <h3 className="font-quicksand font-bold text-sm text-gray-900">
               {article.title}
             </h3>
             <p className="text-xs text-gray-500 mt-1">

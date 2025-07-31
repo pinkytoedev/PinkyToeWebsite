@@ -20,6 +20,8 @@ export default function ArticleDetail() {
     queryKey: [API_ROUTES.ARTICLE_BY_ID(id || '')],
     queryFn: () => fetchArticleById(id || ''),
     enabled: !!id, // Only run query when id is available
+    staleTime: 0, // Always refetch to ensure fresh data
+    refetchOnWindowFocus: false, // Don't refetch on window focus
   });
 
   // Fetch team members for linking

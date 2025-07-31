@@ -6,7 +6,7 @@ import { formatDate } from "@/lib/utils";
 import { Skeleton } from "@/components/ui/skeleton";
 import { X } from "lucide-react";
 import { getImageUrl, getPhotoUrl } from "@/lib/image-helper";
-import { fetchTeamMembers } from "@/lib/api";
+import { fetchTeamMembers, fetchArticleById } from "@/lib/api";
 import { useLocation, Link } from "wouter";
 
 interface ArticleDetailProps {
@@ -19,6 +19,10 @@ export function ArticleDetail({ articleId, onClose }: ArticleDetailProps) {
 
   const { data: article, isLoading, error } = useQuery<Article>({
     queryKey: [API_ROUTES.ARTICLE_BY_ID(articleId)],
+    queryFn: () => fetchArticleById(articleId),
+    enabled: !!articleId, // Only run query when articleId is available
+    staleTime: 0, // Always refetch to ensure fresh data
+    refetchOnWindowFocus: false, // Don't refetch on window focus for modal
   });
 
   // Fetch all team members to match by name
