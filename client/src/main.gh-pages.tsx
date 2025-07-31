@@ -5,11 +5,6 @@ import App from "./App";
 import "./index.css";
 import { initConsoleCommands } from "./lib/consoleCommands";
 
-// Override the API module for GitHub Pages
-import * as ghPagesApi from "./lib/api.gh-pages";
-import * as api from "./lib/api";
-Object.assign(api, ghPagesApi);
-
 // Include FontAwesome for icons
 const fontAwesomeLink = document.createElement('link');
 fontAwesomeLink.rel = 'stylesheet';

@@ -12,12 +12,13 @@ export default defineConfig({
         react(),
         themePlugin(),
     ],
-    resolve: {
-        alias: {
-            "@": path.resolve(__dirname, "client", "src"),
-            "@shared": path.resolve(__dirname, "shared"),
-        },
+      resolve: {
+    alias: {
+      "@": path.resolve(__dirname, "client", "src"),
+      "@shared": path.resolve(__dirname, "shared"),
+      "@/lib/api": path.resolve(__dirname, "client", "src", "lib", "api.gh-pages.ts"),
     },
+  },
     root: path.resolve(__dirname, "client"),
     build: {
         outDir: path.resolve(__dirname, "dist/public"),
