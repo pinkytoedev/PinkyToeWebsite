@@ -1,6 +1,6 @@
 import { Link } from "wouter";
 import { Article } from "@shared/schema";
-import { ROUTES } from "@/lib/constants";
+import { ROUTES, PLACEHOLDER_IMAGE } from "@/lib/constants";
 import { formatDate } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { getImageUrl, getPhotoUrl } from "@/lib/image-helper";
@@ -11,7 +11,7 @@ interface ArticleCardProps {
 
 export function ArticleCard({ article }: ArticleCardProps) {
   // Use imageUrl from MainImageLink or fall back to placeholder
-  const imageSource = article.imageUrl ? getImageUrl(article.imageUrl) : '/api/images/placeholder';
+  const imageSource = article.imageUrl ? getImageUrl(article.imageUrl) : PLACEHOLDER_IMAGE;
   console.log(`Article ${article.id} - Using imageUrl: ${article.imageUrl || 'Not available, using placeholder'}`);
 
   return (
@@ -21,19 +21,19 @@ export function ArticleCard({ article }: ArticleCardProps) {
 
 
         <div className="relative">
-          <img 
-            src={imageSource} 
-            alt={article.title} 
+          <img
+            src={imageSource}
+            alt={article.title}
             className="h-48 w-full object-contain bg-pink-100/50"
             onError={(e) => {
               const target = e.target as HTMLImageElement;
               console.error(`Failed to load image: ${target.src}`);
-              target.src = '/api/images/placeholder';
+              target.src = PLACEHOLDER_IMAGE;
             }}
           />
           <div className="article-overlay absolute inset-0 bg-primary bg-opacity-40 opacity-0 flex items-center justify-center transition-opacity duration-300 group-hover:opacity-100">
             <div>
-              <Button 
+              <Button
                 className="bg-white text-primary font-quicksand font-bold py-2 px-4 rounded-full shadow-lg transition-colors hover:bg-pinky-dark hover:text-white"
               >
                 Read More
@@ -51,7 +51,7 @@ export function ArticleCard({ article }: ArticleCardProps) {
         </div>
         <div className="px-4 pb-4 mt-auto flex justify-between items-center">
           <div className="text-xs">
-            <p className="text-primary font-semibold">{article.name}</p>
+            <p className="text-primary font-semibold">{Array.isArray(article.name) ? article.name[0] : article.name}</p>
             <p className="text-gray-500">{formatDate(article.publishedAt)}</p>
           </div>
         </div>

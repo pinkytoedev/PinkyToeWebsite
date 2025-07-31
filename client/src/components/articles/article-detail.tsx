@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Article, Team } from "@shared/schema";
-import { API_ROUTES } from "@/lib/constants";
+import { API_ROUTES, PLACEHOLDER_IMAGE } from "@/lib/constants";
 import { formatDate } from "@/lib/utils";
 import { Skeleton } from "@/components/ui/skeleton";
 import { X } from "lucide-react";
@@ -16,11 +16,11 @@ interface ArticleDetailProps {
 
 export function ArticleDetail({ articleId, onClose }: ArticleDetailProps) {
   const [, setLocation] = useLocation();
-  
+
   const { data: article, isLoading, error } = useQuery<Article>({
     queryKey: [API_ROUTES.ARTICLE_BY_ID(articleId)],
   });
-  
+
   // Fetch all team members to match by name
   const { data: teamMembers, isLoading: isLoadingTeamMembers } = useQuery<Team[]>({
     queryKey: [API_ROUTES.TEAM],
@@ -28,7 +28,7 @@ export function ArticleDetail({ articleId, onClose }: ArticleDetailProps) {
     staleTime: 60000, // Cache for 1 minute
     enabled: true, // Always fetch team members
   });
-  
+
   useEffect(() => {
     if (teamMembers) {
       console.log('Team members loaded:', teamMembers.length);
@@ -38,10 +38,10 @@ export function ArticleDetail({ articleId, onClose }: ArticleDetailProps) {
   useEffect(() => {
     // Prevent body scroll when modal is open
     document.body.style.overflow = 'hidden';
-    
+
     // Scroll to top of the page when article is opened
     window.scrollTo(0, 0);
-    
+
     // Re-enable scroll when modal is closed
     return () => {
       document.body.style.overflow = '';
@@ -55,9 +55,9 @@ export function ArticleDetail({ articleId, onClose }: ArticleDetailProps) {
         onClose();
       }
     };
-    
+
     window.addEventListener('keydown', handleEsc);
-    
+
     return () => {
       window.removeEventListener('keydown', handleEsc);
     };
@@ -114,74 +114,70 @@ export function ArticleDetail({ articleId, onClose }: ArticleDetailProps) {
 
   // Use photo if imageUrl is not available
   const imageSource = article.imageUrl ? getImageUrl(article.imageUrl) : getPhotoUrl(article.photo);
-  
+
   // Function to find team member by name with improved matching
-  const findTeamMemberByName = (name: string): Team | undefined => {
+  const findTeamMemberByName = (name: string | string[] | undefined): Team | undefined => {
     if (!teamMembers || !name) {
       console.log('Team members data not available yet or name is empty');
       return undefined;
     }
-    
+
+    // Handle array of names (take the first one) 
+    const nameToMatch = Array.isArray(name) ? name[0] : name;
+
+    if (!nameToMatch) return undefined;
+
     // Clean up the name - trim spaces and normalize
-    const cleanName = name.trim().toLowerCase();
+    const cleanName = nameToMatch.trim().toLowerCase();
     console.log('Searching for team member with cleaned name:', cleanName);
-    
+
     // Try to find exact match first
-    let foundMember = teamMembers.find(member => 
+    let foundMember = teamMembers.find(member =>
       member.name?.toLowerCase().trim() === cleanName
     );
-    
+
     // If no exact match, try partial match (name is contained in member name)
     if (!foundMember) {
-      foundMember = teamMembers.find(member => 
-        member.name?.toLowerCase().includes(cleanName) || 
+      foundMember = teamMembers.find(member =>
+        member.name?.toLowerCase().includes(cleanName) ||
         cleanName.includes(member.name?.toLowerCase().trim() || '')
       );
     }
-    
+
     console.log('Found team member?', foundMember ? `Yes, ID: ${foundMember.id}, Name: ${foundMember.name}` : 'No match found');
     return foundMember;
   };
-  
-  // Get team member IDs if available
-  console.log('Article author name:', article.name);
-  console.log('Article photo credit:', article.name_photo);
-  
-  const authorTeamMember = article.name ? findTeamMemberByName(article.name) : undefined;
-  
+
+  // Get team member IDs if available - extract string from array if needed
+  const getNameString = (name: string | string[] | undefined): string => {
+    if (Array.isArray(name)) {
+      return name[0] || '';
+    }
+    return name || '';
+  };
+
+  const authorName = getNameString(article.name);
+  const photoCredit = getNameString(article.name_photo);
+
+  console.log('Article author name:', authorName);
+  console.log('Article photo credit:', photoCredit);
+
+  const authorTeamMember = authorName ? findTeamMemberByName(authorName) : undefined;
+
   // Better extraction of photo credit name - handle multiple formats
   let photoName = '';
-  if (article.name_photo) {
-    // Check if name_photo is a string before calling replace
-    if (typeof article.name_photo === 'string') {
-      photoName = article.name_photo
-        .replace(/Photo by /i, '')  // Remove "Photo by " with case insensitivity
-        .replace(/Photo credit:/i, '') // Remove "Photo credit:" with case insensitivity
-        .trim();
-    } else if (Array.isArray(article.name_photo)) {
-      // If it's an array and has items, take the first item
-      const photoArray = article.name_photo as string[];
-      if (photoArray.length > 0) {
-        const photoCredit = photoArray[0];
-        if (typeof photoCredit === 'string') {
-          photoName = photoCredit
-            .replace(/Photo by /i, '')
-            .replace(/Photo credit:/i, '')
-            .trim();
-        } else {
-          console.log('Photo credit item is not a string:', photoCredit);
-        }
-      }
-    } else {
-      console.log('Photo credit is not in an expected format:', article.name_photo);
-    }
+  if (photoCredit) {
+    photoName = photoCredit
+      .replace(/Photo by /i, '')  // Remove "Photo by " with case insensitivity
+      .replace(/Photo credit:/i, '') // Remove "Photo credit:" with case insensitivity
+      .trim();
   }
-  
+
   const photoTeamMember = photoName ? findTeamMemberByName(photoName) : undefined;
-  
+
   console.log('Author team member:', authorTeamMember);
   console.log('Photo credit team member:', photoTeamMember);
-  
+
   // Navigate to team member page
   const navigateToTeamMember = (teamMemberId: string) => {
     onClose(); // Close the modal first
@@ -201,62 +197,54 @@ export function ArticleDetail({ articleId, onClose }: ArticleDetailProps) {
         </div>
         <div className="p-6">
           <div className="flex justify-center bg-gray-50 py-6 rounded-lg mb-6">
-            <img 
-              src={imageSource} 
-              alt={article.title} 
+            <img
+              src={imageSource}
+              alt={article.title}
               className="max-w-full max-h-[650px] object-contain"
               onError={(e) => {
                 const target = e.target as HTMLImageElement;
                 console.error(`Failed to load image: ${target.src}`);
-                target.src = '/api/images/placeholder';
+                target.src = PLACEHOLDER_IMAGE;
               }}
             />
           </div>
-          
+
           <div className="flex items-center mb-6">
             <div className="text-sm">
               {authorTeamMember ? (
-                <p 
-                  className="text-primary font-semibold cursor-pointer hover:underline" 
+                <p
+                  className="text-primary font-semibold cursor-pointer hover:underline"
                   onClick={(e) => {
                     e.stopPropagation();
                     navigateToTeamMember(authorTeamMember.id);
                   }}
                 >
-                  {article.name} {/* Clickable author name */}
+                  {authorName} {/* Clickable author name */}
                 </p>
               ) : (
-                <p className="text-primary font-semibold">{article.name}</p>
+                <p className="text-primary font-semibold">{authorName}</p>
               )}
               <p className="text-gray-500">{formatDate(article.publishedAt)}</p>
-              {article.name_photo && (
+              {photoCredit && (
                 photoTeamMember ? (
-                  <p 
-                    className="text-gray-500 text-xs mt-1 cursor-pointer hover:underline" 
+                  <p
+                    className="text-gray-500 text-xs mt-1 cursor-pointer hover:underline"
                     onClick={(e) => {
                       e.stopPropagation();
                       navigateToTeamMember(photoTeamMember.id);
                     }}
                   >
-                    Photo Credit: {typeof article.name_photo === 'string' 
-                      ? article.name_photo 
-                      : Array.isArray(article.name_photo) 
-                        ? (article.name_photo as string[])[0] 
-                        : ''}
+                    Photo Credit: {photoCredit}
                   </p>
                 ) : (
                   <p className="text-gray-500 text-xs mt-1">
-                    Photo Credit: {typeof article.name_photo === 'string' 
-                      ? article.name_photo 
-                      : Array.isArray(article.name_photo) 
-                        ? (article.name_photo as string[])[0] 
-                        : ''}
+                    Photo Credit: {photoCredit}
                   </p>
                 )
               )}
             </div>
           </div>
-          
+
           <div className="prose prose-lg max-w-none prose-headings:text-primary prose-a:text-primary hover:prose-a:text-pinky-dark prose-hr:border-gray-300">
             {article.contentFormat === "html" ? (
               <div dangerouslySetInnerHTML={{ __html: article.content }} />

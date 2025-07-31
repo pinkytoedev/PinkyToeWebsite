@@ -43,6 +43,12 @@ export async function fetchTeamMemberById(id: string): Promise<Team> {
   return res.json();
 }
 
+export async function fetchArticlesByTeamMemberId(id: string): Promise<Article[]> {
+  const res = await fetch(API_ROUTES.ARTICLES_BY_TEAM_MEMBER(id));
+  if (!res.ok) throw new Error(`Failed to fetch articles for team member with id ${id}`);
+  return res.json();
+}
+
 export async function fetchQuotes(): Promise<CarouselQuote[]> {
   const res = await fetch(API_ROUTES.QUOTES);
   if (!res.ok) throw new Error("Failed to fetch quotes");

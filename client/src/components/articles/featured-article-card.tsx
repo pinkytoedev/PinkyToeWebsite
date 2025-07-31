@@ -3,6 +3,7 @@ import { Article } from "@shared/schema";
 import { formatDate } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { getImageUrl, getPhotoUrl } from "@/lib/image-helper";
+import { PLACEHOLDER_IMAGE } from "@/lib/constants";
 
 interface FeaturedArticleCardProps {
   article: Article;
@@ -10,31 +11,25 @@ interface FeaturedArticleCardProps {
 
 export function FeaturedArticleCard({ article }: FeaturedArticleCardProps) {
   // Use imageUrl from MainImageLink or fall back to placeholder
-  let imageSource = article.imageUrl ? getImageUrl(article.imageUrl) : '/api/images/placeholder';
+  const imageSource = article.imageUrl ? getImageUrl(article.imageUrl) : PLACEHOLDER_IMAGE;
   console.log(`Featured article ${article.id} - Using imageUrl: ${article.imageUrl || 'Not available, using placeholder'}`);
-  
-  // Make sure the image is going through our proxy if it's an external URL
-  if (imageSource && !imageSource.startsWith('/api/images/') && (imageSource.startsWith('http://') || imageSource.startsWith('https://'))) {
-    // Create a hash of the URL to use as an ID for the proxy
-    const encodedUrl = encodeURIComponent(imageSource);
-    imageSource = `/api/images/${encodedUrl}`;
-  }
-  
+  console.log(`Featured article ${article.id} - Final imageSource: ${imageSource}`);
+
   return (
     <Link href={`/articles/${article.id}`} className="block">
       <div className="article-card bg-pink-50 rounded-lg shadow-lg overflow-hidden cursor-pointer hover:shadow-xl transition-shadow">
         <div className="md:flex">
           <div className="md:w-2/5 flex items-center justify-center">
             <div className="h-80 w-full bg-pink-100/50 relative overflow-hidden">
-              <img 
-                src={imageSource} 
-                alt={article.title} 
+              <img
+                src={imageSource}
+                alt={article.title}
                 className="absolute inset-0 w-full h-full object-contain object-center"
                 onError={(e) => {
                   const target = e.target as HTMLImageElement;
                   console.error(`Failed to load image: ${target.src}`);
                   // Fallback to our local placeholder if image fails to load
-                  target.src = '/api/images/placeholder';
+                  target.src = PLACEHOLDER_IMAGE;
                 }}
               />
             </div>
@@ -49,7 +44,7 @@ export function FeaturedArticleCard({ article }: FeaturedArticleCardProps) {
             </p>
             <div className="flex items-center">
               <div className="text-sm">
-                <p className="text-primary font-semibold">{article.name}</p>
+                <p className="text-primary font-semibold">{Array.isArray(article.name) ? article.name[0] : article.name}</p>
                 <p className="text-gray-500">{formatDate(article.publishedAt)}</p>
               </div>
             </div>

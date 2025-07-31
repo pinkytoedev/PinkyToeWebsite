@@ -2,7 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useParams, useLocation, Link } from "wouter";
 import { Article, Team } from "@shared/schema";
 import { Layout } from "@/components/layout/layout";
-import { API_ROUTES } from "@/lib/constants";
+import { API_ROUTES, PLACEHOLDER_IMAGE } from "@/lib/constants";
 import { formatDate } from "@/lib/utils";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
@@ -10,7 +10,7 @@ import { ArrowLeft } from "lucide-react";
 import { getImageUrl, getPhotoUrl } from "@/lib/image-helper";
 
 import { useState, useEffect } from "react";
-import { fetchTeamMembers } from "@/lib/api";
+import { fetchTeamMembers, fetchArticleById } from "@/lib/api";
 
 export default function ArticleDetail() {
   const { id } = useParams();
@@ -18,6 +18,8 @@ export default function ArticleDetail() {
   const [teamMembers, setTeamMembers] = useState<Team[]>([]);
   const { data: article, isLoading, error } = useQuery<Article>({
     queryKey: [API_ROUTES.ARTICLE_BY_ID(id || '')],
+    queryFn: () => fetchArticleById(id || ''),
+    enabled: !!id, // Only run query when id is available
   });
 
   // Fetch team members for linking
@@ -30,7 +32,7 @@ export default function ArticleDetail() {
         console.error("Failed to fetch team members:", err);
       }
     };
-    
+
     getTeamMembers();
   }, []);
 
@@ -40,22 +42,22 @@ export default function ArticleDetail() {
       console.log('Team members data not available yet or name is empty');
       return undefined;
     }
-    
+
     // Handle array of names (take the first one)
     const nameToMatch = Array.isArray(name) ? name[0] : name;
-    
+
     if (!nameToMatch) return undefined;
-    
+
     // Normalize the name for comparison (remove extra spaces, lowercase)
     const normalizedName = nameToMatch.trim().toLowerCase();
-    
+
     // First try exact match
     const exactMatch = teamMembers.find(member => {
       return member.name.toLowerCase() === normalizedName;
     });
-    
+
     if (exactMatch) return exactMatch;
-    
+
     // If no exact match, try partial matching (if name contains member name or vice versa)
     return teamMembers.find(member => {
       const memberName = member.name.toLowerCase();
@@ -69,17 +71,17 @@ export default function ArticleDetail() {
 
 
   // Get the image URL from MainImageLink if article is available, or use placeholder
-  const imageSource = article && article.imageUrl 
+  const imageSource = article && article.imageUrl
     ? getImageUrl(article.imageUrl)
-    : '/api/images/placeholder';
-    
+    : PLACEHOLDER_IMAGE;
+
   if (article) {
     console.log(`Article detail ${article.id} - Using imageUrl: ${article.imageUrl || 'Not available, using placeholder'}`);
   }
-    
+
   // Get team member IDs if available
   const authorTeamMember = article?.name ? findTeamMemberByName(article.name) : undefined;
-  
+
   // Better extraction of photo credit name - handle multiple formats
   let photoName = '';
   if (article?.name_photo) {
@@ -106,14 +108,14 @@ export default function ArticleDetail() {
       console.log('Photo credit is not in an expected format:', article.name_photo);
     }
   }
-  
+
   const photoTeamMember = photoName ? findTeamMemberByName(photoName) : undefined;
 
   return (
     <Layout>
       <div className="max-w-4xl mx-auto">
-        <Button 
-          variant="ghost" 
+        <Button
+          variant="ghost"
           className="mb-4 flex items-center text-primary hover:text-pinky-dark"
           onClick={goBack}
         >
@@ -126,14 +128,14 @@ export default function ArticleDetail() {
             <Skeleton className="w-full h-80" />
             <div className="p-6 space-y-6">
               <Skeleton className="h-10 w-3/4" />
-              
+
               <div className="flex items-center">
                 <div className="space-y-2">
                   <Skeleton className="h-4 w-32" />
                   <Skeleton className="h-4 w-24" />
                 </div>
               </div>
-              
+
               <div className="space-y-4">
                 <Skeleton className="h-4 w-full" />
                 <Skeleton className="h-4 w-full" />
@@ -151,14 +153,14 @@ export default function ArticleDetail() {
         ) : article ? (
           <div className="bg-pink-50 rounded-lg shadow-lg overflow-hidden">
             <div className="flex justify-center bg-pink-100/50 py-6">
-              <img 
-                src={imageSource} 
-                alt={article.title} 
+              <img
+                src={imageSource}
+                alt={article.title}
                 className="max-w-full max-h-[650px] object-contain"
                 onError={(e) => {
                   const target = e.target as HTMLImageElement;
                   console.error(`Failed to load image: ${target.src}`);
-                  target.src = '/api/images/placeholder';
+                  target.src = PLACEHOLDER_IMAGE;
                 }}
               />
             </div>
@@ -166,43 +168,43 @@ export default function ArticleDetail() {
               <h1 className="font-quicksand font-bold text-3xl text-primary mb-4">
                 {article.title}
               </h1>
-              
+
               <div className="flex items-center mb-6">
                 <div className="text-sm">
                   {authorTeamMember ? (
                     <Link href={`/team/${authorTeamMember.id}`}>
                       <p className="text-primary font-semibold cursor-pointer hover:underline">
-                        {article.name} {/* Clickable author name */}
+                        {Array.isArray(article.name) ? article.name[0] : article.name} {/* Clickable author name */}
                       </p>
                     </Link>
                   ) : (
-                    <p className="text-primary font-semibold">{article.name}</p>
+                    <p className="text-primary font-semibold">{Array.isArray(article.name) ? article.name[0] : article.name}</p>
                   )}
                   <p className="text-gray-500">{formatDate(article.publishedAt)}</p>
                   {article.name_photo && (
                     photoTeamMember ? (
                       <Link href={`/team/${photoTeamMember.id}`}>
                         <p className="text-gray-500 text-xs mt-1 cursor-pointer hover:underline">
-                          Photo Credit: {typeof article.name_photo === 'string' 
-                            ? article.name_photo 
-                            : Array.isArray(article.name_photo) 
-                              ? (article.name_photo as string[])[0] 
+                          Photo Credit: {typeof article.name_photo === 'string'
+                            ? article.name_photo
+                            : Array.isArray(article.name_photo)
+                              ? (article.name_photo as string[])[0]
                               : ''}
                         </p>
                       </Link>
                     ) : (
                       <p className="text-gray-500 text-xs mt-1">
-                        Photo Credit: {typeof article.name_photo === 'string' 
-                          ? article.name_photo 
-                          : Array.isArray(article.name_photo) 
-                            ? (article.name_photo as string[])[0] 
+                        Photo Credit: {typeof article.name_photo === 'string'
+                          ? article.name_photo
+                          : Array.isArray(article.name_photo)
+                            ? (article.name_photo as string[])[0]
                             : ''}
                       </p>
                     )
                   )}
                 </div>
               </div>
-              
+
               <div className="prose prose-lg max-w-none prose-headings:text-primary prose-a:text-primary hover:prose-a:text-pinky-dark prose-hr:border-gray-300">
                 {article.contentFormat === "html" ? (
                   <div dangerouslySetInnerHTML={{ __html: article.content }} />
