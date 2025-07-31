@@ -6,6 +6,7 @@ import { Marquee } from "@/components/ui/marquee";
 import { fetchQuotes } from "@/lib/api";
 import { Skeleton } from "@/components/ui/skeleton";
 import { CarouselQuote } from "@shared/schema";
+import { getAssetPath } from "@/lib/config";
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -51,13 +52,13 @@ export function Layout({ children }: LayoutProps) {
       {/* Decorative floating elements */}
       <div className="fixed top-20 right-10 opacity-20 pointer-events-none z-0 hidden lg:block">
         <div className="w-24 h-24 floating-bg" style={{ animationDelay: '0s' }}>
-          <img src="/attached_assets/TransparentLogo.png" alt="" className="w-full h-full object-contain" />
+          <img src={getAssetPath("/attached_assets/TransparentLogo.png")} alt="" className="w-full h-full object-contain" />
         </div>
       </div>
       
       <div className="fixed bottom-20 left-10 opacity-20 pointer-events-none z-0 hidden lg:block">
         <div className="w-16 h-16 floating-bg" style={{ animationDelay: '2s' }}>
-          <img src="/attached_assets/TransparentLogo.png" alt="" className="w-full h-full object-contain" />
+          <img src={getAssetPath("/attached_assets/TransparentLogo.png")} alt="" className="w-full h-full object-contain" />
         </div>
       </div>
       

@@ -7,6 +7,7 @@ import { RecentArticleCard } from "@/components/articles/recent-article-card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Link } from "wouter";
 import { CarouselQuote } from "@shared/schema";
+import { getAssetPath } from "@/lib/config";
 import {
   Carousel,
   CarouselContent,
@@ -162,7 +163,7 @@ export default function Home() {
             <div className="bg-primary text-white py-3 px-4">
               <h2 className="font-quicksand font-bold text-xl">Quotes</h2>
             </div>
-            <div className="p-6" style={{backgroundImage: 'url("/assets/pink-toe-pattern.png")', backgroundSize: '400px'}}>
+            <div className="p-6" style={{backgroundImage: `url("${getAssetPath("/attached_assets/background for pinky website.png")}")`, backgroundSize: '400px'}}>
               <div className="bg-pink-50 bg-opacity-85 p-5 rounded-lg">
                 {quotesLoading ? (
                   <div className="space-y-3">
