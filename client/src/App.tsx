@@ -8,6 +8,7 @@ import Articles from "@/pages/articles";
 import ArticleDetail from "@/pages/article-detail";
 import Team from "@/pages/team";
 import TeamMemberDetail from "@/pages/team-detail";
+import PrivacyPolicy from "@/pages/privacy-policy";
 import NotFound from "@/pages/not-found";
 
 import "@/index.css";
@@ -21,6 +22,7 @@ function Router() {
       <Route path="/articles/:id" component={ArticleDetail} />
       <Route path="/team" component={Team} />
       <Route path="/team/:id" component={TeamMemberDetail} />
+      <Route path="/privacy-policy" component={PrivacyPolicy} />
       <Route component={NotFound} />
     </Switch>
   );

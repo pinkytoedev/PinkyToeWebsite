@@ -17,17 +17,17 @@ export function Footer() {
               </Link>
               <p className="text-gray-600 ml-3 font-quicksand text-sm hidden md:block">{SITE_TAGLINE}</p>
               <div className="ml-4 flex space-x-3">
-                <a 
-                  href={SOCIAL_LINKS.INSTAGRAM} 
-                  target="_blank" 
+                <a
+                  href={SOCIAL_LINKS.INSTAGRAM}
+                  target="_blank"
                   rel="noopener noreferrer"
                   className="text-primary hover:text-pinky-dark transition-colors text-xl"
                   aria-label="Follow us on Instagram"
                 >
                   <i className="fab fa-instagram"></i>
                 </a>
-                <a 
-                  href="mailto:hello@pinkytoe.com" 
+                <a
+                  href="mailto:hello@pinkytoe.com"
                   className="text-primary hover:text-pinky-dark transition-colors text-xl"
                   aria-label="Email us"
                 >
@@ -37,7 +37,7 @@ export function Footer() {
             </div>
             <p className="text-gray-600 mt-2 font-quicksand text-center text-sm md:hidden">{SITE_TAGLINE}</p>
           </div>
-          
+
           {/* Footer Navigation Links */}
           <div className="flex flex-wrap justify-center md:justify-end">
             <div className="mr-8">
@@ -62,10 +62,16 @@ export function Footer() {
             </div>
           </div>
         </div>
-        
+
         {/* Copyright Section */}
         <div className="border-t border-gray-200 mt-3 pt-3 text-center text-gray-600 text-xs">
-          <p>&copy; {new Date().getFullYear()} The Pinky Toe. All rights reserved. | Designed with <i className="fas fa-heart text-primary pulse"></i> and feminist furries</p>
+          <p>
+            &copy; {new Date().getFullYear()} The Pinky Toe. All rights reserved. |
+            <Link href={ROUTES.PRIVACY_POLICY}>
+              <span className="text-gray-600 hover:text-primary transition-colors cursor-pointer mx-2">Privacy Policy</span>
+            </Link>
+            | Designed with <i className="fas fa-heart text-primary pulse"></i> and feminist furries
+          </p>
         </div>
       </div>
     </footer>

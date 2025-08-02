@@ -7,6 +7,7 @@ export const ROUTES = {
   ARTICLE_DETAIL: "/articles/:id",
   TEAM: "/team",
   TEAM_MEMBER: "/team/:id",
+  PRIVACY_POLICY: "/privacy-policy",
 };
 
 export const API_ROUTES = {
