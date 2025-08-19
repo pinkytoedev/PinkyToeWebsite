@@ -2,6 +2,7 @@ import { Article, Team, CarouselQuote } from "@shared/schema";
 import Airtable from "airtable";
 import { ImageService } from "./services/image-service";
 import { config } from "./config";
+import { logSecurityStatus } from "./security";
 
 // Initialize Airtable
 const airtableApiKey = config.airtable.apiKey;
@@ -698,7 +699,5 @@ export const storage: IStorage = airtableApiKey && airtableBaseId
 
 console.log('Using storage implementation:', storage instanceof AirtableStorage ? 'AirtableStorage' : 'MemStorage');
 
-if (storage instanceof MemStorage) {
-  console.log('Note: Using in-memory storage with sample data.');
-  console.log('To use Airtable, ensure AIRTABLE_API_KEY and AIRTABLE_BASE_ID are set in your .env file.');
-}
+// Log security status
+logSecurityStatus();

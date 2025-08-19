@@ -181,6 +181,30 @@ npm start
 - [ ] Verify all routes work correctly
 - [ ] Check image proxying and caching
 
+## 🔒 Security
+
+### Environment Variables & API Keys
+
+The application is designed with security in mind:
+
+- **Environment Variables**: All sensitive data is stored in `.env` files, which are excluded from Git
+- **Development Mode**: Airtable API keys are only used server-side during development
+- **Production/GitHub Pages**: Uses static cached JSON data (no API keys exposed)
+- **Client-Side**: No sensitive credentials are ever sent to or accessible by the client
+
+### Security Best Practices
+
+1. **Never commit API keys**: The `.env` file is in `.gitignore` to prevent accidental commits
+2. **Use `.env.example`**: Copy and rename to `.env`, then add your actual credentials
+3. **GitHub Pages is secure**: Static deployment doesn't expose any backend credentials
+4. **Development vs Production**: Different data sources ensure production security
+
+### Airtable Connection Security
+
+- **Development**: API keys stored securely in `.env` file (server-side only)
+- **GitHub Pages**: Uses pre-cached static JSON files (no live Airtable connection)
+- **Fallback Mode**: App works with sample data if no credentials are provided
+
 ## 🔍 Key Features
 
 ### Content Management

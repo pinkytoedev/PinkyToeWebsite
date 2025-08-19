@@ -9,9 +9,31 @@ const airtableApiKey = process.env.AIRTABLE_API_KEY || "";
 const airtableBaseId = process.env.AIRTABLE_BASE_ID || "";
 
 if (!airtableApiKey || !airtableBaseId) {
-  console.error('Missing Airtable credentials. Please set AIRTABLE_API_KEY and AIRTABLE_BASE_ID environment variables.');
+  console.error('❌ Missing Airtable credentials.');
+  console.log('');
+  console.log('To use this script:');
+  console.log('1. Copy .env.example to .env');
+  console.log('2. Add your Airtable API key and base ID');
+  console.log('3. Run this script again');
+  console.log('');
+  console.log('Note: This script is for development only and requires live Airtable access.');
   process.exit(1);
 }
+
+// Validate credentials format
+if (airtableApiKey.length < 10) {
+  console.error('❌ Airtable API key appears to be invalid (too short)');
+  process.exit(1);
+}
+
+if (!airtableBaseId.startsWith('app')) {
+  console.error('❌ Airtable base ID should start with "app"');
+  process.exit(1);
+}
+
+console.log('✅ Airtable credentials validated');
+console.log('🔍 Checking Airtable field structure...');
+console.log('');
 
 Airtable.configure({
   apiKey: airtableApiKey,
