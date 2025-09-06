@@ -41,10 +41,10 @@ The caching system has been upgraded to be **publication-aware**, meaning it ada
 - Conserves API calls during low-activity periods (nights/weekends)
 - Prioritizes homepage content for best user experience
 
-### 3. **Emergency Refresh Capability**
-- Breaking news or urgent updates can trigger immediate refresh
-- Bypasses normal throttling for critical content
-- API endpoint: `POST /api/cache/emergency-refresh`
+### 3. **Direct Cache Refresh API**
+- Direct API endpoint for cache refresh operations
+- Uses the same reliable logic as admin refresh endpoints
+- API endpoint: `POST /api/cache/refresh`
 
 ### 4. **Cache Warmup**
 - Server starts with warm caches for immediate availability
@@ -53,11 +53,28 @@ The caching system has been upgraded to be **publication-aware**, meaning it ada
 
 ## API Endpoints
 
-### Emergency Refresh
+### Cache Refresh
 ```http
-POST /api/cache/emergency-refresh
+POST /api/cache/refresh
 ```
-Immediately refreshes critical content (recent articles, featured articles) bypassing throttling.
+Refreshes all cached data using the same logic as `refreshCachedData()`.
+
+**Request Body (optional):**
+```json
+{
+  "entity": "articles"  // Optional: specify entity to refresh
+}
+```
+
+**Response:**
+```json
+{
+  "success": true,
+  "message": "All caches have been invalidated and data refreshed"
+}
+```
+
+**Valid entity values:** `articles`, `featuredArticles`, `recentArticles`, `team`, `quotes`
 
 ### Cache Status
 ```http
@@ -88,7 +105,7 @@ PublicationScheduler.updateConfig({
 
 1. **Faster homepage loads**: Critical content refreshes frequently during business hours
 2. **Reduced API costs**: Less frequent refreshes during off-hours
-3. **Breaking news ready**: Emergency refresh for urgent updates
+3. **Flexible refresh options**: Both admin and direct API endpoints available
 4. **Reliable caching**: No more cache expiry gaps causing slow responses
 5. **Publication workflow aware**: Timing aligns with when content is most likely published
 
@@ -225,12 +242,12 @@ Process A: Acquires lock for 'team' → Crashes before release 💥
 Process B: (35 seconds later) → Detects stale lock → Breaks lock → Acquires new lock ✅
 ```
 
-#### Scenario 3: Emergency Refresh During Normal Operation
+#### Scenario 3: API Refresh During Normal Operation
 ```
 Scheduled Refresh: Acquires lock for 'featuredArticles' → Writing...
-Emergency Refresh: Attempts lock for 'featuredArticles' → Lock busy → Skips ⏭️
+API Refresh: Attempts lock for 'featuredArticles' → Lock busy → Skips ⏭️
 Scheduled Refresh: Completes → Releases lock
-Emergency Refresh: (next attempt) → Acquires lock → Writes cache ✅
+API Refresh: (next attempt) → Acquires lock → Writes cache ✅
 ```
 
 ### Lock Monitoring

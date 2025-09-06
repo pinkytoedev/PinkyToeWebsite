@@ -47,34 +47,37 @@ export async function refreshCachedData(entity?: string): Promise<void> {
 }
 
 /**
- * Emergency refresh for critical content updates
- * Bypasses normal throttling and immediately refreshes critical content
+ * Triggers a cache refresh via API endpoint (same as refreshCachedData but via direct API call)
  * 
  * Usage in browser console:
- * > emergencyRefresh()
+ * > apiRefresh()
+ * or to refresh a specific entity:
+ * > apiRefresh('articles')
  * 
- * @returns Promise that resolves when the emergency refresh is complete
+ * @param entity Optional entity name to refresh specific data
+ * @returns Promise that resolves when the refresh is complete
  */
-export async function emergencyRefresh(): Promise<void> {
-  console.log('🚨 Triggering emergency refresh...');
+export async function apiRefresh(entity?: string): Promise<void> {
+  console.log('🔄 Triggering API cache refresh...');
 
   try {
-    const response = await fetch('/api/cache/emergency-refresh', {
+    const response = await fetch('/api/cache/refresh', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
-      }
+      },
+      body: entity ? JSON.stringify({ entity }) : undefined
     });
 
     if (!response.ok) {
       const errorData = await response.json();
-      throw new Error(errorData.message || 'Emergency refresh failed');
+      throw new Error(errorData.message || 'API refresh failed');
     }
 
     const result = await response.json();
-    console.log('🚨 Emergency refresh completed:', result);
+    console.log('✅ API refresh completed:', result);
   } catch (error) {
-    console.error('🚨 Emergency refresh failed:', error);
+    console.error('❌ API refresh failed:', error);
     throw error;
   }
 }
@@ -86,7 +89,7 @@ export function initConsoleCommands(): void {
   // Attach to window object for console usage
   // TypeScript needs a type declaration for the window object extension
   (window as any).refreshCachedData = refreshCachedData;
-  (window as any).emergencyRefresh = emergencyRefresh;
+  (window as any).apiRefresh = apiRefresh;
 
   // Log available commands
   console.log(
@@ -94,11 +97,11 @@ export function initConsoleCommands(): void {
     'font-weight: bold; font-size: 14px; color: #0066cc;'
   );
   console.log(
-    '%c- refreshCachedData(entity?): Refreshes all cached data or specific entity data',
+    '%c- refreshCachedData(entity?): Refreshes cached data via admin endpoints',
     'color: #333; font-size: 12px;'
   );
   console.log(
-    '%c- emergencyRefresh(): Immediately refreshes critical content bypassing throttling',
+    '%c- apiRefresh(entity?): Refreshes cached data via direct API endpoint',
     'color: #333; font-size: 12px;'
   );
   console.log(
@@ -106,15 +109,19 @@ export function initConsoleCommands(): void {
     'font-weight: bold; color: #444; font-size: 12px;'
   );
   console.log(
-    '%c  refreshCachedData()          // Refresh all data',
+    '%c  refreshCachedData()          // Refresh all data via admin API',
     'color: #666; font-family: monospace;'
   );
   console.log(
-    '%c  refreshCachedData("articles") // Refresh only articles',
+    '%c  refreshCachedData("articles") // Refresh only articles via admin API',
     'color: #666; font-family: monospace;'
   );
   console.log(
-    '%c  emergencyRefresh()           // Emergency refresh of critical content',
+    '%c  apiRefresh()                 // Refresh all data via cache API',
+    'color: #666; font-family: monospace;'
+  );
+  console.log(
+    '%c  apiRefresh("team")            // Refresh only team via cache API',
     'color: #666; font-family: monospace;'
   );
 }

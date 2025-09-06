@@ -154,31 +154,6 @@ export class RefreshService {
     console.log('Publication-aware refresh schedules stopped');
   }
 
-  /**
-   * Emergency refresh for breaking news or urgent updates
-   * Immediately refreshes critical content regardless of throttling
-   */
-  static async emergencyRefresh(): Promise<void> {
-    console.log('🚨 EMERGENCY REFRESH TRIGGERED - Bypassing normal throttling');
-
-    try {
-      // Reset throttling timestamps for critical content
-      const now = Date.now();
-      this.lastRefreshTime.recentArticles = 0;
-      this.lastRefreshTime.featuredArticles = 0;
-
-      // Refresh critical content immediately
-      await Promise.all([
-        this.refreshRecentArticles(),
-        this.refreshFeaturedArticles()
-      ]);
-
-      console.log('🚨 Emergency refresh completed successfully');
-    } catch (error) {
-      console.error('🚨 Emergency refresh failed:', error);
-      throw error;
-    }
-  }
 
   /**
    * Warm up all caches on server start

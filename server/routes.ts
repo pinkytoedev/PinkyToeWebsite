@@ -4,6 +4,7 @@ import { cachedStorage } from "./index";
 import { imagesRouter } from "./routes/images";
 import { adminRouter } from "./routes/admin";
 import { RefreshService } from "./services/refresh-service";
+import { CacheService } from "./services/cache-service";
 import { PublicationScheduler } from "./services/publication-scheduler";
 
 export async function registerRoutes(app: Express): Promise<Server> {
@@ -11,19 +12,72 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.use('/api/images', imagesRouter);
   app.use('/api/admin', adminRouter);
 
-  // Publication cache management endpoints
-  app.post("/api/cache/emergency-refresh", async (req, res) => {
+  // Cache refresh endpoint - uses same logic as refreshCachedData()
+  app.post("/api/cache/refresh", async (req, res) => {
     try {
-      console.log('Emergency refresh requested via API');
-      await RefreshService.emergencyRefresh();
-      res.json({ 
-        message: "Emergency refresh completed successfully",
-        timestamp: new Date().toISOString()
-      });
+      console.log('Cache refresh requested via API');
+      const { entity } = req.body;
+
+      if (entity) {
+        // Refresh specific entity (same logic as refreshCachedData with entity)
+        const validEntities = ['articles', 'featuredArticles', 'recentArticles', 'team', 'quotes'];
+        if (!validEntities.includes(entity)) {
+          return res.status(400).json({
+            success: false,
+            message: `Invalid entity type. Valid options are: ${validEntities.join(', ')}`
+          });
+        }
+
+        console.log(`API: Refreshing ${entity} cached data`);
+
+        // Handle the specific entity refresh (same logic as admin router)
+        switch (entity) {
+          case 'articles':
+            CacheService.invalidateCache('articles');
+            await RefreshService.refreshArticles();
+            break;
+          case 'featuredArticles':
+            CacheService.invalidateCache('featuredArticles');
+            await RefreshService.refreshFeaturedArticles();
+            break;
+          case 'recentArticles':
+            CacheService.invalidateCache('recentArticles');
+            await RefreshService.refreshRecentArticles();
+            break;
+          case 'team':
+            CacheService.invalidateCache('team');
+            await RefreshService.refreshTeam();
+            break;
+          case 'quotes':
+            CacheService.invalidateCache('quotes');
+            await RefreshService.refreshQuotes();
+            break;
+        }
+
+        res.json({
+          success: true,
+          message: `${entity} cache has been invalidated and refreshed`
+        });
+      } else {
+        // Refresh all (same logic as refreshCachedData without entity)
+        console.log('API: Refreshing all cached data');
+
+        // First invalidate all caches
+        CacheService.invalidateAllCaches();
+
+        // Then trigger a refresh of all data
+        await RefreshService.refreshAll();
+
+        res.json({
+          success: true,
+          message: 'All caches have been invalidated and data refreshed'
+        });
+      }
     } catch (error) {
-      console.error("Emergency refresh failed:", error);
-      res.status(500).json({ 
-        message: "Emergency refresh failed", 
+      console.error("Cache refresh failed:", error);
+      res.status(500).json({
+        success: false,
+        message: "Cache refresh failed",
         error: error instanceof Error ? error.message : 'Unknown error'
       });
     }
@@ -35,7 +89,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const criticalInterval = PublicationScheduler.getRefreshInterval('critical');
       const importantInterval = PublicationScheduler.getRefreshInterval('important');
       const stableInterval = PublicationScheduler.getRefreshInterval('stable');
-      
+
       res.json({
         isBusinessHours,
         refreshIntervals: {
@@ -79,7 +133,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const page = parseInt(req.query.page as string) || 1;
       const limit = parseInt(req.query.limit as string) || 6;
       const search = req.query.search as string || "";
-      
+
       const result = await cachedStorage.getArticles(page, limit, search);
       res.json(result);
     } catch (error) {
@@ -112,11 +166,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/articles/:id", async (req, res) => {
     try {
       const article = await cachedStorage.getArticleById(req.params.id);
-      
+
       if (!article) {
         return res.status(404).json({ message: "Article not found" });
       }
-      
+
       res.json(article);
     } catch (error) {
       console.error(`Error fetching article ${req.params.id}:`, error);
@@ -138,11 +192,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/team/:id", async (req, res) => {
     try {
       const teamMember = await cachedStorage.getTeamMemberById(req.params.id);
-      
+
       if (!teamMember) {
         return res.status(404).json({ message: "Team member not found" });
       }
-      
+
       res.json(teamMember);
     } catch (error) {
       console.error(`Error fetching team member ${req.params.id}:`, error);

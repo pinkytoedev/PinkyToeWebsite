@@ -1,21 +1,6 @@
 {
   "data": [
     {
-      "id": "recX0PZZrdzNRYOTL",
-      "title": "Test title 2",
-      "description": "No description provided.\n",
-      "content": "RTF File Information:\n- File ID: 1t6oDkOr_QaNbnK7bO9dygGDBJrjQsGbC\n- File name: uploaded-file\n- File size: Unknown bytes\n\nNote: To extract RTF content, you would need to:\n1. Set up Google Drive API authentication\n2. Download the file using the file ID\n3. Parse the RTF content\n\nFor now, the file is stored in Google Drive and can be accessed manually.\n\nTest description 2",
-      "contentFormat": "html",
-      "imageUrl": "/api/images/https%3A%2F%2Fi.ibb.co%2FR4MG1t13%2FScreenshot-2025-08-21-at-10-19-26-PM-png.png",
-      "imageType": "url",
-      "imagePath": null,
-      "featured": false,
-      "publishedAt": "2025-08-27T05:30:54.870Z",
-      "name": "Test title 2",
-      "photo": "",
-      "createdAt": "2025-09-06T11:15:23.871Z"
-    },
-    {
       "id": "rec5UBfOTf4Tstduy",
       "title": "Travelled Through The Astral Plane To Spiritually Touch Tips",
       "description": "Warren Towers. Post-Halloweekend. 7am.\n\nDrunkenly taking the elevator to my humble abode, after a night of rambunctious ruckus, I noticed the elevator didn't stop at floor nine, or floor ten, nor eleven, not even floor 18! I was transported to the nineteenth floor of Warren Towers Tower B. \n",
@@ -29,7 +14,7 @@
       "name": "ā̶͖̮̯̙̦̻̬̜͇͕̀̽̓̏̈́̏̓̄n̵̬̔̐o̷̱̯̳͔̱̒͗̇̇ͅn̸̛̤̰̈́̓̒̓͊̈͆̏͠y̸̨̢̰̠̳̝͚͈̙͉̒̀̑̔͆̅̏͝m̶̤̾̒̈́͆͋̈o̶̡̨̘̺̘̣̎͐̀̈̕͜͠u̸̬̬͈̺̩̺͎̐̃ś̴̛̛͖̺̠̼͎͛͒͐͌͆̚",
       "photo": "recgqh8EZ6qLEXXsA",
       "name_photo": "Yara Ahmed",
-      "createdAt": "2025-09-06T11:15:23.871Z"
+      "createdAt": "2025-09-06T11:41:06.332Z"
     },
     {
       "id": "rec8qnAFSu1UlnbSg",
@@ -45,7 +30,7 @@
       "name": "Claire Zhang",
       "photo": "recHvFBgqSTJF9jNw",
       "name_photo": "Caterina Terrizz",
-      "createdAt": "2025-09-06T11:15:23.871Z",
+      "createdAt": "2025-09-06T11:41:06.332Z",
       "hashtags": "It’s been over a month since the Center for Gender, Sexuality, and Activism was vandalized and ransacked. The perpetrator ripped down pride flags and destroyed political posters, targeting a space dedicated to protecting and supporting marginalized communities. In the face of this clear hate crime, the BU administration has, predictably, done nothing meaningful in the last 39 days.  However, this raises the question: If hate crimes are apparently fine now, what else can we get away with? As long as you can attribute your actions to being motivated by prejudice based on perceived membership in a social group, you should be in the clear. That guy who holds full 10-minute conversations with your professor in a 100-person lecture instead of just going to office hours? His last name is O’Neill–that sounds Irish enough, doesn’t it? That one acapella group you harbor slightly negative feelings about? All their members are women, and you’re sure that at least some of them get bisexual with it. Your butch, Chinese, just-cut-their-hair friend who won’t stop needling you with monkey facts and threatening to go on low-dose T? That’s your prime target, baby.  So, now that you’ve identified a target, what can you actually do?  Obviously, vandalism is a-okay. Feel free to break in and make a mess–throw furniture around, rip down decorations, ransack the fridge. If you’re feeling creative, you could spray paint a threatening message on the wall, or maybe just draw a dog or something. For our more minimalist readers, writing a short note or even just leaving something that looks out of place can be enough. Remember, your goal is to get your message across, though inducing a healthy amount of fear surely won’t hurt."
     },
     {
@@ -62,7 +47,7 @@
       "name": "Ogenna Oraedu",
       "photo": "recQWHet2vNmYMXRW",
       "name_photo": "Maddie lam\n",
-      "createdAt": "2025-09-06T11:15:23.871Z",
+      "createdAt": "2025-09-06T11:41:06.332Z",
       "hashtags": "Say yes to Senior Spring! Except like. Hey. This is an intervention. You say yes every chance you get. You have been slightly tipsy for the past 12 weeks. You have a problem.  But hey! We aren’t here to judge or make jokes about alcoholism. It is super serious, and you should never be afraid to ask for help. For the sake of this article, however, you are not technically an alcoholic. You’re just in college.  As the semester comes to an end and you gear up to put on that bright Boston University Red robe, you have got to make every last drink count. You have to get it together. Face reality: You don’t need the drunk ciggies. You’re going to end up getting hooked, and let’s be serious, you are too young and far too privileged to have to take advantage of smoke breaks at work. What you need is a juice box and time outside, watching the blades of grass sway in the wind."
     },
     {
@@ -79,7 +64,7 @@
       "name": "ā̶͖̮̯̙̦̻̬̜͇͕̀̽̓̏̈́̏̓̄n̵̬̔̐o̷̱̯̳͔̱̒͗̇̇ͅn̸̛̤̰̈́̓̒̓͊̈͆̏͠y̸̨̢̰̠̳̝͚͈̙͉̒̀̑̔͆̅̏͝m̶̤̾̒̈́͆͋̈o̶̡̨̘̺̘̣̎͐̀̈̕͜͠u̸̬̬͈̺̩̺͎̐̃ś̴̛̛͖̺̠̼͎͛͒͐͌͆̚",
       "photo": "recb56Cqkrk4CEz66",
       "name_photo": "ā̶͖̮̯̙̦̻̬̜͇͕̀̽̓̏̈́̏̓̄n̵̬̔̐o̷̱̯̳͔̱̒͗̇̇ͅn̸̛̤̰̈́̓̒̓͊̈͆̏͠y̸̨̢̰̠̳̝͚͈̙͉̒̀̑̔͆̅̏͝m̶̤̾̒̈́͆͋̈o̶̡̨̘̺̘̣̎͐̀̈̕͜͠u̸̬̬͈̺̩̺͎̐̃ś̴̛̛͖̺̠̼͎͛͒͐͌͆̚",
-      "createdAt": "2025-09-06T11:15:23.871Z"
+      "createdAt": "2025-09-06T11:41:06.332Z"
     },
     {
       "id": "recwuf2fJS7PVvwZ7",
@@ -95,7 +80,7 @@
       "name": "Jaclyn DiMatteo",
       "photo": "recNwxpWgzmS6Ts1F",
       "name_photo": "Elizabeth Morearty",
-      "createdAt": "2025-09-06T11:15:23.871Z"
+      "createdAt": "2025-09-06T11:41:06.332Z"
     },
     {
       "id": "recVYYha5S7dmL6dJ",
@@ -111,7 +96,7 @@
       "name": "Sage Clark",
       "photo": "recNrwwoaPVdgg85g",
       "name_photo": "Via Sznewajs",
-      "createdAt": "2025-09-06T11:15:23.871Z"
+      "createdAt": "2025-09-06T11:41:06.332Z"
     },
     {
       "id": "reca03F38KNl9VQ88",
@@ -126,8 +111,24 @@
       "publishedAt": "2025-04-28T16:00:36.431Z",
       "name": "Man Asks for “Queef Pass,” Doesn’t Know What He’s Talking About ",
       "photo": "",
-      "createdAt": "2025-09-06T11:15:23.871Z"
+      "createdAt": "2025-09-06T11:41:06.332Z"
+    },
+    {
+      "id": "recOlI3fUexIc2CI4",
+      "title": "You’re Celebrating Marmon This Week, I’m Celebrating The “In russia doing research.” 16th Anniversary (April 25, 2009 @ 9:35am)",
+      "description": "When I pitched this headline to The Pinky Toe, I was shocked when nobody, in a room CHOCK FULL of GAY PEOPLE, got the reference. Not a ONE. I will say, I did happen to pitch on the one day that The Pinky Toe’s foremost Lady Gaga fan was absent. But either way, SOMEBODY should have known. Needless to say, I was disappointed.\n",
+      "content": "<html><head><meta content=\"text/html; charset=UTF-8\" http-equiv=\"content-type\"><style type=\"text/css\">ul.lst-kix_hdw03eggeefk-8{list-style-type:none}.lst-kix_hdw03eggeefk-1>li:before{content:\"\\0025cb   \"}.lst-kix_hdw03eggeefk-2>li:before{content:\"\\0025a0   \"}ul.lst-kix_hdw03eggeefk-7{list-style-type:none}ul.lst-kix_hdw03eggeefk-6{list-style-type:none}ul.lst-kix_hdw03eggeefk-5{list-style-type:none}.lst-kix_hdw03eggeefk-0>li:before{content:\"\\0025cf   \"}.lst-kix_hdw03eggeefk-4>li:before{content:\"\\0025cb   \"}.lst-kix_hdw03eggeefk-5>li:before{content:\"\\0025a0   \"}.lst-kix_hdw03eggeefk-6>li:before{content:\"\\0025cf   \"}.lst-kix_hdw03eggeefk-7>li:before{content:\"\\0025cb   \"}.lst-kix_hdw03eggeefk-8>li:before{content:\"\\0025a0   \"}ul.lst-kix_hdw03eggeefk-0{list-style-type:none}ul.lst-kix_hdw03eggeefk-4{list-style-type:none}.lst-kix_hdw03eggeefk-3>li:before{content:\"\\0025cf   \"}ul.lst-kix_hdw03eggeefk-3{list-style-type:none}ul.lst-kix_hdw03eggeefk-2{list-style-type:none}ul.lst-kix_hdw03eggeefk-1{list-style-type:none}ol{margin:0;padding:0}table td,table th{padding:0}.c0{padding-top:0pt;padding-bottom:0pt;line-height:1.15;orphans:2;widows:2;text-align:left;height:11pt}.c1{color:#000000;font-weight:400;text-decoration:none;vertical-align:baseline;font-size:11pt;font-family:\"Arial\";font-style:normal}.c3{padding-top:0pt;padding-bottom:0pt;line-height:1.15;orphans:2;widows:2;text-align:left}.c2{background-color:#ffffff;max-width:468pt;padding:72pt 72pt 72pt 72pt}.c4{font-style:italic}.title{padding-top:0pt;color:#000000;font-size:26pt;padding-bottom:3pt;font-family:\"Arial\";line-height:1.15;page-break-after:avoid;orphans:2;widows:2;text-align:left}.subtitle{padding-top:0pt;color:#666666;font-size:15pt;padding-bottom:16pt;font-family:\"Arial\";line-height:1.15;page-break-after:avoid;orphans:2;widows:2;text-align:left}li{color:#000000;font-size:11pt;font-family:\"Arial\"}p{margin:0;color:#000000;font-size:11pt;font-family:\"Arial\"}h1{padding-top:20pt;color:#000000;font-size:20pt;padding-bottom:6pt;font-family:\"Arial\";line-height:1.15;page-break-after:avoid;orphans:2;widows:2;text-align:left}h2{padding-top:18pt;color:#000000;font-size:16pt;padding-bottom:6pt;font-family:\"Arial\";line-height:1.15;page-break-after:avoid;orphans:2;widows:2;text-align:left}h3{padding-top:16pt;color:#434343;font-size:14pt;padding-bottom:4pt;font-family:\"Arial\";line-height:1.15;page-break-after:avoid;orphans:2;widows:2;text-align:left}h4{padding-top:14pt;color:#666666;font-size:12pt;padding-bottom:4pt;font-family:\"Arial\";line-height:1.15;page-break-after:avoid;orphans:2;widows:2;text-align:left}h5{padding-top:12pt;color:#666666;font-size:11pt;padding-bottom:4pt;font-family:\"Arial\";line-height:1.15;page-break-after:avoid;orphans:2;widows:2;text-align:left}h6{padding-top:12pt;color:#666666;font-size:11pt;padding-bottom:4pt;font-family:\"Arial\";line-height:1.15;page-break-after:avoid;font-style:italic;orphans:2;widows:2;text-align:left}</style></head><body class=\"c2 doc-content\"><p class=\"c0\"><span class=\"c1\"></span></p><p class=\"c3\"><span class=\"c1\">So I did in fact also celebrate Marmon. We really had a triple? Quadruple? Quintuple? Whammy of a long weekend. To have Easter and 4/20 fall on the same day was just magical! I don&rsquo;t personally celebrate much in the way of Easter but it was fun trying to guess who was celebrating what. I spent a beautiful day in the Commons, indulging in the devil&rsquo;s lettuce and some truly DELECTABLE Dave&rsquo;s Hot Chicken. Then I ended the day off at the Lucy Dacus concert--maybe magic is real!! The tale of my Marmon begins on Thursday night when I, having finally been released from the shackles of my fast food job at 10pm, kicked things off with a beautiful Thirsty Thursday game night. And we stayed strong, persevering beyond all odds to maintain a wonderful 5 day Marmon bender. Now I know what you&rsquo;re thinking, but this is NOT!!!! Alcoholism. A Boston college student&rsquo;s very first Marmon is something to be celebrated. And celebrate I did! </span></p><p class=\"c0\"><span class=\"c1\"></span></p><p class=\"c3\"><span>But all of that Marmon business aside, today I am celebrating the highest holiday of them all. Today, April 25, 2025, at 9:35am, is the 16th anniversary of &ldquo;In russia doing research.&rdquo; When I pitched this headline to The Pinky Toe, I was shocked when nobody, in a room CHOCK FULL of GAY PEOPLE, got the reference. </span><span>Not a ONE</span><span>. I will say, I did happen to pitch on the one </span><span>day that The Pinky</span><span class=\"c1\">&nbsp;Toe&rsquo;s foremost Lady Gaga fan was absent. But either way, SOMEBODY should have known. Needless to say, I was disappointed. But this only goes to show, I need to do my job, I need to put in the work, and spread the Gaga gospel.</span></p><p class=\"c0\"><span class=\"c1\"></span></p><p class=\"c3\"><span>Today we </span><span class=\"c4\">celebrate</span><span>, we </span><span class=\"c4\">honor</span><span>, we </span><span class=\"c4\">revere</span><span class=\"c1\">&nbsp;Miss Queen Germanotta. </span></p><p class=\"c0\"><span class=\"c1\"></span></p><p class=\"c3\"><span>What is perhaps one of the most influential and life altering pieces of internet history is Lady Gaga&rsquo;s 2009 (specifically April 25 at 9:35am) tweet which simply states, &ldquo;In russia doing research.&rdquo; It leaves many questions to be asked. Gaga, what are you researching? </span><span>Gaga, why</span><span>&nbsp;are you in </span><span>Russia</span><span>? Okay so maybe it only leaves two questions to be asked. And though I am a person of great scientific inquiry skills, who puzzles, questions, makes connections, and investigates, I really couldn&rsquo;t answer these questions for you! And I KNOW the people (gay) desperately want, desperately </span><span class=\"c4\">need</span><span class=\"c1\">&nbsp;to know the answers--but Gaga&rsquo;s glamour, mystery, and intrigue keep those answers from us! I don&rsquo;t know if she&rsquo;ll ever let us in on her little secret. I can only hope and dream that one day she&rsquo;ll spill the beans--but I doubt that day is coming any time soon.</span></p><p class=\"c0\"><span class=\"c1\"></span></p><p class=\"c3\"><span>So until then, I&rsquo;ll be in </span><span>russia</span><span class=\"c1\">&nbsp;doing research.</span></p><p class=\"c0\"><span class=\"c1\"></span></p><p class=\"c0\"><span class=\"c1\"></span></p><p class=\"c0\"><span class=\"c1\"></span></p><p class=\"c0\"><span class=\"c1\"></span></p><p class=\"c0\"><span class=\"c1\"></span></p><p class=\"c0\"><span class=\"c1\"></span></p><p class=\"c0\"><span class=\"c1\"></span></p><p class=\"c0\"><span class=\"c1\"></span></p></body></html>",
+      "contentFormat": "html",
+      "imageUrl": "/api/images/https%3A%2F%2Fi.ibb.co%2Ffdp2MdfM%2Fin-russia-doing-research-WEBSITE-png.png",
+      "imageType": "url",
+      "imagePath": null,
+      "featured": false,
+      "publishedAt": "2025-04-25T16:48:05.203Z",
+      "name": "Maya Bride",
+      "photo": "recQWHet2vNmYMXRW",
+      "name_photo": "Maddie lam\n",
+      "createdAt": "2025-09-06T11:41:06.332Z"
     }
   ],
-  "timestamp": 1757157323871
+  "timestamp": 1757158866333
 }
