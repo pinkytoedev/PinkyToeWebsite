@@ -10,6 +10,20 @@ import { formatDate } from "@/lib/utils";
 import { getImageUrl, getPhotoUrl } from "@/lib/image-helper";
 import { fetchTeamMemberById, fetchArticlesByTeamMemberId } from "@/lib/api";
 
+/**
+ * Renders the detail view for a single team member.
+ *
+ * Fetches the team member by route `id` and, once available, fetches that member's recent articles.
+ * Displays loading skeletons, an error message, or a two-column profile with image, name, role, bio,
+ * and a "Recent Articles" list (each item links to its article page). Includes a "Back to Team" control
+ * that navigates back to the team list.
+ *
+ * Side effects:
+ * - Triggers React Query data fetching for the team member and dependent articles.
+ * - Navigates when the back button is clicked.
+ *
+ * @returns A JSX element containing the team member detail UI.
+ */
 export default function TeamMemberDetail() {
   const { id } = useParams();
   const [, setLocation] = useLocation();
