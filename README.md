@@ -217,16 +217,10 @@ npm start
 - Follow existing code style
 - Update documentation for new features
 
-## 📞 Support
-
-- **Issues**: [GitHub Issues](https://github.com/jawednur/PinkyToeWebsite/issues)
-- **Email**: hello@pinkytoe.com
-- **Instagram**: [@pinkytoepaper](https://instagram.com/pinkytoepaper)
-
 ## 📄 License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ---
 
-Made with ❤️ and feminist fury by The Pinky Toe Team
+Made with ❤️ and feminist furriee; The Pinky Toe Team
