@@ -11,6 +11,14 @@ import { nanoid } from "nanoid";
 
 const viteLogger = createLogger();
 
+/**
+ * Logs a timestamped, single-line message to the console with an optional source tag.
+ *
+ * The timestamp is formatted in en-US 12-hour time with minutes and seconds (e.g. "3:05:09 PM").
+ *
+ * @param message - The text to log.
+ * @param source - Optional source tag included in square brackets; defaults to `"express"`.
+ */
 export function log(message: string, source = "express") {
   const formattedTime = new Date().toLocaleTimeString("en-US", {
     hour: "numeric",
@@ -22,6 +30,19 @@ export function log(message: string, source = "express") {
   console.log(`${formattedTime} [${source}] ${message}`);
 }
 
+/**
+ * Configures Vite in middleware mode and mounts its middleware and an SPA fallback onto the given Express app.
+ *
+ * This starts a Vite dev server (middlewareMode) wired to the provided HTTP server for HMR, attaches Vite's
+ * middlewares to `app`, and registers a catch-all route that:
+ * - reads `client/index.html` from disk on every request,
+ * - injects a cache-busting query (`?v=<nanoid>`) into the hardcoded `src="/src/main.tsx"` script tag,
+ * - runs Vite's HTML transforms via `vite.transformIndexHtml`, and
+ * - responds with the transformed HTML.
+ *
+ * On errors while reading or transforming the page the function calls `vite.ssrFixStacktrace` and forwards the
+ * error to Express's `next()`. Note: the custom Vite logger is configured to call `process.exit(1)` on errors.
+ */
 export async function setupVite(app: Express, server: Server) {
   const serverOptions: any = {
     middlewareMode: true,
