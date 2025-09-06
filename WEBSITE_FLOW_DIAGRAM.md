@@ -22,13 +22,13 @@ graph TD
     J --> K[Route Resolution]
     
     %% Routes
-    K -->|/| L[Home Page]
-    K -->|/articles| M[Articles Page]
-    K -->|/articles/:id| N[Article Detail]
-    K -->|/team| O[Team Page]
-    K -->|/team/:id| P[Team Detail]
-    K -->|/privacy-policy| Q[Privacy Policy]
-    K -->|404| R[Not Found Page]
+    K -->|"/"| L[Home Page]
+    K -->|"/articles"| M[Articles Page]
+    K -->|"/articles/:id"| N[Article Detail]
+    K -->|"/team"| O[Team Page]
+    K -->|"/team/:id"| P[Team Detail]
+    K -->|"/privacy-policy"| Q[Privacy Policy]
+    K -->|"404"| R[Not Found Page]
     
     %% Data Flow
     L --> S[Fetch Featured Articles]
@@ -47,14 +47,14 @@ graph TD
     P --> CC[Fetch Articles by Author]
     
     %% API Layer
-    S --> DD[/api/articles/featured]
-    T --> EE[/api/articles/recent]
-    U --> FF[/api/quotes/daily]
-    V --> GG[/api/articles]
-    Y --> HH[/api/articles/:id]
-    AA --> II[/api/team]
-    BB --> JJ[/api/team/:id]
-    CC --> KK[/api/team/:id/articles]
+    S --> DD["API: /api/articles/featured"]
+    T --> EE["API: /api/articles/recent"]
+    U --> FF["API: /api/quotes/daily"]
+    V --> GG["API: /api/articles"]
+    Y --> HH["API: /api/articles/:id"]
+    AA --> II["API: /api/team"]
+    BB --> JJ["API: /api/team/:id"]
+    CC --> KK["API: /api/team/:id/articles"]
     
     %% Caching System
     DD --> LL[CachedStorage]
@@ -84,27 +84,37 @@ graph TD
     UU -->|Yes| VV[Image Proxy Service]
     UU -->|No| WW[Return Data]
     
-    VV --> XX[/api/images/:encodedUrl]
+    VV --> XX["API: /api/images/:encodedUrl"]
     XX --> YY[Cache External Images]
     YY --> ZZ[Serve Proxied Image]
     ZZ --> WW
     
     %% Admin Features
-    AAA[Admin Console] --> BBB[/api/cache/status]
-    AAA --> CCC[/api/cache/emergency-refresh]
-    AAA --> DDD[refreshCachedData() function]
+    AAA[Admin Console] --> BBB["API: /api/cache/status"]
+    AAA --> CCC["API: /api/cache/emergency-refresh"]
+    AAA --> DDD["Function: refreshCachedData()"]
     
     %% Background Services
     EEE[RefreshService] --> FFF[Publication Scheduler]
     FFF --> GGG{Content Priority}
-    GGG -->|Critical| HHH[30min/1hr intervals]
-    GGG -->|Important| III[1hr/2hr intervals]  
-    GGG -->|Stable| JJJ[3hr/6hr intervals]
+    GGG -->|Critical| HHH["30min/1hr intervals"]
+    GGG -->|Important| III["1hr/2hr intervals"]  
+    GGG -->|Stable| JJJ["3hr/6hr intervals"]
     
     %% Error Handling
     KKK[Error Occurs] --> LLL{Environment}
     LLL -->|Development| MMM[Detailed Console Logging]
     LLL -->|Production| NNN[Graceful Error Pages]
+    
+    %% Connect App Initialization to Main Flow
+    E --> C
+    E --> D
+    
+    %% Connect Background Services to Cache System
+    EEE --> PP
+    
+    %% Connect Admin to Background Services
+    AAA --> EEE
     
     style A fill:#e1f5fe
     style G fill:#c8e6c9
