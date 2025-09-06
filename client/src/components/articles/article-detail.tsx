@@ -34,7 +34,7 @@ export function ArticleDetail({ articleId, onClose }: ArticleDetailProps) {
   });
 
   useEffect(() => {
-    if (teamMembers) {
+    if (teamMembers && import.meta.env.DEV) {
       console.log('Team members loaded:', teamMembers.length);
     }
   }, [teamMembers]);

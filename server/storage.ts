@@ -241,11 +241,6 @@ export class AirtableStorage implements IStorage {
       const query = this.base('CarouselQuote').select();
       const records = await query.all();
 
-      // Debug: Log what fields are available in the records
-      if (records.length > 0) {
-        console.log('Available fields in Airtable CarouselQuote records:');
-        console.log(Object.keys(records[0].fields));
-      }
 
       let quoteId = 1;
       const mainQuotes: CarouselQuote[] = [];
@@ -262,9 +257,7 @@ export class AirtableStorage implements IStorage {
               carousel: 'main',
               quote: String(mainQuoteText)
             });
-            console.log(`Found main quote: "${mainQuoteText}"`);
           } else {
-            console.log(`Record has empty "main" field`);
             // Create main quotes with placeholder if not already present
             // This is to ensure we have entries for "main" carousel for the UI
             if (mainQuotes.length === 0) {
@@ -287,9 +280,7 @@ export class AirtableStorage implements IStorage {
               carousel: 'philo',
               quote: String(philoQuoteText)
             });
-            console.log(`Found philo quote: "${philoQuoteText}"`);
           } else {
-            console.log(`Record has empty "philo" field`);
           }
         }
       });
@@ -297,8 +288,6 @@ export class AirtableStorage implements IStorage {
       // Combine all quotes and update the instance variable
       this.quotes = [...mainQuotes, ...philoQuotes];
 
-      // Log the final quotes collection
-      console.log(`Total quotes found: ${this.quotes.length} (${mainQuotes.length} main, ${philoQuotes.length} philo)`);
 
       this.quoteLastFetched = new Date();
       return this.quotes;
@@ -352,8 +341,6 @@ export class AirtableStorage implements IStorage {
   }
 
   private mapAirtableRecordToArticle(record: Airtable.Record<any>): Article {
-    console.log('Processing Airtable record:', record.id);
-    console.log('Available fields:', Object.keys(record.fields));
 
     // Get date field - try different possible field names
     const dateString = record.get('publishedAt') || record.get('Published Date') || record.get('Date') || record.get('created');
@@ -363,10 +350,6 @@ export class AirtableStorage implements IStorage {
     const createdString = record.get('createdAt') || record.get('Created Date') || record.get('created');
     const createdDate = createdString ? new Date(createdString as string) : new Date();
 
-    // Check if MainImageLink exists and log its contents
-    if (record.get('MainImageLink')) {
-      console.log('MainImageLink field found:', record.get('MainImageLink'));
-    }
 
     // Use MainImageLink as the primary source for image URLs
     let imageUrl = '';
@@ -375,7 +358,6 @@ export class AirtableStorage implements IStorage {
     const mainImageLink = record.get('MainImageLink') as string;
 
     if (mainImageLink) {
-      console.log(`Found MainImageLink for article "${record.get('Name') || record.id}":`, mainImageLink);
       // Create a proxy URL using the MainImageLink URL
       imageUrl = ImageService.getProxyUrl(mainImageLink);
     }
@@ -390,17 +372,23 @@ export class AirtableStorage implements IStorage {
         '';
 
       if (directUrl) {
-        console.log(`Using direct URL for article "${record.get('Name') || record.id}":`, directUrl);
         // Proxy the direct URL as well
         imageUrl = ImageService.getProxyUrl(directUrl);
       }
     }
 
-    // Check photo field too
+
+    // Handle name field which can be an array or string
+    const nameField = record.get('Name (from Author)') || record.get('name') || record.get('Name') || record.get('author') || record.get('Author');
+    const authorName = Array.isArray(nameField) ? nameField.join(', ') : (nameField as string || '');
+
+    // Handle name_photo field which can be an array or string  
+    const namePhotoField = record.get('Name (from Photo)') || record.get('name_photo') || record.get('photoCredit') || record.get('Photo Credit');
+    const namePhoto = Array.isArray(namePhotoField) ? namePhotoField.join(', ') : (namePhotoField as string || undefined);
+
+    // Handle photo field which can be an array or string
     const photoField = record.get('photo') || record.get('Photo');
-    if (photoField) {
-      console.log(`Photo field for article "${record.get('Name') || record.id}":`, typeof photoField, Array.isArray(photoField) ? 'Array' : '');
-    }
+    const photo = Array.isArray(photoField) ? photoField.join(', ') : (photoField as string || '');
 
     return {
       id: record.id,
@@ -416,9 +404,9 @@ export class AirtableStorage implements IStorage {
       imagePath: null, // No need for local path when using proxy
       featured: record.get('featured') === true || record.get('Featured') === true,
       publishedAt: publishDate,
-      name: record.get('Name (from Author)') as string || record.get('name') as string || record.get('Name') as string || record.get('author') as string || record.get('Author') as string || '',
-      photo: record.get('photo') as string || record.get('Photo') as string || '',
-      name_photo: record.get('Name (from Photo)') as string || record.get('name_photo') as string || record.get('photoCredit') as string || record.get('Photo Credit') as string || undefined,
+      name: authorName,
+      photo: photo,
+      name_photo: namePhoto,
       status: record.get('status') as string || record.get('Status') as string || undefined,
       createdAt: createdDate,
       hashtags: record.get('hashtags') as string || record.get('Hashtags') as string || undefined
@@ -426,13 +414,7 @@ export class AirtableStorage implements IStorage {
   }
 
   private mapAirtableRecordToTeamMember(record: Airtable.Record<any>): Team {
-    console.log('Processing Airtable team record:', record.id);
-    console.log('Available team member fields:', Object.keys(record.fields));
 
-    // Check if MainImageLink exists and log its contents
-    if (record.get('MainImageLink')) {
-      console.log('MainImageLink field found for team member:', record.get('MainImageLink'));
-    }
 
     // Use MainImageLink as the primary source for image URLs
     let imageUrl = '';
@@ -441,7 +423,6 @@ export class AirtableStorage implements IStorage {
     const mainImageLink = record.get('MainImageLink') as string;
 
     if (mainImageLink) {
-      console.log(`Found MainImageLink for team member "${record.get('Name') || record.id}":`, mainImageLink);
       // Create a proxy URL using the MainImageLink URL
       imageUrl = ImageService.getProxyUrl(mainImageLink);
     }
@@ -454,22 +435,20 @@ export class AirtableStorage implements IStorage {
         '';
 
       if (directUrl) {
-        console.log(`Using direct URL for team member "${record.get('Name') || record.id}":`, directUrl);
         // Proxy the direct URL as well
         imageUrl = ImageService.getProxyUrl(directUrl);
       }
     }
 
-    // Check photo field too
-    const photoField = record.get('photo') || record.get('Photo');
-    if (photoField) {
-      console.log(`Photo field for team member "${record.get('Name') || record.id}":`, typeof photoField, Array.isArray(photoField) ? 'Array' : '');
-    }
+
+    // Handle role field which can be an array or string
+    const roleField = record.get('role') || record.get('Role');
+    const role = Array.isArray(roleField) ? roleField.join(', ') : (roleField as string || '');
 
     return {
       id: record.id,
       name: record.get('name') as string || record.get('Name') as string || '',
-      role: record.get('role') as string || record.get('Role') as string || '',
+      role: role,
       bio: record.get('bio') as string || record.get('Bio') as string || '',
       imageUrl: imageUrl,
       imageType: 'url', // Always use URL type since we're proxying

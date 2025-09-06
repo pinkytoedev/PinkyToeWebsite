@@ -55,7 +55,7 @@ export class ImageService {
     if (url.startsWith('/api/images/')) {
       return url;
     }
-    
+
     // Encode the URL to use as the ID in our proxy
     return `/api/images/${encodeURIComponent(url)}`;
   }
@@ -66,36 +66,22 @@ export class ImageService {
    */
   static extractAttachmentFromField(field: any): AirtableAttachment | null {
     if (!field) {
-      console.log('Empty field received in extractAttachmentFromField');
       return null;
     }
 
-    console.log('Field data type:', typeof field);
-    
     // If it's an array, get the first item
     if (Array.isArray(field)) {
       if (field.length === 0) {
-        console.log('Empty array received in extractAttachmentFromField');
         return null;
       }
-      
-      console.log('Array field in extractAttachmentFromField, first item:', field[0]);
       return field[0];
     }
-    
+
     // If it's already an attachment object
     if (typeof field === 'object' && field.url) {
-      console.log('Object with URL found in extractAttachmentFromField:', field.url);
       return field;
     }
-    
-    // If it's a string (potentially an Airtable record ID)
-    if (typeof field === 'string') {
-      console.log(`String value received in extractAttachmentFromField: "${field}"`);
-      // In this case, we can't extract an attachment directly, but we log for debugging
-    }
-    
-    console.log('No valid attachment data found in field:', field);
+
     return null;
   }
 

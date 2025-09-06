@@ -50,12 +50,11 @@ export default function Home() {
   const quotes = Array.isArray(allQuotes) ? allQuotes : [];
   const philoQuotes = quotes.filter((quote: CarouselQuote) => quote.carousel === "philo");
 
-  // For debugging purposes, only log on initial load
+  // Track quotes loading for debugging in development only
   useEffect(() => {
-    if (quotes.length > 0 && !window.__quotesLogged) {
+    if (quotes.length > 0 && !window.__quotesLogged && import.meta.env.DEV) {
       window.__quotesLogged = true;
-      console.log("All quotes loaded:", quotes);
-      console.log("Philo quotes:", philoQuotes);
+      console.log("Quotes loaded:", quotes.length, "total,", philoQuotes.length, "philo quotes");
     }
   }, [quotes.length > 0]);
 
