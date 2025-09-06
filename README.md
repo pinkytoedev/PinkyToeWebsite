@@ -15,7 +15,7 @@ A modern full-stack web application serving feminist humor content, built with R
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/jawednur/PinkyToeWebsite.git
+   git clone https://github.com/pinkytoedev/PinkyToeWebsite.git
    cd PinkyToeWebsite
    ```
 
@@ -41,6 +41,10 @@ A modern full-stack web application serving feminist humor content, built with R
 5. **Open your browser**
    
    Navigate to `http://localhost:5000` to see the website!
+
+## 📊 Website Architecture
+
+For a detailed understanding of how the website works, see the [Website Logic Flow Diagram](WEBSITE_FLOW_DIAGRAM.md).
 
 ## 📁 Project Structure
 
@@ -161,8 +165,9 @@ npm test
 # Run tests in watch mode (for development)
 npm run test:watch
 
-# Generate coverage report
-npm run test:coverage
+# Generate coverage report (requires @vitest/coverage-v8)
+# npm install --save-dev @vitest/coverage-v8
+# npm run test:coverage
 ```
 
 ## 🚀 Deployment
