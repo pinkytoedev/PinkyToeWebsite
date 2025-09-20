@@ -181,10 +181,6 @@ export default function Home() {
                   </div>
                 ) : philoQuotes.length > 0 ? (
                   <>
-                    <div className="text-xs text-gray-500 mb-2">
-                      Debug: Total quotes: {quotes.length},
-                      Philo quotes: {philoQuotes.length}
-                    </div>
                     <div className="relative">
                       <Carousel
                         opts={{
