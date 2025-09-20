@@ -14,7 +14,7 @@ export async function fetchRecentArticles(limit = 4): Promise<Article[]> {
 }
 
 export async function fetchArticles(
-  page = 1, 
+  page = 1,
   search?: string
 ): Promise<{ articles: Article[], total: number }> {
   const searchParam = search ? `&search=${encodeURIComponent(search)}` : '';
@@ -29,6 +29,22 @@ export async function fetchArticleById(id: string): Promise<Article> {
   const res = await fetch(API_ROUTES.ARTICLE_BY_ID(id));
   if (!res.ok) throw new Error(`Failed to fetch article with id ${id}`);
   return res.json();
+}
+
+export async function fetchArticlesByIds(ids: string[]): Promise<Article[]> {
+  if (!ids || ids.length === 0) return [];
+
+  // Fetch all articles concurrently
+  const promises = ids.map(id =>
+    fetchArticleById(id).catch(error => {
+      console.warn(`Failed to fetch article ${id}:`, error);
+      return null;
+    })
+  );
+
+  const results = await Promise.all(promises);
+  // Filter out null results (failed fetches)
+  return results.filter((article): article is Article => article !== null);
 }
 
 export async function fetchTeamMembers(): Promise<Team[]> {

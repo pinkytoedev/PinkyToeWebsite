@@ -18,6 +18,8 @@ export const teamSchema = z.object({
   imageUrl: z.string(),
   imageType: z.enum(["url", "file"]),
   imagePath: z.string().nullable(),
+  authorSub: z.array(z.string()).optional(), // Array of article IDs where this person is the author
+  photoSub: z.array(z.string()).optional(), // Array of article IDs where this person provided photo credits
 });
 
 export type Team = z.infer<typeof teamSchema>;
@@ -101,6 +103,8 @@ export const teamMembers = pgTable("team_members", {
   imageUrl: text("image_url").notNull(),
   imageType: text("image_type").notNull(),
   imagePath: text("image_path"),
+  authorSub: jsonb("author_sub"), // Array of article IDs where this person is the author
+  photoSub: jsonb("photo_sub"), // Array of article IDs where this person provided photo credits
   createdAt: timestamp("created_at").defaultNow(),
 });
 

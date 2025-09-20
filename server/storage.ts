@@ -151,7 +151,9 @@ export class AirtableStorage implements IStorage {
         bio: 'Comedy writer and feminist scholar with a passion for empowering women through humor.',
         imageUrl: '/api/images/placeholder',
         imageType: 'url',
-        imagePath: null
+        imagePath: null,
+        authorSub: ['sample-article-1', 'sample-article-2'],
+        photoSub: ['sample-photo-1']
       },
       {
         id: 'sample2',
@@ -160,7 +162,9 @@ export class AirtableStorage implements IStorage {
         bio: 'Comedian and essayist focusing on intersectional feminism and representation in media.',
         imageUrl: '/api/images/placeholder',
         imageType: 'url',
-        imagePath: null
+        imagePath: null,
+        authorSub: ['sample-article-1', 'sample-article-2'],
+        photoSub: ['sample-photo-1']
       },
       {
         id: 'sample3',
@@ -169,7 +173,9 @@ export class AirtableStorage implements IStorage {
         bio: 'Cultural critic and humor writer exploring gender politics through a satirical lens.',
         imageUrl: '/api/images/placeholder',
         imageType: 'url',
-        imagePath: null
+        imagePath: null,
+        authorSub: ['sample-article-1', 'sample-article-2'],
+        photoSub: ['sample-photo-1']
       }
     ];
   }
@@ -445,6 +451,13 @@ export class AirtableStorage implements IStorage {
     const roleField = record.get('role') || record.get('Role');
     const role = Array.isArray(roleField) ? roleField.join(', ') : (roleField as string || '');
 
+    // Handle authorSub and photoSub fields - these are arrays of article IDs
+    const authorSubField = record.get('AuthorSub') || record.get('authorSub') || record.get('Author Sub');
+    const authorSub = Array.isArray(authorSubField) ? authorSubField : (authorSubField ? [authorSubField] : undefined);
+
+    const photoSubField = record.get('PhotoSub') || record.get('photoSub') || record.get('Photo Sub');
+    const photoSub = Array.isArray(photoSubField) ? photoSubField : (photoSubField ? [photoSubField] : undefined);
+
     return {
       id: record.id,
       name: record.get('name') as string || record.get('Name') as string || '',
@@ -452,7 +465,9 @@ export class AirtableStorage implements IStorage {
       bio: record.get('bio') as string || record.get('Bio') as string || '',
       imageUrl: imageUrl,
       imageType: 'url', // Always use URL type since we're proxying
-      imagePath: null // No need for local path when using proxy
+      imagePath: null, // No need for local path when using proxy
+      authorSub: authorSub,
+      photoSub: photoSub
     };
   }
 }
@@ -555,7 +570,9 @@ export class MemStorage implements IStorage {
         bio: 'Comedy writer and feminist scholar with a passion for empowering women through humor.',
         imageUrl: ImageService.getProxyUrl('https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80'),
         imageType: 'url',
-        imagePath: null
+        imagePath: null,
+        authorSub: ['sample-article-1', 'sample-article-2'],
+        photoSub: ['sample-photo-1']
       },
       {
         id: 'rec2',
@@ -564,7 +581,9 @@ export class MemStorage implements IStorage {
         bio: 'Comedian and essayist focusing on intersectional feminism and representation in media.',
         imageUrl: ImageService.getProxyUrl('https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80'),
         imageType: 'url',
-        imagePath: null
+        imagePath: null,
+        authorSub: ['sample-article-3', 'sample-article-4', 'sample-article-5'],
+        photoSub: ['sample-photo-2', 'sample-photo-3']
       },
       {
         id: 'rec3',
@@ -573,7 +592,9 @@ export class MemStorage implements IStorage {
         bio: 'Cultural critic and humor writer exploring gender politics through a satirical lens.',
         imageUrl: ImageService.getProxyUrl('https://images.unsplash.com/photo-1581992652564-44c42f5ad3ad?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80'),
         imageType: 'url',
-        imagePath: null
+        imagePath: null,
+        authorSub: ['sample-article-6'],
+        photoSub: ['sample-photo-4', 'sample-photo-5']
       }
     ];
 
