@@ -11,12 +11,12 @@ A modern full-stack web application serving feminist humor content, built with R
 - **Node.js** 18+ and **npm**
 - **Git**
 
-### Local Development Setup
+#### Option 1: Railway (Recommended)
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/pinkytoedev/PinkyToeWebsite.git
-   cd PinkyToeWebsite
+   git clone <repository-url>
+   cd <project-folder>
    ```
 
 2. **Install dependencies**
@@ -24,24 +24,18 @@ A modern full-stack web application serving feminist humor content, built with R
    npm install
    ```
 
-3. **Set up environment variables (Optional)**
-   
-   The app works out-of-the-box with test data, but you can connect to Airtable for live data:
-   
+3. **Login and link Railway** (for local env variables)
    ```bash
-   cp .env.example .env
-   # Edit .env with your Airtable credentials (optional)
+   npm i -g @railway/cli
+   railway login
+   railway link
    ```
 
-4. **Start development server**
+4. **Start development server with Railway env**
    ```bash
-   npm run dev
+   railway run npm run dev
    ```
-
-5. **Open your browser**
-   
-   Navigate to `http://localhost:5000` to see the website!
-
+   The app will start on `http://localhost:3000` (auto-fallbacks to `3001`, `3002`, etc. if ports are busy). HTTPS for Facebook runs on `https://localhost:3001`.
 ## 📊 Website Architecture
 
 For a detailed understanding of how the website works, see the [Website Logic Flow Diagram](WEBSITE_FLOW_DIAGRAM.md).
