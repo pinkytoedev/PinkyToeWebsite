@@ -2,19 +2,20 @@
   "data": {
     "articles": [
       {
-        "id": "recvbU9mI98GQuX7q",
-        "title": "Test Article 1",
-        "description": "test 1 descript\n",
-        "content": "",
-        "contentFormat": "plaintext",
-        "imageUrl": "/api/images/https%3A%2F%2Fi.ibb.co%2F1Gp848MT%2FIMG-0710-jpg.jpg",
+        "id": "recbmrNMi8ZpXXmJE",
+        "title": "The Cheese Gambit: Every time I Go to the Bathroom I Must Best A Little Mouse In A Game of Chess",
+        "description": "At this point, I know you, and you know me. And so you should know that I have celiac disease and cannot eat gluten. And that I’m Jewish.\n",
+        "content": "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n  <meta charset=\"UTF-8\">\n  <title>The Cheese Gambit</title>\n</head>\n<body>\n  <h1>The Cheese Gambit: Everytime I Go to the Bathroom I Must Best A Little Mouse In A Game of Chess</h1>\n  <p>Hello readers. It’s me, Doran. I’m a junior at this university now. At this point, I know you, and you know me. And so you should know that I have celiac disease and cannot eat gluten. And that I’m Jewish. And that Jews frequently have digestive issues. Because of this, going to the bathroom is something very sacred to me. It’s a place where I can just sit in silence by myself and let loose. Let go of anything that’s holding me down, and just let it flow out of my body.</p>\n\n  <p>So you can imagine how fucking MAD I was when a little fucking know-it-all MOUSE stood blocking the fucking entrance with his stupid fucking chess board and little fucking mouse chess pieces fucking asking me to fucking play or he fucking wouldn’t fucking let fucking me fucking in to fucking shit! <em>(Clearly, mad enough to let the God of middle school boys who just learned to curse take over me. His name is Jason. He’s actually lowkey a ki once you get to know him /srs)</em></p>\n\n  <p>How could this be happening to me? My shit is currently nudging against the interior of my asshole and this other asshole is making me sit down for a nice game of chess! Either way, I had no choice. I had to beat him. And so, I got to work, trying to ignore the reverse sodomy happening down below. Before I knew it, he had lost (of course, like how could I lose to a literal mouse), and I got to have my special time.</p>\n\n  <p>However, as I passed the mouse to go hit the pooper, I heard a little mischievous snicker, “You may have bested me today, but you’ll never finish the whole Cheese Gambit, muahahahaha!!!”</p>\n\n  <p>I for one, don’t take dumb shit like that (I let it go.) so I immediately yelled back, “The Cheese Gambit? Bitch you ain’t Anya Taylor-Joy, you could NEVER be Anya Taylor-Joy. Anya Taylor-Joy would never stop people from dropping deuces, she would respectfully wait for them to drop said deuce and then have a nice game of chess waiting for them when they’re DONE!”</p>\n\n  <p>The mouse gave me no response except for an impish chuckle, as he seemingly strolled away. I then had a very nice shit.</p>\n\n  <p>But the next day, he was there again. And the next, the one after that, and the following day. This continued for weeks, and there was nothing I could do about it. One day, the mouse laughed at me, saying, “oh you’re gonna tell on me? Hah! You think anyone would believe such a ridiculous story?”</p>\n\n  <p>“You’re right,” I said. “No one would believe I’m playing a little mouse in chess.”</p>\n\n  <p>“HAH! No! I meant, no one will believe that you’re beating me, fucko!”</p>\n\n  <p>This cycle continued for 40 days and 40 nights, the games getting harder each time, until one night, it wasn’t just him. 80s of mice sat behind him clapping their hands rhythmically as I walked up to the board to gain passage as he sat there with a crown of cheese on his head, opposing me.</p>\n\n  <p>“You have company this time. And a new hat,” I noticed.</p>\n\n  <p>The mice all abruptly stopped clapping, and he looked at me in shock.</p>\n\n  <p>“You do realize that every mouse you’ve played has been a different mouse, right? Like, I’ve never played you before. I’m the Cheese King, the best chess player in the land.”</p>\n\n  <p>I stared at my adversaries in shock of this news. I had no clue. But what I did know was that I had to shit reaaal bad. So I got to work again.</p>\n\n  <p>The game was intense. I almost lost. He was struggling. And each time he did, he would take a little nibble out of his crown. But right near the end, the spirit of Anya emboldened me to make the necessary decisions to come out victorious. I cheered. The mice cried. I had finally defeated these evil mice, and could now poop freely! The mice couldn’t believe it, and the Cheese King placed his crown on my head. I gladly accepted the honor, and continued passage into my safe space.</p>\n\n  <p>Eyes closed, taking it all in, I sat down on the toilet, hearing the cries of the mice outside.</p>\n\n  <p>“Hey hoststuff, need a hand?”</p>\n\n  <p>I turn and jump up in shock, the shit literally being scared out of me, as I see my best friend, Olga Syphil, sitting on a toilet facing me that I’ve never seen in my bathroom before in my life.</p>\n\n  <p>“Let’s drop that dookie together now, shall we? One, two, three, Squeeeeeze!”</p>\n</body>\n</html>\n",
+        "contentFormat": "html",
+        "imageUrl": "/api/images/https%3A%2F%2Fi.ibb.co%2FkgPkpMSW%2Fcheese-gambit-1-png.png",
         "imageType": "url",
         "imagePath": null,
-        "featured": false,
-        "publishedAt": "2025-09-18T21:55:31.897Z",
-        "name": "Test Article 1",
+        "featured": true,
+        "publishedAt": "2025-09-21T14:05:00.000Z",
+        "name": "Doran Steinfeld",
         "photo": "",
-        "createdAt": "2025-09-20T18:23:46.482Z"
+        "status": "published",
+        "createdAt": "2025-09-22T21:17:20.356Z"
       },
       {
         "id": "reca03F38KNl9VQ88",
@@ -26,10 +27,11 @@
         "imageType": "url",
         "imagePath": null,
         "featured": false,
-        "publishedAt": "2025-09-13T01:34:09.972Z",
+        "publishedAt": "2025-09-12T21:35:00.000Z",
         "name": "Man Asks for “Queef Pass,” Doesn’t Know What He’s Talking About ",
         "photo": "",
-        "createdAt": "2025-09-20T18:23:46.482Z"
+        "status": "published",
+        "createdAt": "2025-09-22T21:17:20.356Z"
       },
       {
         "id": "rec5UBfOTf4Tstduy",
@@ -41,11 +43,12 @@
         "imageType": "url",
         "imagePath": null,
         "featured": false,
-        "publishedAt": "2025-05-08T18:41:52.933Z",
+        "publishedAt": "2025-05-08T12:20:00.000Z",
         "name": "ā̶͖̮̯̙̦̻̬̜͇͕̀̽̓̏̈́̏̓̄n̵̬̔̐o̷̱̯̳͔̱̒͗̇̇ͅn̸̛̤̰̈́̓̒̓͊̈͆̏͠y̸̨̢̰̠̳̝͚͈̙͉̒̀̑̔͆̅̏͝m̶̤̾̒̈́͆͋̈o̶̡̨̘̺̘̣̎͐̀̈̕͜͠u̸̬̬͈̺̩̺͎̐̃ś̴̛̛͖̺̠̼͎͛͒͐͌͆̚",
         "photo": "recgqh8EZ6qLEXXsA",
         "name_photo": "Yara Ahmed",
-        "createdAt": "2025-09-20T18:23:46.482Z"
+        "status": "published",
+        "createdAt": "2025-09-22T21:17:20.356Z"
       },
       {
         "id": "rec8qnAFSu1UlnbSg",
@@ -57,11 +60,12 @@
         "imageType": "url",
         "imagePath": null,
         "featured": false,
-        "publishedAt": "2025-05-06T16:18:03.343Z",
+        "publishedAt": "2025-05-06T12:10:00.000Z",
         "name": "Claire Zhang",
         "photo": "recHvFBgqSTJF9jNw",
         "name_photo": "Caterina Terrizz",
-        "createdAt": "2025-09-20T18:23:46.482Z",
+        "status": "published",
+        "createdAt": "2025-09-22T21:17:20.356Z",
         "hashtags": "It’s been over a month since the Center for Gender, Sexuality, and Activism was vandalized and ransacked. The perpetrator ripped down pride flags and destroyed political posters, targeting a space dedicated to protecting and supporting marginalized communities. In the face of this clear hate crime, the BU administration has, predictably, done nothing meaningful in the last 39 days.  However, this raises the question: If hate crimes are apparently fine now, what else can we get away with? As long as you can attribute your actions to being motivated by prejudice based on perceived membership in a social group, you should be in the clear. That guy who holds full 10-minute conversations with your professor in a 100-person lecture instead of just going to office hours? His last name is O’Neill–that sounds Irish enough, doesn’t it? That one acapella group you harbor slightly negative feelings about? All their members are women, and you’re sure that at least some of them get bisexual with it. Your butch, Chinese, just-cut-their-hair friend who won’t stop needling you with monkey facts and threatening to go on low-dose T? That’s your prime target, baby.  So, now that you’ve identified a target, what can you actually do?  Obviously, vandalism is a-okay. Feel free to break in and make a mess–throw furniture around, rip down decorations, ransack the fridge. If you’re feeling creative, you could spray paint a threatening message on the wall, or maybe just draw a dog or something. For our more minimalist readers, writing a short note or even just leaving something that looks out of place can be enough. Remember, your goal is to get your message across, though inducing a healthy amount of fear surely won’t hurt."
       },
       {
@@ -74,11 +78,12 @@
         "imageType": "url",
         "imagePath": null,
         "featured": true,
-        "publishedAt": "2025-05-02T16:22:22.012Z",
+        "publishedAt": "2025-05-02T12:30:00.000Z",
         "name": "Ogenna Oraedu",
         "photo": "recQWHet2vNmYMXRW",
         "name_photo": "Maddie lam\n",
-        "createdAt": "2025-09-20T18:23:46.482Z",
+        "status": "published",
+        "createdAt": "2025-09-22T21:17:20.356Z",
         "hashtags": "Say yes to Senior Spring! Except like. Hey. This is an intervention. You say yes every chance you get. You have been slightly tipsy for the past 12 weeks. You have a problem.  But hey! We aren’t here to judge or make jokes about alcoholism. It is super serious, and you should never be afraid to ask for help. For the sake of this article, however, you are not technically an alcoholic. You’re just in college.  As the semester comes to an end and you gear up to put on that bright Boston University Red robe, you have got to make every last drink count. You have to get it together. Face reality: You don’t need the drunk ciggies. You’re going to end up getting hooked, and let’s be serious, you are too young and far too privileged to have to take advantage of smoke breaks at work. What you need is a juice box and time outside, watching the blades of grass sway in the wind."
       },
       {
@@ -91,27 +96,12 @@
         "imageType": "url",
         "imagePath": null,
         "featured": false,
-        "publishedAt": "2025-04-29T14:07:59.192Z",
+        "publishedAt": "2025-04-30T13:36:00.000Z",
         "name": "ā̶͖̮̯̙̦̻̬̜͇͕̀̽̓̏̈́̏̓̄n̵̬̔̐o̷̱̯̳͔̱̒͗̇̇ͅn̸̛̤̰̈́̓̒̓͊̈͆̏͠y̸̨̢̰̠̳̝͚͈̙͉̒̀̑̔͆̅̏͝m̶̤̾̒̈́͆͋̈o̶̡̨̘̺̘̣̎͐̀̈̕͜͠u̸̬̬͈̺̩̺͎̐̃ś̴̛̛͖̺̠̼͎͛͒͐͌͆̚",
         "photo": "recb56Cqkrk4CEz66",
         "name_photo": "ā̶͖̮̯̙̦̻̬̜͇͕̀̽̓̏̈́̏̓̄n̵̬̔̐o̷̱̯̳͔̱̒͗̇̇ͅn̸̛̤̰̈́̓̒̓͊̈͆̏͠y̸̨̢̰̠̳̝͚͈̙͉̒̀̑̔͆̅̏͝m̶̤̾̒̈́͆͋̈o̶̡̨̘̺̘̣̎͐̀̈̕͜͠u̸̬̬͈̺̩̺͎̐̃ś̴̛̛͖̺̠̼͎͛͒͐͌͆̚",
-        "createdAt": "2025-09-20T18:23:46.482Z"
-      },
-      {
-        "id": "recwuf2fJS7PVvwZ7",
-        "title": "Bush Being Back is a Recession Indicator",
-        "description": "Theydies and Themtlethems BUSH as is luxurious PUBIC HAIR is BACK.\n",
-        "content": "<html><head><meta content=\"text/html; charset=UTF-8\" http-equiv=\"content-type\"><style type=\"text/css\">.lst-kix_f9sf9c88uqma-2>li:before{content:\"-  \"}ul.lst-kix_f9sf9c88uqma-0{list-style-type:none}.lst-kix_f9sf9c88uqma-3>li:before{content:\"-  \"}.lst-kix_f9sf9c88uqma-6>li:before{content:\"-  \"}ul.lst-kix_8mj3fcjf615-3{list-style-type:none}ul.lst-kix_8mj3fcjf615-2{list-style-type:none}ul.lst-kix_8mj3fcjf615-5{list-style-type:none}ul.lst-kix_8mj3fcjf615-4{list-style-type:none}.lst-kix_f9sf9c88uqma-4>li:before{content:\"-  \"}.lst-kix_f9sf9c88uqma-5>li:before{content:\"-  \"}ul.lst-kix_8mj3fcjf615-1{list-style-type:none}ul.lst-kix_8mj3fcjf615-0{list-style-type:none}.lst-kix_8mj3fcjf615-1>li:before{content:\"-  \"}ul.lst-kix_8mj3fcjf615-7{list-style-type:none}ul.lst-kix_8mj3fcjf615-6{list-style-type:none}.lst-kix_8mj3fcjf615-0>li:before{content:\"-  \"}ul.lst-kix_8mj3fcjf615-8{list-style-type:none}.lst-kix_f9sf9c88uqma-0>li:before{content:\"-  \"}.lst-kix_f9sf9c88uqma-1>li:before{content:\"-  \"}.lst-kix_8mj3fcjf615-8>li:before{content:\"-  \"}.lst-kix_8mj3fcjf615-7>li:before{content:\"-  \"}.lst-kix_8mj3fcjf615-2>li:before{content:\"-  \"}li.li-bullet-0:before{margin-left:-18pt;white-space:nowrap;display:inline-block;min-width:18pt}.lst-kix_8mj3fcjf615-3>li:before{content:\"-  \"}.lst-kix_f9sf9c88uqma-7>li:before{content:\"-  \"}ul.lst-kix_f9sf9c88uqma-2{list-style-type:none}ul.lst-kix_f9sf9c88uqma-1{list-style-type:none}.lst-kix_8mj3fcjf615-4>li:before{content:\"-  \"}.lst-kix_8mj3fcjf615-5>li:before{content:\"-  \"}ul.lst-kix_f9sf9c88uqma-4{list-style-type:none}ul.lst-kix_f9sf9c88uqma-3{list-style-type:none}ul.lst-kix_f9sf9c88uqma-6{list-style-type:none}.lst-kix_f9sf9c88uqma-8>li:before{content:\"-  \"}ul.lst-kix_f9sf9c88uqma-5{list-style-type:none}.lst-kix_8mj3fcjf615-6>li:before{content:\"-  \"}ul.lst-kix_f9sf9c88uqma-8{list-style-type:none}ul.lst-kix_f9sf9c88uqma-7{list-style-type:none}ol{margin:0;padding:0}table td,table th{padding:0}.c2{margin-left:36pt;padding-top:0pt;padding-left:0pt;padding-bottom:0pt;line-height:1.15;orphans:2;widows:2;text-align:left}.c0{color:#000000;font-weight:400;text-decoration:none;vertical-align:baseline;font-size:12pt;font-family:\"Times New Roman\";font-style:normal}.c1{padding-top:0pt;padding-bottom:0pt;line-height:1.15;orphans:2;widows:2;text-align:left;height:11pt}.c3{padding-top:0pt;padding-bottom:0pt;line-height:1.15;orphans:2;widows:2;text-align:left}.c6{font-size:12pt;font-family:\"Times New Roman\";font-style:italic;font-weight:400}.c4{background-color:#ffffff;max-width:468pt;padding:72pt 72pt 72pt 72pt}.c7{font-size:12pt;font-weight:400;font-family:\"Times New Roman\"}.c5{padding:0;margin:0}.title{padding-top:0pt;color:#000000;font-size:26pt;padding-bottom:3pt;font-family:\"Arial\";line-height:1.15;page-break-after:avoid;orphans:2;widows:2;text-align:left}.subtitle{padding-top:0pt;color:#666666;font-size:15pt;padding-bottom:16pt;font-family:\"Arial\";line-height:1.15;page-break-after:avoid;orphans:2;widows:2;text-align:left}li{color:#000000;font-size:11pt;font-family:\"Arial\"}p{margin:0;color:#000000;font-size:11pt;font-family:\"Arial\"}h1{padding-top:20pt;color:#000000;font-size:20pt;padding-bottom:6pt;font-family:\"Arial\";line-height:1.15;page-break-after:avoid;orphans:2;widows:2;text-align:left}h2{padding-top:18pt;color:#000000;font-size:16pt;padding-bottom:6pt;font-family:\"Arial\";line-height:1.15;page-break-after:avoid;orphans:2;widows:2;text-align:left}h3{padding-top:16pt;color:#434343;font-size:14pt;padding-bottom:4pt;font-family:\"Arial\";line-height:1.15;page-break-after:avoid;orphans:2;widows:2;text-align:left}h4{padding-top:14pt;color:#666666;font-size:12pt;padding-bottom:4pt;font-family:\"Arial\";line-height:1.15;page-break-after:avoid;orphans:2;widows:2;text-align:left}h5{padding-top:12pt;color:#666666;font-size:11pt;padding-bottom:4pt;font-family:\"Arial\";line-height:1.15;page-break-after:avoid;orphans:2;widows:2;text-align:left}h6{padding-top:12pt;color:#666666;font-size:11pt;padding-bottom:4pt;font-family:\"Arial\";line-height:1.15;page-break-after:avoid;font-style:italic;orphans:2;widows:2;text-align:left}</style></head><body class=\"c4 doc-content\"><p class=\"c1\"><span class=\"c0\"></span></p><p class=\"c1\"><span class=\"c0\"></span></p><p class=\"c3\"><span class=\"c0\">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;I know what you may be thinking&hellip; George W. Bush has decided to run for a 3rd term against Donald Trump?!?!?! NO!!!!!!!!!!!!!!!!!!!!!!!!!!!! WORSE!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!</span></p><p class=\"c1\"><span class=\"c0\"></span></p><p class=\"c3\"><span class=\"c0\">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Theydies and Themtlethems BUSH as is luxurious PUBIC HAIR is BACK.</span></p><p class=\"c1\"><span class=\"c0\"></span></p><p class=\"c3\"><span class=\"c0\">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Now, this in itself isn&rsquo;t bad. I love a bush &#128521; and you should too. BUT it is an indication of the greater sociopolitical atmosphere of the United States. Idk if y&rsquo;all have heard about the economy recently but it is BAD! When no one can afford to trim and sculpt their beautiful pubes anymore, that&#39;s when you know it&rsquo;s real.</span></p><p class=\"c1\"><span class=\"c0\"></span></p><p class=\"c3\"><span class=\"c0\">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Your pubes are now your biggest status symbol. Now at elite gatherings doormen are forcing people to drop their pants, and only when there is a smooth surface are they allowed in. That&rsquo;s right. Republicans are no longer asking what&rsquo;s in your pants to determine your gender, they want to know your Pubic Status. </span></p><p class=\"c1\"><span class=\"c0\"></span></p><p class=\"c3\"><span class=\"c0\">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Word has it this is starting to become a requirement for job interviews, frat parties, and they will even be checking pubes at the BU all-university commencement. In some of the more &lsquo;woke&rsquo; places that are now requiring pube checks, individuals are allowed bush only if they can prove the bush is representative of their soul, and not their economic status.</span></p><p class=\"c1\"><span class=\"c0\"></span></p><p class=\"c3\"><span class=\"c0\">Criteria of Soul Bush proof is as follows (must qualify for at least two to pass):</span></p><ul class=\"c5 lst-kix_f9sf9c88uqma-0 start\"><li class=\"c2 li-bullet-0\"><span class=\"c0\">Buzz Cut &ndash; gotta have hair somewhere</span></li><li class=\"c2 li-bullet-0\"><span class=\"c0\">Being Ginger &ndash; curtains can match the drapes</span></li><li class=\"c2 li-bullet-0\"><span class=\"c0\">Vegetarian &ndash; you&rsquo;re supposed to smell/taste better so pubes are allowed</span></li><li class=\"c2 li-bullet-0\"><span class=\"c0\">Wearing a Canadian Tuxedo - denim x denim and bush just feel right</span></li><li class=\"c2 li-bullet-0\"><span class=\"c0\">You have a hairless pet &ndash; people with snakes, lizards, chameleons, etc. need to balance out the hairiness in the world</span></li><li class=\"c2 li-bullet-0\"><span class=\"c7\">You have been on the hit reality TV show </span><span class=\"c6\">Survivor</span><span class=\"c0\">&nbsp;&ndash; proof you embraced the wilderness into your soul and into your coochie or penitz or other</span></li></ul><p class=\"c1\"><span class=\"c0\"></span></p><p class=\"c1\"><span class=\"c0\"></span></p><p class=\"c3\"><span class=\"c0\">DISQUALIFIERS</span></p><ul class=\"c5 lst-kix_8mj3fcjf615-0 start\"><li class=\"c2 li-bullet-0\"><span class=\"c0\">You have a mustache &ndash; you&rsquo;re only allowed 1 mustache and your upper lip is taking it up</span></li><li class=\"c2 li-bullet-0\"><span class=\"c0\">You are going/have gone to grad school &ndash; way bigger waste of money, you can waste a little more on a razor</span></li></ul><p class=\"c1\"><span class=\"c0\"></span></p><p class=\"c1\"><span class=\"c0\"></span></p><p class=\"c1\"><span class=\"c0\"></span></p></body></html>",
-        "contentFormat": "html",
-        "imageUrl": "/api/images/https%3A%2F%2Fi.ibb.co%2FXxWDgPHv%2FBush-Being-Back-is-a-Recession-Indicator-jpg.jpg",
-        "imageType": "url",
-        "imagePath": null,
-        "featured": false,
-        "publishedAt": "2025-04-28T16:26:52.223Z",
-        "name": "Jaclyn DiMatteo",
-        "photo": "recNwxpWgzmS6Ts1F",
-        "name_photo": "Elizabeth Morearty",
-        "createdAt": "2025-09-20T18:23:46.482Z"
+        "status": "published",
+        "createdAt": "2025-09-22T21:17:20.356Z"
       },
       {
         "id": "recVYYha5S7dmL6dJ",
@@ -123,11 +113,29 @@
         "imageType": "url",
         "imagePath": null,
         "featured": false,
-        "publishedAt": "2025-04-28T16:26:43.444Z",
+        "publishedAt": "2025-04-28T17:22:00.000Z",
         "name": "Sage Clark",
         "photo": "recNrwwoaPVdgg85g",
         "name_photo": "Via Sznewajs",
-        "createdAt": "2025-09-20T18:23:46.482Z"
+        "status": "published",
+        "createdAt": "2025-09-22T21:17:20.356Z"
+      },
+      {
+        "id": "recwuf2fJS7PVvwZ7",
+        "title": "Bush Being Back is a Recession Indicator",
+        "description": "Theydies and Themtlethems BUSH as is luxurious PUBIC HAIR is BACK.\n",
+        "content": "<html><head><meta content=\"text/html; charset=UTF-8\" http-equiv=\"content-type\"><style type=\"text/css\">.lst-kix_f9sf9c88uqma-2>li:before{content:\"-  \"}ul.lst-kix_f9sf9c88uqma-0{list-style-type:none}.lst-kix_f9sf9c88uqma-3>li:before{content:\"-  \"}.lst-kix_f9sf9c88uqma-6>li:before{content:\"-  \"}ul.lst-kix_8mj3fcjf615-3{list-style-type:none}ul.lst-kix_8mj3fcjf615-2{list-style-type:none}ul.lst-kix_8mj3fcjf615-5{list-style-type:none}ul.lst-kix_8mj3fcjf615-4{list-style-type:none}.lst-kix_f9sf9c88uqma-4>li:before{content:\"-  \"}.lst-kix_f9sf9c88uqma-5>li:before{content:\"-  \"}ul.lst-kix_8mj3fcjf615-1{list-style-type:none}ul.lst-kix_8mj3fcjf615-0{list-style-type:none}.lst-kix_8mj3fcjf615-1>li:before{content:\"-  \"}ul.lst-kix_8mj3fcjf615-7{list-style-type:none}ul.lst-kix_8mj3fcjf615-6{list-style-type:none}.lst-kix_8mj3fcjf615-0>li:before{content:\"-  \"}ul.lst-kix_8mj3fcjf615-8{list-style-type:none}.lst-kix_f9sf9c88uqma-0>li:before{content:\"-  \"}.lst-kix_f9sf9c88uqma-1>li:before{content:\"-  \"}.lst-kix_8mj3fcjf615-8>li:before{content:\"-  \"}.lst-kix_8mj3fcjf615-7>li:before{content:\"-  \"}.lst-kix_8mj3fcjf615-2>li:before{content:\"-  \"}li.li-bullet-0:before{margin-left:-18pt;white-space:nowrap;display:inline-block;min-width:18pt}.lst-kix_8mj3fcjf615-3>li:before{content:\"-  \"}.lst-kix_f9sf9c88uqma-7>li:before{content:\"-  \"}ul.lst-kix_f9sf9c88uqma-2{list-style-type:none}ul.lst-kix_f9sf9c88uqma-1{list-style-type:none}.lst-kix_8mj3fcjf615-4>li:before{content:\"-  \"}.lst-kix_8mj3fcjf615-5>li:before{content:\"-  \"}ul.lst-kix_f9sf9c88uqma-4{list-style-type:none}ul.lst-kix_f9sf9c88uqma-3{list-style-type:none}ul.lst-kix_f9sf9c88uqma-6{list-style-type:none}.lst-kix_f9sf9c88uqma-8>li:before{content:\"-  \"}ul.lst-kix_f9sf9c88uqma-5{list-style-type:none}.lst-kix_8mj3fcjf615-6>li:before{content:\"-  \"}ul.lst-kix_f9sf9c88uqma-8{list-style-type:none}ul.lst-kix_f9sf9c88uqma-7{list-style-type:none}ol{margin:0;padding:0}table td,table th{padding:0}.c2{margin-left:36pt;padding-top:0pt;padding-left:0pt;padding-bottom:0pt;line-height:1.15;orphans:2;widows:2;text-align:left}.c0{color:#000000;font-weight:400;text-decoration:none;vertical-align:baseline;font-size:12pt;font-family:\"Times New Roman\";font-style:normal}.c1{padding-top:0pt;padding-bottom:0pt;line-height:1.15;orphans:2;widows:2;text-align:left;height:11pt}.c3{padding-top:0pt;padding-bottom:0pt;line-height:1.15;orphans:2;widows:2;text-align:left}.c6{font-size:12pt;font-family:\"Times New Roman\";font-style:italic;font-weight:400}.c4{background-color:#ffffff;max-width:468pt;padding:72pt 72pt 72pt 72pt}.c7{font-size:12pt;font-weight:400;font-family:\"Times New Roman\"}.c5{padding:0;margin:0}.title{padding-top:0pt;color:#000000;font-size:26pt;padding-bottom:3pt;font-family:\"Arial\";line-height:1.15;page-break-after:avoid;orphans:2;widows:2;text-align:left}.subtitle{padding-top:0pt;color:#666666;font-size:15pt;padding-bottom:16pt;font-family:\"Arial\";line-height:1.15;page-break-after:avoid;orphans:2;widows:2;text-align:left}li{color:#000000;font-size:11pt;font-family:\"Arial\"}p{margin:0;color:#000000;font-size:11pt;font-family:\"Arial\"}h1{padding-top:20pt;color:#000000;font-size:20pt;padding-bottom:6pt;font-family:\"Arial\";line-height:1.15;page-break-after:avoid;orphans:2;widows:2;text-align:left}h2{padding-top:18pt;color:#000000;font-size:16pt;padding-bottom:6pt;font-family:\"Arial\";line-height:1.15;page-break-after:avoid;orphans:2;widows:2;text-align:left}h3{padding-top:16pt;color:#434343;font-size:14pt;padding-bottom:4pt;font-family:\"Arial\";line-height:1.15;page-break-after:avoid;orphans:2;widows:2;text-align:left}h4{padding-top:14pt;color:#666666;font-size:12pt;padding-bottom:4pt;font-family:\"Arial\";line-height:1.15;page-break-after:avoid;orphans:2;widows:2;text-align:left}h5{padding-top:12pt;color:#666666;font-size:11pt;padding-bottom:4pt;font-family:\"Arial\";line-height:1.15;page-break-after:avoid;orphans:2;widows:2;text-align:left}h6{padding-top:12pt;color:#666666;font-size:11pt;padding-bottom:4pt;font-family:\"Arial\";line-height:1.15;page-break-after:avoid;font-style:italic;orphans:2;widows:2;text-align:left}</style></head><body class=\"c4 doc-content\"><p class=\"c1\"><span class=\"c0\"></span></p><p class=\"c1\"><span class=\"c0\"></span></p><p class=\"c3\"><span class=\"c0\">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;I know what you may be thinking&hellip; George W. Bush has decided to run for a 3rd term against Donald Trump?!?!?! NO!!!!!!!!!!!!!!!!!!!!!!!!!!!! WORSE!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!</span></p><p class=\"c1\"><span class=\"c0\"></span></p><p class=\"c3\"><span class=\"c0\">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Theydies and Themtlethems BUSH as is luxurious PUBIC HAIR is BACK.</span></p><p class=\"c1\"><span class=\"c0\"></span></p><p class=\"c3\"><span class=\"c0\">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Now, this in itself isn&rsquo;t bad. I love a bush &#128521; and you should too. BUT it is an indication of the greater sociopolitical atmosphere of the United States. Idk if y&rsquo;all have heard about the economy recently but it is BAD! When no one can afford to trim and sculpt their beautiful pubes anymore, that&#39;s when you know it&rsquo;s real.</span></p><p class=\"c1\"><span class=\"c0\"></span></p><p class=\"c3\"><span class=\"c0\">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Your pubes are now your biggest status symbol. Now at elite gatherings doormen are forcing people to drop their pants, and only when there is a smooth surface are they allowed in. That&rsquo;s right. Republicans are no longer asking what&rsquo;s in your pants to determine your gender, they want to know your Pubic Status. </span></p><p class=\"c1\"><span class=\"c0\"></span></p><p class=\"c3\"><span class=\"c0\">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Word has it this is starting to become a requirement for job interviews, frat parties, and they will even be checking pubes at the BU all-university commencement. In some of the more &lsquo;woke&rsquo; places that are now requiring pube checks, individuals are allowed bush only if they can prove the bush is representative of their soul, and not their economic status.</span></p><p class=\"c1\"><span class=\"c0\"></span></p><p class=\"c3\"><span class=\"c0\">Criteria of Soul Bush proof is as follows (must qualify for at least two to pass):</span></p><ul class=\"c5 lst-kix_f9sf9c88uqma-0 start\"><li class=\"c2 li-bullet-0\"><span class=\"c0\">Buzz Cut &ndash; gotta have hair somewhere</span></li><li class=\"c2 li-bullet-0\"><span class=\"c0\">Being Ginger &ndash; curtains can match the drapes</span></li><li class=\"c2 li-bullet-0\"><span class=\"c0\">Vegetarian &ndash; you&rsquo;re supposed to smell/taste better so pubes are allowed</span></li><li class=\"c2 li-bullet-0\"><span class=\"c0\">Wearing a Canadian Tuxedo - denim x denim and bush just feel right</span></li><li class=\"c2 li-bullet-0\"><span class=\"c0\">You have a hairless pet &ndash; people with snakes, lizards, chameleons, etc. need to balance out the hairiness in the world</span></li><li class=\"c2 li-bullet-0\"><span class=\"c7\">You have been on the hit reality TV show </span><span class=\"c6\">Survivor</span><span class=\"c0\">&nbsp;&ndash; proof you embraced the wilderness into your soul and into your coochie or penitz or other</span></li></ul><p class=\"c1\"><span class=\"c0\"></span></p><p class=\"c1\"><span class=\"c0\"></span></p><p class=\"c3\"><span class=\"c0\">DISQUALIFIERS</span></p><ul class=\"c5 lst-kix_8mj3fcjf615-0 start\"><li class=\"c2 li-bullet-0\"><span class=\"c0\">You have a mustache &ndash; you&rsquo;re only allowed 1 mustache and your upper lip is taking it up</span></li><li class=\"c2 li-bullet-0\"><span class=\"c0\">You are going/have gone to grad school &ndash; way bigger waste of money, you can waste a little more on a razor</span></li></ul><p class=\"c1\"><span class=\"c0\"></span></p><p class=\"c1\"><span class=\"c0\"></span></p><p class=\"c1\"><span class=\"c0\"></span></p></body></html>",
+        "contentFormat": "html",
+        "imageUrl": "/api/images/https%3A%2F%2Fi.ibb.co%2FXxWDgPHv%2FBush-Being-Back-is-a-Recession-Indicator-jpg.jpg",
+        "imageType": "url",
+        "imagePath": null,
+        "featured": false,
+        "publishedAt": "2025-04-28T17:01:00.000Z",
+        "name": "Jaclyn DiMatteo",
+        "photo": "recNwxpWgzmS6Ts1F",
+        "name_photo": "Elizabeth Morearty",
+        "status": "published",
+        "createdAt": "2025-09-22T21:17:20.356Z"
       },
       {
         "id": "recOlI3fUexIc2CI4",
@@ -139,27 +147,12 @@
         "imageType": "url",
         "imagePath": null,
         "featured": false,
-        "publishedAt": "2025-04-25T16:48:05.203Z",
+        "publishedAt": "2025-04-25T17:46:00.000Z",
         "name": "Maya Bride",
         "photo": "recQWHet2vNmYMXRW",
         "name_photo": "Maddie lam\n",
-        "createdAt": "2025-09-20T18:23:46.482Z"
-      },
-      {
-        "id": "recbE7G1vBSQyVY8j",
-        "title": "New 24 Hour Challenge Meme Challenge Funny Hot Dog Challenge To Do With Friends and Other Hotdogs",
-        "description": "To host a N24HCMCFHDCTDWFAOH, first gather your friends or hotdogs. For your friends, you may try creating a silly Canva invite using canva.com and your BU email. No, you don’t have Canva Pro, but you still have a vast selection of hotdog imagery to entice your friends. \n",
-        "content": "<body>\n\n  <p>As the trees begin to bloom and bushes of all types begin to grow outside their bounds, like-minded hotdogs and people across Boston are wondering what to do on a warm (40 degree) sunny (sometimes that cloud moves away) Saturday afternoon (it's a Tuesday night). Well, thanks to the Trump administration banning the word women, it is back to the basics: men and hotdogs. So this season, sit right down and prepare for not the worst time during your week: the new 24 hour challenge meme challenge funny hot dog challenge to do with friends and other hotdogs.</p>\n\n  <p>To host a N24HCMCFHDCTDWFAOH, first gather your friends or hotdogs. For your friends, you may try creating a silly Canva invite using canva.com and your BU email. No, you don’t have Canva Pro, but you still have a vast selection of hotdog imagery to entice your friends. If it is instead other hotdogs you are trying to kindle a friendship with, it is more effective to hire a local dog to herd the hotdogs into formation to attend your event. Local hotdog herding dog services cannot be found on canva, but rather hotdoghunters.org on which BU emails do in fact have a premium account.</p>\n\n  <p>After you have a rough guest list for your N24HCMCFHDCTDWFAOH event, it's time to get into the funny meme challenge hassle of it all. It's easy to be funny, but the challenge part of this event is not easy to pull off. Begin by lubricating your home depot buckets with the hotdog water. Remember, the most sanitary measure for cooking your hotdogs is to make a vertical incision, place the weenie in a shallow plate of water, and microwave for 1-2:30 minutes. This method not only heats the weenie to the perfect meme-ing temperature but also infuses the water with the rich hotdog nutrients necessary to replenish the lost enzymes as your guest hotdogs and friends alike will suffer great physical exertion.</p>\n\n  <p>Once the buckets are adequately lined with hotdog waters and microwaves weenies, gather your guests around the bucket… the fun is about to begin. Alert your guests of the nearest exits in case of emergency, go over the rules and regulations of safe sex and drug use, and finally, remind guests about the plights of plagiarism as explained in the BU student handbook, all with at least 3 hotdogs adhered to somewhere on your body. This makes it look easy, but you must've used tape! Aha, it will be much harder for your guests to replicate this here trick.</p>\n\n  <p>Now it's their turn! See how many hotdogs your hotdogs and friends can balance on their bodies!</p>\n\n  <p>Yes, it’s that easy. It seems crazy that such a funny and laughing challenge could require four paragraphs of buildup and instruction, however, this challenge is bound to make memories lasting years. Stand perfectly still and try not to laugh… play some timely hits to get people happy… try out Má Vlast (My Country): No 2 Vltava [Moldau] by Bedřich Smetana, Polish National Radio Symphony Orchestra and Antoni Wit. If that's not for you, Turn My Swag On by Soulja Boy will certainly take this challenge to the next meme level, though you may sacrifice some aura points and cringe levels. This can all be redacted by throwing a T-pose into the mix, making the balancing of hotdogs all the more difficult.</p>\n\n  <p>If you enjoy this activity, be sure to follow Pinky Toe on all platforms to stay updated on other funny meme challenges that everyone is doing and laughing at while doing and other hotdog events and information.</p>\n\n  <p>But be careful, hotdogs can be deadly. Though ideally, you provide alternative snacks instead of eating your hotdog guests, it is a known fact that each hotdog consumed by a human cuts 36 minutes off their lives. Sure, this is all fun and games, but the hotdog 24 hour silly challenge is an important lesson in healthy diet and limiting hotdog intake in the face of Trump's dramatic defunding of other carcinogens. As it becomes increasingly hard to buy indie Chinese cigarettes or cancerous Mongolian chicken nuggets because of Trump’s outrageous tariffs, it is important to be aware of the domestic health possibilities provided by our very own hotdogs.</p>\n</body>",
-        "contentFormat": "html",
-        "imageUrl": "/api/images/https%3A%2F%2Fi.ibb.co%2Fwr6D0mwn%2FFunny-Hotdog-Challenge-WEB-jpg.jpg",
-        "imageType": "url",
-        "imagePath": null,
-        "featured": false,
-        "publishedAt": "2025-04-24T22:15:36.488Z",
-        "name": "Ava Rubin",
-        "photo": "recgqh8EZ6qLEXXsA",
-        "name_photo": "Yara Ahmed",
-        "createdAt": "2025-09-20T18:23:46.482Z"
+        "status": "published",
+        "createdAt": "2025-09-22T21:17:20.356Z"
       },
       {
         "id": "recqXnKerjLVNrCDJ",
@@ -171,11 +164,29 @@
         "imageType": "url",
         "imagePath": null,
         "featured": false,
-        "publishedAt": "2025-04-24T22:14:53.198Z",
+        "publishedAt": "2025-04-25T03:54:00.000Z",
         "name": "ā̶͖̮̯̙̦̻̬̜͇͕̀̽̓̏̈́̏̓̄n̵̬̔̐o̷̱̯̳͔̱̒͗̇̇ͅn̸̛̤̰̈́̓̒̓͊̈͆̏͠y̸̨̢̰̠̳̝͚͈̙͉̒̀̑̔͆̅̏͝m̶̤̾̒̈́͆͋̈o̶̡̨̘̺̘̣̎͐̀̈̕͜͠u̸̬̬͈̺̩̺͎̐̃ś̴̛̛͖̺̠̼͎͛͒͐͌͆̚",
         "photo": "recb56Cqkrk4CEz66",
         "name_photo": "ā̶͖̮̯̙̦̻̬̜͇͕̀̽̓̏̈́̏̓̄n̵̬̔̐o̷̱̯̳͔̱̒͗̇̇ͅn̸̛̤̰̈́̓̒̓͊̈͆̏͠y̸̨̢̰̠̳̝͚͈̙͉̒̀̑̔͆̅̏͝m̶̤̾̒̈́͆͋̈o̶̡̨̘̺̘̣̎͐̀̈̕͜͠u̸̬̬͈̺̩̺͎̐̃ś̴̛̛͖̺̠̼͎͛͒͐͌͆̚",
-        "createdAt": "2025-09-20T18:23:46.482Z"
+        "status": "published",
+        "createdAt": "2025-09-22T21:17:20.356Z"
+      },
+      {
+        "id": "recbE7G1vBSQyVY8j",
+        "title": "New 24 Hour Challenge Meme Challenge Funny Hot Dog Challenge To Do With Friends and Other Hotdogs",
+        "description": "To host a N24HCMCFHDCTDWFAOH, first gather your friends or hotdogs. For your friends, you may try creating a silly Canva invite using canva.com and your BU email. No, you don’t have Canva Pro, but you still have a vast selection of hotdog imagery to entice your friends. \n",
+        "content": "<body>\n\n  <p>As the trees begin to bloom and bushes of all types begin to grow outside their bounds, like-minded hotdogs and people across Boston are wondering what to do on a warm (40 degree) sunny (sometimes that cloud moves away) Saturday afternoon (it's a Tuesday night). Well, thanks to the Trump administration banning the word women, it is back to the basics: men and hotdogs. So this season, sit right down and prepare for not the worst time during your week: the new 24 hour challenge meme challenge funny hot dog challenge to do with friends and other hotdogs.</p>\n\n  <p>To host a N24HCMCFHDCTDWFAOH, first gather your friends or hotdogs. For your friends, you may try creating a silly Canva invite using canva.com and your BU email. No, you don’t have Canva Pro, but you still have a vast selection of hotdog imagery to entice your friends. If it is instead other hotdogs you are trying to kindle a friendship with, it is more effective to hire a local dog to herd the hotdogs into formation to attend your event. Local hotdog herding dog services cannot be found on canva, but rather hotdoghunters.org on which BU emails do in fact have a premium account.</p>\n\n  <p>After you have a rough guest list for your N24HCMCFHDCTDWFAOH event, it's time to get into the funny meme challenge hassle of it all. It's easy to be funny, but the challenge part of this event is not easy to pull off. Begin by lubricating your home depot buckets with the hotdog water. Remember, the most sanitary measure for cooking your hotdogs is to make a vertical incision, place the weenie in a shallow plate of water, and microwave for 1-2:30 minutes. This method not only heats the weenie to the perfect meme-ing temperature but also infuses the water with the rich hotdog nutrients necessary to replenish the lost enzymes as your guest hotdogs and friends alike will suffer great physical exertion.</p>\n\n  <p>Once the buckets are adequately lined with hotdog waters and microwaves weenies, gather your guests around the bucket… the fun is about to begin. Alert your guests of the nearest exits in case of emergency, go over the rules and regulations of safe sex and drug use, and finally, remind guests about the plights of plagiarism as explained in the BU student handbook, all with at least 3 hotdogs adhered to somewhere on your body. This makes it look easy, but you must've used tape! Aha, it will be much harder for your guests to replicate this here trick.</p>\n\n  <p>Now it's their turn! See how many hotdogs your hotdogs and friends can balance on their bodies!</p>\n\n  <p>Yes, it’s that easy. It seems crazy that such a funny and laughing challenge could require four paragraphs of buildup and instruction, however, this challenge is bound to make memories lasting years. Stand perfectly still and try not to laugh… play some timely hits to get people happy… try out Má Vlast (My Country): No 2 Vltava [Moldau] by Bedřich Smetana, Polish National Radio Symphony Orchestra and Antoni Wit. If that's not for you, Turn My Swag On by Soulja Boy will certainly take this challenge to the next meme level, though you may sacrifice some aura points and cringe levels. This can all be redacted by throwing a T-pose into the mix, making the balancing of hotdogs all the more difficult.</p>\n\n  <p>If you enjoy this activity, be sure to follow Pinky Toe on all platforms to stay updated on other funny meme challenges that everyone is doing and laughing at while doing and other hotdog events and information.</p>\n\n  <p>But be careful, hotdogs can be deadly. Though ideally, you provide alternative snacks instead of eating your hotdog guests, it is a known fact that each hotdog consumed by a human cuts 36 minutes off their lives. Sure, this is all fun and games, but the hotdog 24 hour silly challenge is an important lesson in healthy diet and limiting hotdog intake in the face of Trump's dramatic defunding of other carcinogens. As it becomes increasingly hard to buy indie Chinese cigarettes or cancerous Mongolian chicken nuggets because of Trump’s outrageous tariffs, it is important to be aware of the domestic health possibilities provided by our very own hotdogs.</p>\n</body>",
+        "contentFormat": "html",
+        "imageUrl": "/api/images/https%3A%2F%2Fi.ibb.co%2Fwr6D0mwn%2FFunny-Hotdog-Challenge-WEB-jpg.jpg",
+        "imageType": "url",
+        "imagePath": null,
+        "featured": false,
+        "publishedAt": "2025-04-24T17:31:00.000Z",
+        "name": "Ava Rubin",
+        "photo": "recgqh8EZ6qLEXXsA",
+        "name_photo": "Yara Ahmed",
+        "status": "published",
+        "createdAt": "2025-09-22T21:17:20.356Z"
       },
       {
         "id": "reck1otRde60Hljyg",
@@ -187,11 +198,11 @@
         "imageType": "url",
         "imagePath": null,
         "featured": true,
-        "publishedAt": "2025-04-22T18:09:08.564Z",
+        "publishedAt": "2025-04-23T12:31:00.000Z",
         "name": "ā̶͖̮̯̙̦̻̬̜͇͕̀̽̓̏̈́̏̓̄n̵̬̔̐o̷̱̯̳͔̱̒͗̇̇ͅn̸̛̤̰̈́̓̒̓͊̈͆̏͠y̸̨̢̰̠̳̝͚͈̙͉̒̀̑̔͆̅̏͝m̶̤̾̒̈́͆͋̈o̶̡̨̘̺̘̣̎͐̀̈̕͜͠u̸̬̬͈̺̩̺͎̐̃ś̴̛̛͖̺̠̼͎͛͒͐͌͆̚",
-        "photo": "recZYbpEkFkyD2Z9w",
-        "name_photo": "Elana Felig ",
-        "createdAt": "2025-09-20T18:23:46.482Z"
+        "photo": "",
+        "status": "published",
+        "createdAt": "2025-09-22T21:17:20.356Z"
       },
       {
         "id": "recGBxRFhrVVnOSSc",
@@ -203,11 +214,12 @@
         "imageType": "url",
         "imagePath": null,
         "featured": false,
-        "publishedAt": "2025-04-22T16:50:21.505Z",
+        "publishedAt": "2025-04-22T16:50:00.000Z",
         "name": "Aidan Fairchild-Sandoval",
         "photo": "recNwxpWgzmS6Ts1F",
         "name_photo": "Elizabeth Morearty",
-        "createdAt": "2025-09-20T18:23:46.482Z"
+        "status": "published",
+        "createdAt": "2025-09-22T21:17:20.356Z"
       },
       {
         "id": "reczb1AUBnpSNbxYl",
@@ -223,7 +235,8 @@
         "name": "Ogenna Oraedu",
         "photo": "recNwxpWgzmS6Ts1F",
         "name_photo": "Elizabeth Morearty",
-        "createdAt": "2025-09-20T18:23:46.482Z"
+        "status": "published",
+        "createdAt": "2025-09-22T21:17:20.356Z"
       },
       {
         "id": "recRV7JdEc7Y9OaIa",
@@ -239,7 +252,8 @@
         "name": "Martin Akamine",
         "photo": "recNwxpWgzmS6Ts1F",
         "name_photo": "Elizabeth Morearty",
-        "createdAt": "2025-09-20T18:23:46.482Z"
+        "status": "published",
+        "createdAt": "2025-09-22T21:17:20.356Z"
       },
       {
         "id": "recscaECzXSMnY1ND",
@@ -253,9 +267,9 @@
         "featured": false,
         "publishedAt": "2025-04-15T14:56:00.000Z",
         "name": "Emma Santos",
-        "photo": "recZYbpEkFkyD2Z9w",
-        "name_photo": "Elana Felig ",
-        "createdAt": "2025-09-20T18:23:46.482Z"
+        "photo": "",
+        "status": "published",
+        "createdAt": "2025-09-22T21:17:20.356Z"
       },
       {
         "id": "recQgVsmzZrsLuhEb",
@@ -271,7 +285,8 @@
         "name": "Ariana Beck",
         "photo": "recNwxpWgzmS6Ts1F",
         "name_photo": "Elizabeth Morearty",
-        "createdAt": "2025-09-20T18:23:46.482Z"
+        "status": "published",
+        "createdAt": "2025-09-22T21:17:20.356Z"
       },
       {
         "id": "recE5pKivsH3syL0L",
@@ -287,7 +302,8 @@
         "name": "Mandy",
         "photo": "recNwxpWgzmS6Ts1F",
         "name_photo": "Elizabeth Morearty",
-        "createdAt": "2025-09-20T18:23:46.482Z"
+        "status": "published",
+        "createdAt": "2025-09-22T21:17:20.356Z"
       },
       {
         "id": "rec8UnN6O1G6w7iwG",
@@ -303,7 +319,8 @@
         "name": "Paige Schwartz",
         "photo": "recqzeh29YuQiTSz3",
         "name_photo": "Adrianna Uykan",
-        "createdAt": "2025-09-20T18:23:46.482Z"
+        "status": "published",
+        "createdAt": "2025-09-22T21:17:20.356Z"
       },
       {
         "id": "rec9VM3surMszV913",
@@ -319,7 +336,8 @@
         "name": "Maya Bride",
         "photo": "recb56Cqkrk4CEz66",
         "name_photo": "ā̶͖̮̯̙̦̻̬̜͇͕̀̽̓̏̈́̏̓̄n̵̬̔̐o̷̱̯̳͔̱̒͗̇̇ͅn̸̛̤̰̈́̓̒̓͊̈͆̏͠y̸̨̢̰̠̳̝͚͈̙͉̒̀̑̔͆̅̏͝m̶̤̾̒̈́͆͋̈o̶̡̨̘̺̘̣̎͐̀̈̕͜͠u̸̬̬͈̺̩̺͎̐̃ś̴̛̛͖̺̠̼͎͛͒͐͌͆̚",
-        "createdAt": "2025-09-20T18:23:46.482Z"
+        "status": "published",
+        "createdAt": "2025-09-22T21:17:20.356Z"
       },
       {
         "id": "recfGgRSmED4MuRce",
@@ -335,7 +353,8 @@
         "name": "Claire Zhang",
         "photo": "recb56Cqkrk4CEz66",
         "name_photo": "ā̶͖̮̯̙̦̻̬̜͇͕̀̽̓̏̈́̏̓̄n̵̬̔̐o̷̱̯̳͔̱̒͗̇̇ͅn̸̛̤̰̈́̓̒̓͊̈͆̏͠y̸̨̢̰̠̳̝͚͈̙͉̒̀̑̔͆̅̏͝m̶̤̾̒̈́͆͋̈o̶̡̨̘̺̘̣̎͐̀̈̕͜͠u̸̬̬͈̺̩̺͎̐̃ś̴̛̛͖̺̠̼͎͛͒͐͌͆̚",
-        "createdAt": "2025-09-20T18:23:46.482Z"
+        "status": "published",
+        "createdAt": "2025-09-22T21:17:20.356Z"
       },
       {
         "id": "recIvqHmrXO8aEfVm",
@@ -351,7 +370,8 @@
         "name": "Marissa Gilbert",
         "photo": "recb56Cqkrk4CEz66",
         "name_photo": "ā̶͖̮̯̙̦̻̬̜͇͕̀̽̓̏̈́̏̓̄n̵̬̔̐o̷̱̯̳͔̱̒͗̇̇ͅn̸̛̤̰̈́̓̒̓͊̈͆̏͠y̸̨̢̰̠̳̝͚͈̙͉̒̀̑̔͆̅̏͝m̶̤̾̒̈́͆͋̈o̶̡̨̘̺̘̣̎͐̀̈̕͜͠u̸̬̬͈̺̩̺͎̐̃ś̴̛̛͖̺̠̼͎͛͒͐͌͆̚",
-        "createdAt": "2025-09-20T18:23:46.482Z"
+        "status": "published",
+        "createdAt": "2025-09-22T21:17:20.356Z"
       },
       {
         "id": "recfnbE0T0qYfqt9E",
@@ -367,7 +387,8 @@
         "name": "Ava Carrel",
         "photo": "recb56Cqkrk4CEz66",
         "name_photo": "ā̶͖̮̯̙̦̻̬̜͇͕̀̽̓̏̈́̏̓̄n̵̬̔̐o̷̱̯̳͔̱̒͗̇̇ͅn̸̛̤̰̈́̓̒̓͊̈͆̏͠y̸̨̢̰̠̳̝͚͈̙͉̒̀̑̔͆̅̏͝m̶̤̾̒̈́͆͋̈o̶̡̨̘̺̘̣̎͐̀̈̕͜͠u̸̬̬͈̺̩̺͎̐̃ś̴̛̛͖̺̠̼͎͛͒͐͌͆̚",
-        "createdAt": "2025-09-20T18:23:46.482Z"
+        "status": "published",
+        "createdAt": "2025-09-22T21:17:20.356Z"
       },
       {
         "id": "recSeKhpNtcZC98VM",
@@ -383,7 +404,8 @@
         "name": "Aidan Fairchild-Sandoval",
         "photo": "recfJ29zsXVWwTE02",
         "name_photo": "Maya Bride",
-        "createdAt": "2025-09-20T18:23:46.482Z"
+        "status": "published",
+        "createdAt": "2025-09-22T21:17:20.356Z"
       },
       {
         "id": "recW5HnXSUGwtT1aP",
@@ -399,7 +421,8 @@
         "name": "Doran Steinfeld",
         "photo": "recNwxpWgzmS6Ts1F",
         "name_photo": "Elizabeth Morearty",
-        "createdAt": "2025-09-20T18:23:46.482Z"
+        "status": "published",
+        "createdAt": "2025-09-22T21:17:20.356Z"
       },
       {
         "id": "recqkxTgFd50gZVYa",
@@ -412,10 +435,11 @@
         "imagePath": null,
         "featured": false,
         "publishedAt": "2025-03-20T12:43:00.000Z",
-        "name": "Elana Felig ",
+        "name": "That’s So True, I Know the End: My Application To Be Paul Mescal’s Next Victim",
         "photo": "rec1PJwtCdLh6gGOy",
         "name_photo": "Katherine (Katie) Reilly",
-        "createdAt": "2025-09-20T18:23:46.482Z"
+        "status": "published",
+        "createdAt": "2025-09-22T21:17:20.356Z"
       },
       {
         "id": "recRBoofsKHcgXYIv",
@@ -431,7 +455,8 @@
         "name": "Willa Norvell",
         "photo": "recNrwwoaPVdgg85g",
         "name_photo": "Via Sznewajs",
-        "createdAt": "2025-09-20T18:23:46.482Z"
+        "status": "published",
+        "createdAt": "2025-09-22T21:17:20.356Z"
       },
       {
         "id": "recdaDlsxX43yuP7h",
@@ -447,7 +472,8 @@
         "name": "Ava Rubin",
         "photo": "recNrwwoaPVdgg85g",
         "name_photo": "Via Sznewajs",
-        "createdAt": "2025-09-20T18:23:46.482Z"
+        "status": "published",
+        "createdAt": "2025-09-22T21:17:20.356Z"
       },
       {
         "id": "recv0MVsHOGeZDFrD",
@@ -463,7 +489,8 @@
         "name": "ā̶͖̮̯̙̦̻̬̜͇͕̀̽̓̏̈́̏̓̄n̵̬̔̐o̷̱̯̳͔̱̒͗̇̇ͅn̸̛̤̰̈́̓̒̓͊̈͆̏͠y̸̨̢̰̠̳̝͚͈̙͉̒̀̑̔͆̅̏͝m̶̤̾̒̈́͆͋̈o̶̡̨̘̺̘̣̎͐̀̈̕͜͠u̸̬̬͈̺̩̺͎̐̃ś̴̛̛͖̺̠̼͎͛͒͐͌͆̚",
         "photo": "recgqh8EZ6qLEXXsA",
         "name_photo": "Yara Ahmed",
-        "createdAt": "2025-09-20T18:23:46.482Z"
+        "status": "published",
+        "createdAt": "2025-09-22T21:17:20.356Z"
       },
       {
         "id": "recXfuYm7dCnXCcyF",
@@ -479,7 +506,8 @@
         "name": "Lauren Matz",
         "photo": "recqzeh29YuQiTSz3",
         "name_photo": "Adrianna Uykan",
-        "createdAt": "2025-09-20T18:23:46.482Z"
+        "status": "published",
+        "createdAt": "2025-09-22T21:17:20.356Z"
       },
       {
         "id": "recRlv2TFb1GLD6CX",
@@ -495,7 +523,8 @@
         "name": "Ogenna Oraedu",
         "photo": "recNwxpWgzmS6Ts1F",
         "name_photo": "Elizabeth Morearty",
-        "createdAt": "2025-09-20T18:23:46.482Z"
+        "status": "published",
+        "createdAt": "2025-09-22T21:17:20.356Z"
       },
       {
         "id": "recGxsAqSzeLmxDU8",
@@ -511,7 +540,8 @@
         "name": "Sadie ",
         "photo": "recgqh8EZ6qLEXXsA",
         "name_photo": "Yara Ahmed",
-        "createdAt": "2025-09-20T18:23:46.482Z"
+        "status": "published",
+        "createdAt": "2025-09-22T21:17:20.356Z"
       },
       {
         "id": "reczOWRgpTgw5xOKo",
@@ -527,7 +557,8 @@
         "name": "Sage Clark",
         "photo": "recNrwwoaPVdgg85g",
         "name_photo": "Via Sznewajs",
-        "createdAt": "2025-09-20T18:23:46.482Z"
+        "status": "published",
+        "createdAt": "2025-09-22T21:17:20.356Z"
       },
       {
         "id": "rec7hS0r7SWLoKJm0",
@@ -543,7 +574,8 @@
         "name": "Martin Akamine",
         "photo": "recNwxpWgzmS6Ts1F",
         "name_photo": "Elizabeth Morearty",
-        "createdAt": "2025-09-20T18:23:46.482Z"
+        "status": "published",
+        "createdAt": "2025-09-22T21:17:20.356Z"
       },
       {
         "id": "reckZsvL5sxi3Iut7",
@@ -559,7 +591,8 @@
         "name": "Rachel Stern",
         "photo": "recZDtJSX5KOLTgH4",
         "name_photo": "Lindsay Lee",
-        "createdAt": "2025-09-20T18:23:46.482Z"
+        "status": "published",
+        "createdAt": "2025-09-22T21:17:20.356Z"
       },
       {
         "id": "recKOk3k8L79JP6YJ",
@@ -575,7 +608,8 @@
         "name": "Mirna Benavente",
         "photo": "recNwxpWgzmS6Ts1F",
         "name_photo": "Elizabeth Morearty",
-        "createdAt": "2025-09-20T18:23:46.482Z"
+        "status": "published",
+        "createdAt": "2025-09-22T21:17:20.356Z"
       },
       {
         "id": "recMaSCJDBIbPjFz8",
@@ -591,7 +625,8 @@
         "name": "Emma Santos",
         "photo": "recb56Cqkrk4CEz66",
         "name_photo": "ā̶͖̮̯̙̦̻̬̜͇͕̀̽̓̏̈́̏̓̄n̵̬̔̐o̷̱̯̳͔̱̒͗̇̇ͅn̸̛̤̰̈́̓̒̓͊̈͆̏͠y̸̨̢̰̠̳̝͚͈̙͉̒̀̑̔͆̅̏͝m̶̤̾̒̈́͆͋̈o̶̡̨̘̺̘̣̎͐̀̈̕͜͠u̸̬̬͈̺̩̺͎̐̃ś̴̛̛͖̺̠̼͎͛͒͐͌͆̚",
-        "createdAt": "2025-09-20T18:23:46.482Z"
+        "status": "published",
+        "createdAt": "2025-09-22T21:17:20.356Z"
       },
       {
         "id": "recsR1NjQpY119N4a",
@@ -607,7 +642,8 @@
         "name": "Ariana Beck",
         "photo": "rec1PJwtCdLh6gGOy",
         "name_photo": "Katherine (Katie) Reilly",
-        "createdAt": "2025-09-20T18:23:46.482Z"
+        "status": "published",
+        "createdAt": "2025-09-22T21:17:20.356Z"
       },
       {
         "id": "recMzm4xyOTAIOUv8",
@@ -623,7 +659,8 @@
         "name": "Mandy",
         "photo": "recfCkG7cdGG2OAVU",
         "name_photo": "Lauren Matz",
-        "createdAt": "2025-09-20T18:23:46.482Z",
+        "status": "published",
+        "createdAt": "2025-09-22T21:17:20.356Z",
         "hashtags": "fghj"
       },
       {
@@ -640,7 +677,8 @@
         "name": "Maggie McNeir",
         "photo": "recNrwwoaPVdgg85g",
         "name_photo": "Via Sznewajs",
-        "createdAt": "2025-09-20T18:23:46.482Z"
+        "status": "published",
+        "createdAt": "2025-09-22T21:17:20.356Z"
       },
       {
         "id": "recmqHtMe6DhCma0a",
@@ -656,7 +694,8 @@
         "name": "Maya Bride",
         "photo": "recQWHet2vNmYMXRW",
         "name_photo": "Maddie lam\n",
-        "createdAt": "2025-09-20T18:23:46.482Z"
+        "status": "published",
+        "createdAt": "2025-09-22T21:17:20.356Z"
       },
       {
         "id": "recQVDnw8VLXdQFgj",
@@ -672,7 +711,8 @@
         "name": "Paige Schwartz",
         "photo": "recNrwwoaPVdgg85g",
         "name_photo": "Via Sznewajs",
-        "createdAt": "2025-09-20T18:23:46.482Z"
+        "status": "published",
+        "createdAt": "2025-09-22T21:17:20.356Z"
       },
       {
         "id": "recfJB6XsYhyFNvjU",
@@ -688,7 +728,8 @@
         "name": "Abbie Garretson",
         "photo": "recgqh8EZ6qLEXXsA",
         "name_photo": "Yara Ahmed",
-        "createdAt": "2025-09-20T18:23:46.482Z"
+        "status": "published",
+        "createdAt": "2025-09-22T21:17:20.356Z"
       },
       {
         "id": "recy5YPSOCP1Lelpk",
@@ -704,7 +745,8 @@
         "name": "Marissa Gilbert",
         "photo": "recNwxpWgzmS6Ts1F",
         "name_photo": "Elizabeth Morearty",
-        "createdAt": "2025-09-20T18:23:46.482Z"
+        "status": "published",
+        "createdAt": "2025-09-22T21:17:20.356Z"
       },
       {
         "id": "recEXqJnuZXuXHLi7",
@@ -720,7 +762,8 @@
         "name": "ā̶͖̮̯̙̦̻̬̜͇͕̀̽̓̏̈́̏̓̄n̵̬̔̐o̷̱̯̳͔̱̒͗̇̇ͅn̸̛̤̰̈́̓̒̓͊̈͆̏͠y̸̨̢̰̠̳̝͚͈̙͉̒̀̑̔͆̅̏͝m̶̤̾̒̈́͆͋̈o̶̡̨̘̺̘̣̎͐̀̈̕͜͠u̸̬̬͈̺̩̺͎̐̃ś̴̛̛͖̺̠̼͎͛͒͐͌͆̚",
         "photo": "recb56Cqkrk4CEz66",
         "name_photo": "ā̶͖̮̯̙̦̻̬̜͇͕̀̽̓̏̈́̏̓̄n̵̬̔̐o̷̱̯̳͔̱̒͗̇̇ͅn̸̛̤̰̈́̓̒̓͊̈͆̏͠y̸̨̢̰̠̳̝͚͈̙͉̒̀̑̔͆̅̏͝m̶̤̾̒̈́͆͋̈o̶̡̨̘̺̘̣̎͐̀̈̕͜͠u̸̬̬͈̺̩̺͎̐̃ś̴̛̛͖̺̠̼͎͛͒͐͌͆̚",
-        "createdAt": "2025-09-20T18:23:46.482Z"
+        "status": "published",
+        "createdAt": "2025-09-22T21:17:20.356Z"
       },
       {
         "id": "rec9goJ62DEMuv3He",
@@ -736,7 +779,8 @@
         "name": "Ces Lodovico",
         "photo": "recb56Cqkrk4CEz66",
         "name_photo": "ā̶͖̮̯̙̦̻̬̜͇͕̀̽̓̏̈́̏̓̄n̵̬̔̐o̷̱̯̳͔̱̒͗̇̇ͅn̸̛̤̰̈́̓̒̓͊̈͆̏͠y̸̨̢̰̠̳̝͚͈̙͉̒̀̑̔͆̅̏͝m̶̤̾̒̈́͆͋̈o̶̡̨̘̺̘̣̎͐̀̈̕͜͠u̸̬̬͈̺̩̺͎̐̃ś̴̛̛͖̺̠̼͎͛͒͐͌͆̚",
-        "createdAt": "2025-09-20T18:23:46.482Z"
+        "status": "published",
+        "createdAt": "2025-09-22T21:17:20.356Z"
       },
       {
         "id": "reccvb6PlIVfxtpN2",
@@ -752,7 +796,8 @@
         "name": "Jaclyn DiMatteo",
         "photo": "recQWHet2vNmYMXRW",
         "name_photo": "Maddie lam\n",
-        "createdAt": "2025-09-20T18:23:46.482Z"
+        "status": "published",
+        "createdAt": "2025-09-22T21:17:20.356Z"
       },
       {
         "id": "recuhMwyTcaayrf9h",
@@ -768,7 +813,8 @@
         "name": "Doran Steinfeld",
         "photo": "recqzeh29YuQiTSz3",
         "name_photo": "Adrianna Uykan",
-        "createdAt": "2025-09-20T18:23:46.482Z"
+        "status": "published",
+        "createdAt": "2025-09-22T21:17:20.356Z"
       },
       {
         "id": "recw4Zbm225axjGv5",
@@ -784,7 +830,8 @@
         "name": "Aidan Fairchild-Sandoval",
         "photo": "recHvFBgqSTJF9jNw",
         "name_photo": "Caterina Terrizz",
-        "createdAt": "2025-09-20T18:23:46.482Z"
+        "status": "published",
+        "createdAt": "2025-09-22T21:17:20.356Z"
       },
       {
         "id": "rec2yg5XpiKie4CCL",
@@ -800,7 +847,8 @@
         "name": "Lauren Matz",
         "photo": "recgqh8EZ6qLEXXsA",
         "name_photo": "Yara Ahmed",
-        "createdAt": "2025-09-20T18:23:46.482Z"
+        "status": "published",
+        "createdAt": "2025-09-22T21:17:20.356Z"
       },
       {
         "id": "rec4eLXUGPBl3jldZ",
@@ -816,7 +864,8 @@
         "name": "Willa Norvell",
         "photo": "recNrwwoaPVdgg85g",
         "name_photo": "Via Sznewajs",
-        "createdAt": "2025-09-20T18:23:46.482Z"
+        "status": "published",
+        "createdAt": "2025-09-22T21:17:20.356Z"
       },
       {
         "id": "recAjCPTx2OJK9KVU",
@@ -832,7 +881,8 @@
         "name": "Ava Rubin",
         "photo": "recqzeh29YuQiTSz3",
         "name_photo": "Adrianna Uykan",
-        "createdAt": "2025-09-20T18:23:46.482Z"
+        "status": "published",
+        "createdAt": "2025-09-22T21:17:20.356Z"
       },
       {
         "id": "recfoGKRrYhgZoTeZ",
@@ -848,7 +898,8 @@
         "name": "Sage Clark",
         "photo": "recYigetjlh094xGR",
         "name_photo": "Maddie lam",
-        "createdAt": "2025-09-20T18:23:46.482Z",
+        "status": "published",
+        "createdAt": "2025-09-22T21:17:20.356Z",
         "hashtags": "#funny"
       },
       {
@@ -865,7 +916,8 @@
         "name": "Emma Santos",
         "photo": "recgqh8EZ6qLEXXsA",
         "name_photo": "Yara Ahmed",
-        "createdAt": "2025-09-20T18:23:46.482Z"
+        "status": "published",
+        "createdAt": "2025-09-22T21:17:20.356Z"
       },
       {
         "id": "recg4PnGPv2x6WmXe",
@@ -881,7 +933,8 @@
         "name": "Ogenna Oraedu",
         "photo": "recNwxpWgzmS6Ts1F",
         "name_photo": "Elizabeth Morearty",
-        "createdAt": "2025-09-20T18:23:46.482Z",
+        "status": "published",
+        "createdAt": "2025-09-22T21:17:20.356Z",
         "hashtags": "#funny"
       },
       {
@@ -898,7 +951,8 @@
         "name": "Rachel Stern",
         "photo": "recNrwwoaPVdgg85g",
         "name_photo": "Via Sznewajs",
-        "createdAt": "2025-09-20T18:23:46.482Z"
+        "status": "published",
+        "createdAt": "2025-09-22T21:17:20.356Z"
       },
       {
         "id": "recvGnv4rkieTsnrp",
@@ -914,7 +968,8 @@
         "name": "Martin Akamine",
         "photo": "recb56Cqkrk4CEz66",
         "name_photo": "ā̶͖̮̯̙̦̻̬̜͇͕̀̽̓̏̈́̏̓̄n̵̬̔̐o̷̱̯̳͔̱̒͗̇̇ͅn̸̛̤̰̈́̓̒̓͊̈͆̏͠y̸̨̢̰̠̳̝͚͈̙͉̒̀̑̔͆̅̏͝m̶̤̾̒̈́͆͋̈o̶̡̨̘̺̘̣̎͐̀̈̕͜͠u̸̬̬͈̺̩̺͎̐̃ś̴̛̛͖̺̠̼͎͛͒͐͌͆̚",
-        "createdAt": "2025-09-20T18:23:46.482Z"
+        "status": "published",
+        "createdAt": "2025-09-22T21:17:20.356Z"
       },
       {
         "id": "recgzrjlNbhnSTIiQ",
@@ -930,7 +985,8 @@
         "name": "Mirna Benavente",
         "photo": "recb56Cqkrk4CEz66",
         "name_photo": "ā̶͖̮̯̙̦̻̬̜͇͕̀̽̓̏̈́̏̓̄n̵̬̔̐o̷̱̯̳͔̱̒͗̇̇ͅn̸̛̤̰̈́̓̒̓͊̈͆̏͠y̸̨̢̰̠̳̝͚͈̙͉̒̀̑̔͆̅̏͝m̶̤̾̒̈́͆͋̈o̶̡̨̘̺̘̣̎͐̀̈̕͜͠u̸̬̬͈̺̩̺͎̐̃ś̴̛̛͖̺̠̼͎͛͒͐͌͆̚",
-        "createdAt": "2025-09-20T18:23:46.482Z"
+        "status": "published",
+        "createdAt": "2025-09-22T21:17:20.356Z"
       },
       {
         "id": "recZ9B8rROf67jQGp",
@@ -946,7 +1002,8 @@
         "name": "ā̶͖̮̯̙̦̻̬̜͇͕̀̽̓̏̈́̏̓̄n̵̬̔̐o̷̱̯̳͔̱̒͗̇̇ͅn̸̛̤̰̈́̓̒̓͊̈͆̏͠y̸̨̢̰̠̳̝͚͈̙͉̒̀̑̔͆̅̏͝m̶̤̾̒̈́͆͋̈o̶̡̨̘̺̘̣̎͐̀̈̕͜͠u̸̬̬͈̺̩̺͎̐̃ś̴̛̛͖̺̠̼͎͛͒͐͌͆̚",
         "photo": "recb56Cqkrk4CEz66",
         "name_photo": "ā̶͖̮̯̙̦̻̬̜͇͕̀̽̓̏̈́̏̓̄n̵̬̔̐o̷̱̯̳͔̱̒͗̇̇ͅn̸̛̤̰̈́̓̒̓͊̈͆̏͠y̸̨̢̰̠̳̝͚͈̙͉̒̀̑̔͆̅̏͝m̶̤̾̒̈́͆͋̈o̶̡̨̘̺̘̣̎͐̀̈̕͜͠u̸̬̬͈̺̩̺͎̐̃ś̴̛̛͖̺̠̼͎͛͒͐͌͆̚",
-        "createdAt": "2025-09-20T18:23:46.482Z"
+        "status": "published",
+        "createdAt": "2025-09-22T21:17:20.356Z"
       },
       {
         "id": "recTIzaejYQEFFVVQ",
@@ -962,7 +1019,8 @@
         "name": "Ava Carrel",
         "photo": "recNrwwoaPVdgg85g",
         "name_photo": "Via Sznewajs",
-        "createdAt": "2025-09-20T18:23:46.482Z",
+        "status": "published",
+        "createdAt": "2025-09-22T21:17:20.356Z",
         "hashtags": "<p id=\"\">Writer: Ava Carrel</p><p id=\"\">Photo: Via Sznewajs</p><p id=\"\">#hotgirlsrot #hotgirlsferment #thepinkytoe #bostonuniversity #freshdill #masonjar #glutenfreetunamelt</p>"
       },
       {
@@ -979,7 +1037,8 @@
         "name": "ā̶͖̮̯̙̦̻̬̜͇͕̀̽̓̏̈́̏̓̄n̵̬̔̐o̷̱̯̳͔̱̒͗̇̇ͅn̸̛̤̰̈́̓̒̓͊̈͆̏͠y̸̨̢̰̠̳̝͚͈̙͉̒̀̑̔͆̅̏͝m̶̤̾̒̈́͆͋̈o̶̡̨̘̺̘̣̎͐̀̈̕͜͠u̸̬̬͈̺̩̺͎̐̃ś̴̛̛͖̺̠̼͎͛͒͐͌͆̚",
         "photo": "recb56Cqkrk4CEz66",
         "name_photo": "ā̶͖̮̯̙̦̻̬̜͇͕̀̽̓̏̈́̏̓̄n̵̬̔̐o̷̱̯̳͔̱̒͗̇̇ͅn̸̛̤̰̈́̓̒̓͊̈͆̏͠y̸̨̢̰̠̳̝͚͈̙͉̒̀̑̔͆̅̏͝m̶̤̾̒̈́͆͋̈o̶̡̨̘̺̘̣̎͐̀̈̕͜͠u̸̬̬͈̺̩̺͎̐̃ś̴̛̛͖̺̠̼͎͛͒͐͌͆̚",
-        "createdAt": "2025-09-20T18:23:46.482Z",
+        "status": "published",
+        "createdAt": "2025-09-22T21:17:20.356Z",
         "hashtags": "Writer: Anon\nPhoto: Adrianna Uykan\n#theythem #enby #bluehairedlibs #thepinkytoe #bostonuniversity #starbucksrunsonnonbinaries #satire"
       },
       {
@@ -996,7 +1055,8 @@
         "name": "Mirna Benavente",
         "photo": "recNwxpWgzmS6Ts1F",
         "name_photo": "Elizabeth Morearty",
-        "createdAt": "2025-09-20T18:23:46.482Z"
+        "status": "published",
+        "createdAt": "2025-09-22T21:17:20.356Z"
       },
       {
         "id": "rechU8eOElJT0NKSM",
@@ -1012,7 +1072,8 @@
         "name": "Willa Norvell",
         "photo": "recb56Cqkrk4CEz66",
         "name_photo": "ā̶͖̮̯̙̦̻̬̜͇͕̀̽̓̏̈́̏̓̄n̵̬̔̐o̷̱̯̳͔̱̒͗̇̇ͅn̸̛̤̰̈́̓̒̓͊̈͆̏͠y̸̨̢̰̠̳̝͚͈̙͉̒̀̑̔͆̅̏͝m̶̤̾̒̈́͆͋̈o̶̡̨̘̺̘̣̎͐̀̈̕͜͠u̸̬̬͈̺̩̺͎̐̃ś̴̛̛͖̺̠̼͎͛͒͐͌͆̚",
-        "createdAt": "2025-09-20T18:23:46.482Z"
+        "status": "published",
+        "createdAt": "2025-09-22T21:17:20.356Z"
       },
       {
         "id": "reclbSYzNzXvELMrL",
@@ -1028,7 +1089,8 @@
         "name": "Ava Carrel",
         "photo": "recb56Cqkrk4CEz66",
         "name_photo": "ā̶͖̮̯̙̦̻̬̜͇͕̀̽̓̏̈́̏̓̄n̵̬̔̐o̷̱̯̳͔̱̒͗̇̇ͅn̸̛̤̰̈́̓̒̓͊̈͆̏͠y̸̨̢̰̠̳̝͚͈̙͉̒̀̑̔͆̅̏͝m̶̤̾̒̈́͆͋̈o̶̡̨̘̺̘̣̎͐̀̈̕͜͠u̸̬̬͈̺̩̺͎̐̃ś̴̛̛͖̺̠̼͎͛͒͐͌͆̚",
-        "createdAt": "2025-09-20T18:23:46.482Z"
+        "status": "published",
+        "createdAt": "2025-09-22T21:17:20.356Z"
       },
       {
         "id": "recS4Jp5wdNISD1z6",
@@ -1044,7 +1106,8 @@
         "name": "Maya Bride",
         "photo": "rec1PJwtCdLh6gGOy",
         "name_photo": "Katherine (Katie) Reilly",
-        "createdAt": "2025-09-20T18:23:46.482Z"
+        "status": "published",
+        "createdAt": "2025-09-22T21:17:20.356Z"
       },
       {
         "id": "recZKxTThO1Y4TiDY",
@@ -1057,10 +1120,11 @@
         "imagePath": null,
         "featured": false,
         "publishedAt": "2024-12-08T23:43:33.000Z",
-        "name": "Elana Felig ",
+        "name": "Paint N’ Shit: An Inclusive Twist on Paint N’ Sip for Bitches with Stomach Problems",
         "photo": "recb56Cqkrk4CEz66",
         "name_photo": "ā̶͖̮̯̙̦̻̬̜͇͕̀̽̓̏̈́̏̓̄n̵̬̔̐o̷̱̯̳͔̱̒͗̇̇ͅn̸̛̤̰̈́̓̒̓͊̈͆̏͠y̸̨̢̰̠̳̝͚͈̙͉̒̀̑̔͆̅̏͝m̶̤̾̒̈́͆͋̈o̶̡̨̘̺̘̣̎͐̀̈̕͜͠u̸̬̬͈̺̩̺͎̐̃ś̴̛̛͖̺̠̼͎͛͒͐͌͆̚",
-        "createdAt": "2025-09-20T18:23:46.482Z"
+        "status": "published",
+        "createdAt": "2025-09-22T21:17:20.356Z"
       },
       {
         "id": "recZvw6R8g5R4wFX1",
@@ -1076,7 +1140,8 @@
         "name": "Doran Steinfeld",
         "photo": "recb56Cqkrk4CEz66",
         "name_photo": "ā̶͖̮̯̙̦̻̬̜͇͕̀̽̓̏̈́̏̓̄n̵̬̔̐o̷̱̯̳͔̱̒͗̇̇ͅn̸̛̤̰̈́̓̒̓͊̈͆̏͠y̸̨̢̰̠̳̝͚͈̙͉̒̀̑̔͆̅̏͝m̶̤̾̒̈́͆͋̈o̶̡̨̘̺̘̣̎͐̀̈̕͜͠u̸̬̬͈̺̩̺͎̐̃ś̴̛̛͖̺̠̼͎͛͒͐͌͆̚",
-        "createdAt": "2025-09-20T18:23:46.482Z",
+        "status": "published",
+        "createdAt": "2025-09-22T21:17:20.356Z",
         "hashtags": "Writer: Doran Steinfeld\nPhoto: Ariana Beck\n#poop #drpoop #tingles #plop #thepinkytoe #bostonuniversity #bu #lockedintotoilettime "
       },
       {
@@ -1093,7 +1158,8 @@
         "name": "Abbie Garretson",
         "photo": "rec6KKJhAlg13VtKn",
         "name_photo": "Taylor Olson",
-        "createdAt": "2025-09-20T18:23:46.482Z",
+        "status": "published",
+        "createdAt": "2025-09-22T21:17:20.356Z",
         "hashtags": "#queeragenda #wokeagenda #liberalagenda #biohacking #theyreputtingmicrochipsintome #waitwhydoesthemicrochipfeelgood #thepinkytoe #bostonuniversity"
       },
       {
@@ -1110,7 +1176,8 @@
         "name": "Marissa Gilbert",
         "photo": "recUkhO4IuCasooVu",
         "name_photo": "Sadie ",
-        "createdAt": "2025-09-20T18:23:46.482Z"
+        "status": "published",
+        "createdAt": "2025-09-22T21:17:20.356Z"
       },
       {
         "id": "recu3nRER1QvayQa5",
@@ -1126,7 +1193,8 @@
         "name": "Aidan Fairchild-Sandoval",
         "photo": "recb56Cqkrk4CEz66",
         "name_photo": "ā̶͖̮̯̙̦̻̬̜͇͕̀̽̓̏̈́̏̓̄n̵̬̔̐o̷̱̯̳͔̱̒͗̇̇ͅn̸̛̤̰̈́̓̒̓͊̈͆̏͠y̸̨̢̰̠̳̝͚͈̙͉̒̀̑̔͆̅̏͝m̶̤̾̒̈́͆͋̈o̶̡̨̘̺̘̣̎͐̀̈̕͜͠u̸̬̬͈̺̩̺͎̐̃ś̴̛̛͖̺̠̼͎͛͒͐͌͆̚",
-        "createdAt": "2025-09-20T18:23:46.482Z"
+        "status": "published",
+        "createdAt": "2025-09-22T21:17:20.356Z"
       },
       {
         "id": "recY30NungwEfWEbd",
@@ -1142,7 +1210,8 @@
         "name": "Ogenna Oraedu",
         "photo": "recb56Cqkrk4CEz66",
         "name_photo": "ā̶͖̮̯̙̦̻̬̜͇͕̀̽̓̏̈́̏̓̄n̵̬̔̐o̷̱̯̳͔̱̒͗̇̇ͅn̸̛̤̰̈́̓̒̓͊̈͆̏͠y̸̨̢̰̠̳̝͚͈̙͉̒̀̑̔͆̅̏͝m̶̤̾̒̈́͆͋̈o̶̡̨̘̺̘̣̎͐̀̈̕͜͠u̸̬̬͈̺̩̺͎̐̃ś̴̛̛͖̺̠̼͎͛͒͐͌͆̚",
-        "createdAt": "2025-09-20T18:23:46.482Z"
+        "status": "published",
+        "createdAt": "2025-09-22T21:17:20.356Z"
       },
       {
         "id": "recayZL1twQt5Zx6Z",
@@ -1158,7 +1227,8 @@
         "name": "ā̶͖̮̯̙̦̻̬̜͇͕̀̽̓̏̈́̏̓̄n̵̬̔̐o̷̱̯̳͔̱̒͗̇̇ͅn̸̛̤̰̈́̓̒̓͊̈͆̏͠y̸̨̢̰̠̳̝͚͈̙͉̒̀̑̔͆̅̏͝m̶̤̾̒̈́͆͋̈o̶̡̨̘̺̘̣̎͐̀̈̕͜͠u̸̬̬͈̺̩̺͎̐̃ś̴̛̛͖̺̠̼͎͛͒͐͌͆̚",
         "photo": "recb56Cqkrk4CEz66",
         "name_photo": "ā̶͖̮̯̙̦̻̬̜͇͕̀̽̓̏̈́̏̓̄n̵̬̔̐o̷̱̯̳͔̱̒͗̇̇ͅn̸̛̤̰̈́̓̒̓͊̈͆̏͠y̸̨̢̰̠̳̝͚͈̙͉̒̀̑̔͆̅̏͝m̶̤̾̒̈́͆͋̈o̶̡̨̘̺̘̣̎͐̀̈̕͜͠u̸̬̬͈̺̩̺͎̐̃ś̴̛̛͖̺̠̼͎͛͒͐͌͆̚",
-        "createdAt": "2025-09-20T18:23:46.482Z",
+        "status": "published",
+        "createdAt": "2025-09-22T21:17:20.356Z",
         "hashtags": "<p>#bostonuniversity #satire #buhockey #humpin #humpday </p>"
       },
       {
@@ -1175,7 +1245,8 @@
         "name": "Doran Steinfeld",
         "photo": "recb56Cqkrk4CEz66",
         "name_photo": "ā̶͖̮̯̙̦̻̬̜͇͕̀̽̓̏̈́̏̓̄n̵̬̔̐o̷̱̯̳͔̱̒͗̇̇ͅn̸̛̤̰̈́̓̒̓͊̈͆̏͠y̸̨̢̰̠̳̝͚͈̙͉̒̀̑̔͆̅̏͝m̶̤̾̒̈́͆͋̈o̶̡̨̘̺̘̣̎͐̀̈̕͜͠u̸̬̬͈̺̩̺͎̐̃ś̴̛̛͖̺̠̼͎͛͒͐͌͆̚",
-        "createdAt": "2025-09-20T18:23:46.482Z",
+        "status": "published",
+        "createdAt": "2025-09-22T21:17:20.356Z",
         "hashtags": "<p>#bostonuniversity #dropdeadgorgeous #satire #imsoback #iseethelight</p>"
       },
       {
@@ -1192,7 +1263,8 @@
         "name": "Piper Hope",
         "photo": "recNrwwoaPVdgg85g",
         "name_photo": "Via Sznewajs",
-        "createdAt": "2025-09-20T18:23:46.482Z",
+        "status": "published",
+        "createdAt": "2025-09-22T21:17:20.356Z",
         "hashtags": "<p>#bostonuniversity #pinkytoe #bunion #satire #meangirls #dietpepsi #addisonrae</p>"
       },
       {
@@ -1209,7 +1281,8 @@
         "name": "ā̶͖̮̯̙̦̻̬̜͇͕̀̽̓̏̈́̏̓̄n̵̬̔̐o̷̱̯̳͔̱̒͗̇̇ͅn̸̛̤̰̈́̓̒̓͊̈͆̏͠y̸̨̢̰̠̳̝͚͈̙͉̒̀̑̔͆̅̏͝m̶̤̾̒̈́͆͋̈o̶̡̨̘̺̘̣̎͐̀̈̕͜͠u̸̬̬͈̺̩̺͎̐̃ś̴̛̛͖̺̠̼͎͛͒͐͌͆̚",
         "photo": "recb56Cqkrk4CEz66",
         "name_photo": "ā̶͖̮̯̙̦̻̬̜͇͕̀̽̓̏̈́̏̓̄n̵̬̔̐o̷̱̯̳͔̱̒͗̇̇ͅn̸̛̤̰̈́̓̒̓͊̈͆̏͠y̸̨̢̰̠̳̝͚͈̙͉̒̀̑̔͆̅̏͝m̶̤̾̒̈́͆͋̈o̶̡̨̘̺̘̣̎͐̀̈̕͜͠u̸̬̬͈̺̩̺͎̐̃ś̴̛̛͖̺̠̼͎͛͒͐͌͆̚",
-        "createdAt": "2025-09-20T18:23:46.482Z"
+        "status": "published",
+        "createdAt": "2025-09-22T21:17:20.356Z"
       },
       {
         "id": "recfQeaIeF6LK6Zyg",
@@ -1225,7 +1298,8 @@
         "name": "Abbie Garretson",
         "photo": "recb56Cqkrk4CEz66",
         "name_photo": "ā̶͖̮̯̙̦̻̬̜͇͕̀̽̓̏̈́̏̓̄n̵̬̔̐o̷̱̯̳͔̱̒͗̇̇ͅn̸̛̤̰̈́̓̒̓͊̈͆̏͠y̸̨̢̰̠̳̝͚͈̙͉̒̀̑̔͆̅̏͝m̶̤̾̒̈́͆͋̈o̶̡̨̘̺̘̣̎͐̀̈̕͜͠u̸̬̬͈̺̩̺͎̐̃ś̴̛̛͖̺̠̼͎͛͒͐͌͆̚",
-        "createdAt": "2025-09-20T18:23:46.482Z"
+        "status": "published",
+        "createdAt": "2025-09-22T21:17:20.356Z"
       },
       {
         "id": "recrtyzS4I8tWSZh9",
@@ -1241,7 +1315,8 @@
         "name": "ā̶͖̮̯̙̦̻̬̜͇͕̀̽̓̏̈́̏̓̄n̵̬̔̐o̷̱̯̳͔̱̒͗̇̇ͅn̸̛̤̰̈́̓̒̓͊̈͆̏͠y̸̨̢̰̠̳̝͚͈̙͉̒̀̑̔͆̅̏͝m̶̤̾̒̈́͆͋̈o̶̡̨̘̺̘̣̎͐̀̈̕͜͠u̸̬̬͈̺̩̺͎̐̃ś̴̛̛͖̺̠̼͎͛͒͐͌͆̚",
         "photo": "recb56Cqkrk4CEz66",
         "name_photo": "ā̶͖̮̯̙̦̻̬̜͇͕̀̽̓̏̈́̏̓̄n̵̬̔̐o̷̱̯̳͔̱̒͗̇̇ͅn̸̛̤̰̈́̓̒̓͊̈͆̏͠y̸̨̢̰̠̳̝͚͈̙͉̒̀̑̔͆̅̏͝m̶̤̾̒̈́͆͋̈o̶̡̨̘̺̘̣̎͐̀̈̕͜͠u̸̬̬͈̺̩̺͎̐̃ś̴̛̛͖̺̠̼͎͛͒͐͌͆̚",
-        "createdAt": "2025-09-20T18:23:46.482Z"
+        "status": "published",
+        "createdAt": "2025-09-22T21:17:20.356Z"
       },
       {
         "id": "rectD871phxWz5wnL",
@@ -1257,7 +1332,8 @@
         "name": "Piper Hope",
         "photo": "recb56Cqkrk4CEz66",
         "name_photo": "ā̶͖̮̯̙̦̻̬̜͇͕̀̽̓̏̈́̏̓̄n̵̬̔̐o̷̱̯̳͔̱̒͗̇̇ͅn̸̛̤̰̈́̓̒̓͊̈͆̏͠y̸̨̢̰̠̳̝͚͈̙͉̒̀̑̔͆̅̏͝m̶̤̾̒̈́͆͋̈o̶̡̨̘̺̘̣̎͐̀̈̕͜͠u̸̬̬͈̺̩̺͎̐̃ś̴̛̛͖̺̠̼͎͛͒͐͌͆̚",
-        "createdAt": "2025-09-20T18:23:46.482Z"
+        "status": "published",
+        "createdAt": "2025-09-22T21:17:20.356Z"
       },
       {
         "id": "recApARAqXjZghKsa",
@@ -1273,7 +1349,8 @@
         "name": "Ces Lodovico",
         "photo": "recb56Cqkrk4CEz66",
         "name_photo": "ā̶͖̮̯̙̦̻̬̜͇͕̀̽̓̏̈́̏̓̄n̵̬̔̐o̷̱̯̳͔̱̒͗̇̇ͅn̸̛̤̰̈́̓̒̓͊̈͆̏͠y̸̨̢̰̠̳̝͚͈̙͉̒̀̑̔͆̅̏͝m̶̤̾̒̈́͆͋̈o̶̡̨̘̺̘̣̎͐̀̈̕͜͠u̸̬̬͈̺̩̺͎̐̃ś̴̛̛͖̺̠̼͎͛͒͐͌͆̚",
-        "createdAt": "2025-09-20T18:23:46.482Z"
+        "status": "published",
+        "createdAt": "2025-09-22T21:17:20.356Z"
       },
       {
         "id": "recO4dxuuNtdiWVzj",
@@ -1289,7 +1366,8 @@
         "name": "Sage Clark",
         "photo": "recb56Cqkrk4CEz66",
         "name_photo": "ā̶͖̮̯̙̦̻̬̜͇͕̀̽̓̏̈́̏̓̄n̵̬̔̐o̷̱̯̳͔̱̒͗̇̇ͅn̸̛̤̰̈́̓̒̓͊̈͆̏͠y̸̨̢̰̠̳̝͚͈̙͉̒̀̑̔͆̅̏͝m̶̤̾̒̈́͆͋̈o̶̡̨̘̺̘̣̎͐̀̈̕͜͠u̸̬̬͈̺̩̺͎̐̃ś̴̛̛͖̺̠̼͎͛͒͐͌͆̚",
-        "createdAt": "2025-09-20T18:23:46.482Z"
+        "status": "published",
+        "createdAt": "2025-09-22T21:17:20.356Z"
       },
       {
         "id": "recop8Ui1vgkXv4J4",
@@ -1305,7 +1383,8 @@
         "name": "ā̶͖̮̯̙̦̻̬̜͇͕̀̽̓̏̈́̏̓̄n̵̬̔̐o̷̱̯̳͔̱̒͗̇̇ͅn̸̛̤̰̈́̓̒̓͊̈͆̏͠y̸̨̢̰̠̳̝͚͈̙͉̒̀̑̔͆̅̏͝m̶̤̾̒̈́͆͋̈o̶̡̨̘̺̘̣̎͐̀̈̕͜͠u̸̬̬͈̺̩̺͎̐̃ś̴̛̛͖̺̠̼͎͛͒͐͌͆̚",
         "photo": "recb56Cqkrk4CEz66",
         "name_photo": "ā̶͖̮̯̙̦̻̬̜͇͕̀̽̓̏̈́̏̓̄n̵̬̔̐o̷̱̯̳͔̱̒͗̇̇ͅn̸̛̤̰̈́̓̒̓͊̈͆̏͠y̸̨̢̰̠̳̝͚͈̙͉̒̀̑̔͆̅̏͝m̶̤̾̒̈́͆͋̈o̶̡̨̘̺̘̣̎͐̀̈̕͜͠u̸̬̬͈̺̩̺͎̐̃ś̴̛̛͖̺̠̼͎͛͒͐͌͆̚",
-        "createdAt": "2025-09-20T18:23:46.482Z"
+        "status": "published",
+        "createdAt": "2025-09-22T21:17:20.356Z"
       },
       {
         "id": "rec0dBv2iMdSt2YS8",
@@ -1321,7 +1400,8 @@
         "name": "Maya Bride",
         "photo": "recb56Cqkrk4CEz66",
         "name_photo": "ā̶͖̮̯̙̦̻̬̜͇͕̀̽̓̏̈́̏̓̄n̵̬̔̐o̷̱̯̳͔̱̒͗̇̇ͅn̸̛̤̰̈́̓̒̓͊̈͆̏͠y̸̨̢̰̠̳̝͚͈̙͉̒̀̑̔͆̅̏͝m̶̤̾̒̈́͆͋̈o̶̡̨̘̺̘̣̎͐̀̈̕͜͠u̸̬̬͈̺̩̺͎̐̃ś̴̛̛͖̺̠̼͎͛͒͐͌͆̚",
-        "createdAt": "2025-09-20T18:23:46.482Z"
+        "status": "published",
+        "createdAt": "2025-09-22T21:17:20.356Z"
       },
       {
         "id": "rec4SnBYuCJ30zX7D",
@@ -1337,7 +1417,8 @@
         "name": "ā̶͖̮̯̙̦̻̬̜͇͕̀̽̓̏̈́̏̓̄n̵̬̔̐o̷̱̯̳͔̱̒͗̇̇ͅn̸̛̤̰̈́̓̒̓͊̈͆̏͠y̸̨̢̰̠̳̝͚͈̙͉̒̀̑̔͆̅̏͝m̶̤̾̒̈́͆͋̈o̶̡̨̘̺̘̣̎͐̀̈̕͜͠u̸̬̬͈̺̩̺͎̐̃ś̴̛̛͖̺̠̼͎͛͒͐͌͆̚",
         "photo": "recb56Cqkrk4CEz66",
         "name_photo": "ā̶͖̮̯̙̦̻̬̜͇͕̀̽̓̏̈́̏̓̄n̵̬̔̐o̷̱̯̳͔̱̒͗̇̇ͅn̸̛̤̰̈́̓̒̓͊̈͆̏͠y̸̨̢̰̠̳̝͚͈̙͉̒̀̑̔͆̅̏͝m̶̤̾̒̈́͆͋̈o̶̡̨̘̺̘̣̎͐̀̈̕͜͠u̸̬̬͈̺̩̺͎̐̃ś̴̛̛͖̺̠̼͎͛͒͐͌͆̚",
-        "createdAt": "2025-09-20T18:23:46.482Z"
+        "status": "published",
+        "createdAt": "2025-09-22T21:17:20.356Z"
       },
       {
         "id": "recrBzF25lXGjrpJX",
@@ -1353,7 +1434,8 @@
         "name": "Emma Santos",
         "photo": "recb56Cqkrk4CEz66",
         "name_photo": "ā̶͖̮̯̙̦̻̬̜͇͕̀̽̓̏̈́̏̓̄n̵̬̔̐o̷̱̯̳͔̱̒͗̇̇ͅn̸̛̤̰̈́̓̒̓͊̈͆̏͠y̸̨̢̰̠̳̝͚͈̙͉̒̀̑̔͆̅̏͝m̶̤̾̒̈́͆͋̈o̶̡̨̘̺̘̣̎͐̀̈̕͜͠u̸̬̬͈̺̩̺͎̐̃ś̴̛̛͖̺̠̼͎͛͒͐͌͆̚",
-        "createdAt": "2025-09-20T18:23:46.482Z"
+        "status": "published",
+        "createdAt": "2025-09-22T21:17:20.356Z"
       },
       {
         "id": "recD4av5Td4ww0eg5",
@@ -1369,7 +1451,8 @@
         "name": "ā̶͖̮̯̙̦̻̬̜͇͕̀̽̓̏̈́̏̓̄n̵̬̔̐o̷̱̯̳͔̱̒͗̇̇ͅn̸̛̤̰̈́̓̒̓͊̈͆̏͠y̸̨̢̰̠̳̝͚͈̙͉̒̀̑̔͆̅̏͝m̶̤̾̒̈́͆͋̈o̶̡̨̘̺̘̣̎͐̀̈̕͜͠u̸̬̬͈̺̩̺͎̐̃ś̴̛̛͖̺̠̼͎͛͒͐͌͆̚",
         "photo": "recb56Cqkrk4CEz66",
         "name_photo": "ā̶͖̮̯̙̦̻̬̜͇͕̀̽̓̏̈́̏̓̄n̵̬̔̐o̷̱̯̳͔̱̒͗̇̇ͅn̸̛̤̰̈́̓̒̓͊̈͆̏͠y̸̨̢̰̠̳̝͚͈̙͉̒̀̑̔͆̅̏͝m̶̤̾̒̈́͆͋̈o̶̡̨̘̺̘̣̎͐̀̈̕͜͠u̸̬̬͈̺̩̺͎̐̃ś̴̛̛͖̺̠̼͎͛͒͐͌͆̚",
-        "createdAt": "2025-09-20T18:23:46.482Z"
+        "status": "published",
+        "createdAt": "2025-09-22T21:17:20.356Z"
       },
       {
         "id": "recmDBYKCphtikHij",
@@ -1385,7 +1468,8 @@
         "name": "Martin Akamine",
         "photo": "recb56Cqkrk4CEz66",
         "name_photo": "ā̶͖̮̯̙̦̻̬̜͇͕̀̽̓̏̈́̏̓̄n̵̬̔̐o̷̱̯̳͔̱̒͗̇̇ͅn̸̛̤̰̈́̓̒̓͊̈͆̏͠y̸̨̢̰̠̳̝͚͈̙͉̒̀̑̔͆̅̏͝m̶̤̾̒̈́͆͋̈o̶̡̨̘̺̘̣̎͐̀̈̕͜͠u̸̬̬͈̺̩̺͎̐̃ś̴̛̛͖̺̠̼͎͛͒͐͌͆̚",
-        "createdAt": "2025-09-20T18:23:46.482Z"
+        "status": "published",
+        "createdAt": "2025-09-22T21:17:20.356Z"
       },
       {
         "id": "recBwPx8YjotwpQCK",
@@ -1401,7 +1485,8 @@
         "name": "Willa Norvell",
         "photo": "recb56Cqkrk4CEz66",
         "name_photo": "ā̶͖̮̯̙̦̻̬̜͇͕̀̽̓̏̈́̏̓̄n̵̬̔̐o̷̱̯̳͔̱̒͗̇̇ͅn̸̛̤̰̈́̓̒̓͊̈͆̏͠y̸̨̢̰̠̳̝͚͈̙͉̒̀̑̔͆̅̏͝m̶̤̾̒̈́͆͋̈o̶̡̨̘̺̘̣̎͐̀̈̕͜͠u̸̬̬͈̺̩̺͎̐̃ś̴̛̛͖̺̠̼͎͛͒͐͌͆̚",
-        "createdAt": "2025-09-20T18:23:46.482Z"
+        "status": "published",
+        "createdAt": "2025-09-22T21:17:20.356Z"
       },
       {
         "id": "recqv92nLW3CAQs9H",
@@ -1417,7 +1502,8 @@
         "name": "Mirna Benavente",
         "photo": "recb56Cqkrk4CEz66",
         "name_photo": "ā̶͖̮̯̙̦̻̬̜͇͕̀̽̓̏̈́̏̓̄n̵̬̔̐o̷̱̯̳͔̱̒͗̇̇ͅn̸̛̤̰̈́̓̒̓͊̈͆̏͠y̸̨̢̰̠̳̝͚͈̙͉̒̀̑̔͆̅̏͝m̶̤̾̒̈́͆͋̈o̶̡̨̘̺̘̣̎͐̀̈̕͜͠u̸̬̬͈̺̩̺͎̐̃ś̴̛̛͖̺̠̼͎͛͒͐͌͆̚",
-        "createdAt": "2025-09-20T18:23:46.482Z"
+        "status": "published",
+        "createdAt": "2025-09-22T21:17:20.356Z"
       },
       {
         "id": "recpETc8UeQ7QTriz",
@@ -1433,7 +1519,8 @@
         "name": "Maggie McNeir",
         "photo": "recb56Cqkrk4CEz66",
         "name_photo": "ā̶͖̮̯̙̦̻̬̜͇͕̀̽̓̏̈́̏̓̄n̵̬̔̐o̷̱̯̳͔̱̒͗̇̇ͅn̸̛̤̰̈́̓̒̓͊̈͆̏͠y̸̨̢̰̠̳̝͚͈̙͉̒̀̑̔͆̅̏͝m̶̤̾̒̈́͆͋̈o̶̡̨̘̺̘̣̎͐̀̈̕͜͠u̸̬̬͈̺̩̺͎̐̃ś̴̛̛͖̺̠̼͎͛͒͐͌͆̚",
-        "createdAt": "2025-09-20T18:23:46.482Z"
+        "status": "published",
+        "createdAt": "2025-09-22T21:17:20.356Z"
       },
       {
         "id": "rec2kbiCZuowebSjG",
@@ -1449,7 +1536,8 @@
         "name": "ā̶͖̮̯̙̦̻̬̜͇͕̀̽̓̏̈́̏̓̄n̵̬̔̐o̷̱̯̳͔̱̒͗̇̇ͅn̸̛̤̰̈́̓̒̓͊̈͆̏͠y̸̨̢̰̠̳̝͚͈̙͉̒̀̑̔͆̅̏͝m̶̤̾̒̈́͆͋̈o̶̡̨̘̺̘̣̎͐̀̈̕͜͠u̸̬̬͈̺̩̺͎̐̃ś̴̛̛͖̺̠̼͎͛͒͐͌͆̚",
         "photo": "recb56Cqkrk4CEz66",
         "name_photo": "ā̶͖̮̯̙̦̻̬̜͇͕̀̽̓̏̈́̏̓̄n̵̬̔̐o̷̱̯̳͔̱̒͗̇̇ͅn̸̛̤̰̈́̓̒̓͊̈͆̏͠y̸̨̢̰̠̳̝͚͈̙͉̒̀̑̔͆̅̏͝m̶̤̾̒̈́͆͋̈o̶̡̨̘̺̘̣̎͐̀̈̕͜͠u̸̬̬͈̺̩̺͎̐̃ś̴̛̛͖̺̠̼͎͛͒͐͌͆̚",
-        "createdAt": "2025-09-20T18:23:46.482Z"
+        "status": "published",
+        "createdAt": "2025-09-22T21:17:20.356Z"
       },
       {
         "id": "rec6Z60kzn1VR4eMC",
@@ -1465,7 +1553,8 @@
         "name": "Ava Carrel",
         "photo": "recb56Cqkrk4CEz66",
         "name_photo": "ā̶͖̮̯̙̦̻̬̜͇͕̀̽̓̏̈́̏̓̄n̵̬̔̐o̷̱̯̳͔̱̒͗̇̇ͅn̸̛̤̰̈́̓̒̓͊̈͆̏͠y̸̨̢̰̠̳̝͚͈̙͉̒̀̑̔͆̅̏͝m̶̤̾̒̈́͆͋̈o̶̡̨̘̺̘̣̎͐̀̈̕͜͠u̸̬̬͈̺̩̺͎̐̃ś̴̛̛͖̺̠̼͎͛͒͐͌͆̚",
-        "createdAt": "2025-09-20T18:23:46.482Z"
+        "status": "published",
+        "createdAt": "2025-09-22T21:17:20.356Z"
       },
       {
         "id": "recpwIhW9uEYCmjxP",
@@ -1481,7 +1570,8 @@
         "name": "ā̶͖̮̯̙̦̻̬̜͇͕̀̽̓̏̈́̏̓̄n̵̬̔̐o̷̱̯̳͔̱̒͗̇̇ͅn̸̛̤̰̈́̓̒̓͊̈͆̏͠y̸̨̢̰̠̳̝͚͈̙͉̒̀̑̔͆̅̏͝m̶̤̾̒̈́͆͋̈o̶̡̨̘̺̘̣̎͐̀̈̕͜͠u̸̬̬͈̺̩̺͎̐̃ś̴̛̛͖̺̠̼͎͛͒͐͌͆̚",
         "photo": "recb56Cqkrk4CEz66",
         "name_photo": "ā̶͖̮̯̙̦̻̬̜͇͕̀̽̓̏̈́̏̓̄n̵̬̔̐o̷̱̯̳͔̱̒͗̇̇ͅn̸̛̤̰̈́̓̒̓͊̈͆̏͠y̸̨̢̰̠̳̝͚͈̙͉̒̀̑̔͆̅̏͝m̶̤̾̒̈́͆͋̈o̶̡̨̘̺̘̣̎͐̀̈̕͜͠u̸̬̬͈̺̩̺͎̐̃ś̴̛̛͖̺̠̼͎͛͒͐͌͆̚",
-        "createdAt": "2025-09-20T18:23:46.482Z"
+        "status": "published",
+        "createdAt": "2025-09-22T21:17:20.356Z"
       },
       {
         "id": "recaWRNCANRkeTxYF",
@@ -1497,7 +1587,8 @@
         "name": "Aidan Fairchild-Sandoval",
         "photo": "recb56Cqkrk4CEz66",
         "name_photo": "ā̶͖̮̯̙̦̻̬̜͇͕̀̽̓̏̈́̏̓̄n̵̬̔̐o̷̱̯̳͔̱̒͗̇̇ͅn̸̛̤̰̈́̓̒̓͊̈͆̏͠y̸̨̢̰̠̳̝͚͈̙͉̒̀̑̔͆̅̏͝m̶̤̾̒̈́͆͋̈o̶̡̨̘̺̘̣̎͐̀̈̕͜͠u̸̬̬͈̺̩̺͎̐̃ś̴̛̛͖̺̠̼͎͛͒͐͌͆̚",
-        "createdAt": "2025-09-20T18:23:46.482Z"
+        "status": "published",
+        "createdAt": "2025-09-22T21:17:20.356Z"
       },
       {
         "id": "recwVGsbn55yvAWMW",
@@ -1513,7 +1604,8 @@
         "name": "Mirna Benavente",
         "photo": "recb56Cqkrk4CEz66",
         "name_photo": "ā̶͖̮̯̙̦̻̬̜͇͕̀̽̓̏̈́̏̓̄n̵̬̔̐o̷̱̯̳͔̱̒͗̇̇ͅn̸̛̤̰̈́̓̒̓͊̈͆̏͠y̸̨̢̰̠̳̝͚͈̙͉̒̀̑̔͆̅̏͝m̶̤̾̒̈́͆͋̈o̶̡̨̘̺̘̣̎͐̀̈̕͜͠u̸̬̬͈̺̩̺͎̐̃ś̴̛̛͖̺̠̼͎͛͒͐͌͆̚",
-        "createdAt": "2025-09-20T18:23:46.482Z"
+        "status": "published",
+        "createdAt": "2025-09-22T21:17:20.356Z"
       },
       {
         "id": "reclMxmS6QKgVzwEY",
@@ -1529,7 +1621,8 @@
         "name": "ā̶͖̮̯̙̦̻̬̜͇͕̀̽̓̏̈́̏̓̄n̵̬̔̐o̷̱̯̳͔̱̒͗̇̇ͅn̸̛̤̰̈́̓̒̓͊̈͆̏͠y̸̨̢̰̠̳̝͚͈̙͉̒̀̑̔͆̅̏͝m̶̤̾̒̈́͆͋̈o̶̡̨̘̺̘̣̎͐̀̈̕͜͠u̸̬̬͈̺̩̺͎̐̃ś̴̛̛͖̺̠̼͎͛͒͐͌͆̚",
         "photo": "recb56Cqkrk4CEz66",
         "name_photo": "ā̶͖̮̯̙̦̻̬̜͇͕̀̽̓̏̈́̏̓̄n̵̬̔̐o̷̱̯̳͔̱̒͗̇̇ͅn̸̛̤̰̈́̓̒̓͊̈͆̏͠y̸̨̢̰̠̳̝͚͈̙͉̒̀̑̔͆̅̏͝m̶̤̾̒̈́͆͋̈o̶̡̨̘̺̘̣̎͐̀̈̕͜͠u̸̬̬͈̺̩̺͎̐̃ś̴̛̛͖̺̠̼͎͛͒͐͌͆̚",
-        "createdAt": "2025-09-20T18:23:46.482Z"
+        "status": "published",
+        "createdAt": "2025-09-22T21:17:20.356Z"
       },
       {
         "id": "recVTm5CZUjUMybxF",
@@ -1545,7 +1638,8 @@
         "name": "Fracking 101: New Questrom Class Taught by Rupaul",
         "photo": "recb56Cqkrk4CEz66",
         "name_photo": "ā̶͖̮̯̙̦̻̬̜͇͕̀̽̓̏̈́̏̓̄n̵̬̔̐o̷̱̯̳͔̱̒͗̇̇ͅn̸̛̤̰̈́̓̒̓͊̈͆̏͠y̸̨̢̰̠̳̝͚͈̙͉̒̀̑̔͆̅̏͝m̶̤̾̒̈́͆͋̈o̶̡̨̘̺̘̣̎͐̀̈̕͜͠u̸̬̬͈̺̩̺͎̐̃ś̴̛̛͖̺̠̼͎͛͒͐͌͆̚",
-        "createdAt": "2025-09-20T18:23:46.482Z"
+        "status": "published",
+        "createdAt": "2025-09-22T21:17:20.356Z"
       },
       {
         "id": "recXdZqiuK3WGrXrB",
@@ -1561,7 +1655,8 @@
         "name": "ā̶͖̮̯̙̦̻̬̜͇͕̀̽̓̏̈́̏̓̄n̵̬̔̐o̷̱̯̳͔̱̒͗̇̇ͅn̸̛̤̰̈́̓̒̓͊̈͆̏͠y̸̨̢̰̠̳̝͚͈̙͉̒̀̑̔͆̅̏͝m̶̤̾̒̈́͆͋̈o̶̡̨̘̺̘̣̎͐̀̈̕͜͠u̸̬̬͈̺̩̺͎̐̃ś̴̛̛͖̺̠̼͎͛͒͐͌͆̚",
         "photo": "recb56Cqkrk4CEz66",
         "name_photo": "ā̶͖̮̯̙̦̻̬̜͇͕̀̽̓̏̈́̏̓̄n̵̬̔̐o̷̱̯̳͔̱̒͗̇̇ͅn̸̛̤̰̈́̓̒̓͊̈͆̏͠y̸̨̢̰̠̳̝͚͈̙͉̒̀̑̔͆̅̏͝m̶̤̾̒̈́͆͋̈o̶̡̨̘̺̘̣̎͐̀̈̕͜͠u̸̬̬͈̺̩̺͎̐̃ś̴̛̛͖̺̠̼͎͛͒͐͌͆̚",
-        "createdAt": "2025-09-20T18:23:46.482Z"
+        "status": "published",
+        "createdAt": "2025-09-22T21:17:20.356Z"
       },
       {
         "id": "recqWG2TB9vBKrPs5",
@@ -1577,7 +1672,8 @@
         "name": "Doran Steinfeld",
         "photo": "recb56Cqkrk4CEz66",
         "name_photo": "ā̶͖̮̯̙̦̻̬̜͇͕̀̽̓̏̈́̏̓̄n̵̬̔̐o̷̱̯̳͔̱̒͗̇̇ͅn̸̛̤̰̈́̓̒̓͊̈͆̏͠y̸̨̢̰̠̳̝͚͈̙͉̒̀̑̔͆̅̏͝m̶̤̾̒̈́͆͋̈o̶̡̨̘̺̘̣̎͐̀̈̕͜͠u̸̬̬͈̺̩̺͎̐̃ś̴̛̛͖̺̠̼͎͛͒͐͌͆̚",
-        "createdAt": "2025-09-20T18:23:46.482Z"
+        "status": "published",
+        "createdAt": "2025-09-22T21:17:20.356Z"
       },
       {
         "id": "recGOSexZqhrDRBcB",
@@ -1590,10 +1686,11 @@
         "imagePath": null,
         "featured": false,
         "publishedAt": "2024-10-27T16:06:46.000Z",
-        "name": "Elana Felig ",
+        "name": "How to Pick Up Your Canes Order the Day of a BC Football Game as a Person of Color: Don't",
         "photo": "recb56Cqkrk4CEz66",
         "name_photo": "ā̶͖̮̯̙̦̻̬̜͇͕̀̽̓̏̈́̏̓̄n̵̬̔̐o̷̱̯̳͔̱̒͗̇̇ͅn̸̛̤̰̈́̓̒̓͊̈͆̏͠y̸̨̢̰̠̳̝͚͈̙͉̒̀̑̔͆̅̏͝m̶̤̾̒̈́͆͋̈o̶̡̨̘̺̘̣̎͐̀̈̕͜͠u̸̬̬͈̺̩̺͎̐̃ś̴̛̛͖̺̠̼͎͛͒͐͌͆̚",
-        "createdAt": "2025-09-20T18:23:46.482Z"
+        "status": "published",
+        "createdAt": "2025-09-22T21:17:20.356Z"
       },
       {
         "id": "recpLGBj4dJA5YkJp",
@@ -1609,10 +1706,11 @@
         "name": "Emma Santos",
         "photo": "recb56Cqkrk4CEz66",
         "name_photo": "ā̶͖̮̯̙̦̻̬̜͇͕̀̽̓̏̈́̏̓̄n̵̬̔̐o̷̱̯̳͔̱̒͗̇̇ͅn̸̛̤̰̈́̓̒̓͊̈͆̏͠y̸̨̢̰̠̳̝͚͈̙͉̒̀̑̔͆̅̏͝m̶̤̾̒̈́͆͋̈o̶̡̨̘̺̘̣̎͐̀̈̕͜͠u̸̬̬͈̺̩̺͎̐̃ś̴̛̛͖̺̠̼͎͛͒͐͌͆̚",
-        "createdAt": "2025-09-20T18:23:46.482Z"
+        "status": "published",
+        "createdAt": "2025-09-22T21:17:20.356Z"
       }
     ],
-    "total": 146
+    "total": 147
   },
-  "timestamp": 1758392626482
+  "timestamp": 1758575840357
 }

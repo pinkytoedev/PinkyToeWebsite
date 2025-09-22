@@ -15,6 +15,15 @@
       ]
     },
     {
+      "id": "recZtkL9mFlnEVuka",
+      "name": "Adrianna Egan",
+      "role": "Writer",
+      "bio": "first time using photoshop, kinda nervous",
+      "imageUrl": "",
+      "imageType": "url",
+      "imagePath": null
+    },
+    {
       "id": "recqzeh29YuQiTSz3",
       "name": "Adrianna Uykan",
       "role": "Writer",
@@ -48,6 +57,24 @@
         "recSeKhpNtcZC98VM",
         "recGBxRFhrVVnOSSc"
       ]
+    },
+    {
+      "id": "recNuVghNDeoT2Ukz",
+      "name": "Aidan Fairchild-Sandoval",
+      "role": "Writer",
+      "bio": "Qualifications: Hot, Gay, and Brown",
+      "imageUrl": "",
+      "imageType": "url",
+      "imagePath": null
+    },
+    {
+      "id": "recalhUBu9vDRaZM5",
+      "name": "Alex Peplinski",
+      "role": "Writer",
+      "bio": "Alex is a sophomore from Dallas, TX studying biology on the pre-med track. In his free time, he plays the drums, sings in an a cappella group, and even writes sometimes. ",
+      "imageUrl": "",
+      "imageType": "url",
+      "imagePath": null
     },
     {
       "id": "recYVzIBtSDdFzydc",
@@ -98,7 +125,8 @@
         "recEKQltiwKfyn9lD",
         "recLy6WsOqR3jKuFZ",
         "recWuzh6A1Q1xVPoN",
-        "rec5UBfOTf4Tstduy"
+        "rec5UBfOTf4Tstduy",
+        "recNvTvYiLQKIqaIG"
       ],
       "photoSub": [
         "recpJPXY4Kv85HeNK",
@@ -238,15 +266,6 @@
       ]
     },
     {
-      "id": "recGaH5clUrNQG3UZ",
-      "name": "Cassidy Wall",
-      "role": "Writer",
-      "bio": "I love Jawed!\n",
-      "imageUrl": "",
-      "imageType": "url",
-      "imagePath": null
-    },
-    {
       "id": "recHvFBgqSTJF9jNw",
       "name": "Caterina Terrizz",
       "role": "Writer",
@@ -311,28 +330,8 @@
         "recZvw6R8g5R4wFX1",
         "recrATeKeR0MzsId9",
         "recuhMwyTcaayrf9h",
-        "recW5HnXSUGwtT1aP"
-      ]
-    },
-    {
-      "id": "recZYbpEkFkyD2Z9w",
-      "name": "Elana Felig ",
-      "role": "Writer",
-      "bio": "I love Jawed!\n",
-      "imageUrl": "",
-      "imageType": "url",
-      "imagePath": null,
-      "authorSub": [
-        "recGOSexZqhrDRBcB",
-        "recpYgNaLFFdC7vl7",
-        "recbqqFYn6IQgNJFc",
-        "recZKxTThO1Y4TiDY",
-        "recg5BL01wKq7Cj3t",
-        "recqkxTgFd50gZVYa"
-      ],
-      "photoSub": [
-        "recscaECzXSMnY1ND",
-        "reck1otRde60Hljyg"
+        "recW5HnXSUGwtT1aP",
+        "recbmrNMi8ZpXXmJE"
       ]
     },
     {
@@ -535,6 +534,24 @@
       ]
     },
     {
+      "id": "recIFn7416d22TIyp",
+      "name": "Lizzy Morearty",
+      "role": "Writer",
+      "bio": "grande pink drink no fruit add-ins",
+      "imageUrl": "",
+      "imageType": "url",
+      "imagePath": null
+    },
+    {
+      "id": "recdzQhTdgxNMTV4M",
+      "name": "Lucy Wang",
+      "role": "Dev",
+      "bio": "Hey there! I'm Lucy from \"the Website Team\" at Pinky Toe! I might not be good at writing jokes, but I am good at writing code (usually for websites, like the one you're on right now!), and that's what I do here too. Quick! Pop quiz: you can usually find Lucy... A. Debugging her own code, B. Trying to not anger the geese in Boston Common, C. Choosing C as the correct answer, D. Speed-walking somewhere because she's late (again)",
+      "imageUrl": "",
+      "imageType": "url",
+      "imagePath": null
+    },
+    {
       "id": "recYigetjlh094xGR",
       "name": "Maddie lam",
       "role": "Writer",
@@ -561,15 +578,6 @@
         "recOlI3fUexIc2CI4",
         "rec6rPIDoZBeteIPC"
       ]
-    },
-    {
-      "id": "recYR2vAO3pOFnDQw",
-      "name": "Maddie lam ",
-      "role": "Writer",
-      "bio": "I love Jawed!\n",
-      "imageUrl": "",
-      "imageType": "url",
-      "imagePath": null
     },
     {
       "id": "recAif1lt3Y0LaCXl",
@@ -922,5 +930,5 @@
       ]
     }
   ],
-  "timestamp": 1758392626596
+  "timestamp": 1758575840514
 }

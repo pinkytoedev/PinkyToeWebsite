@@ -58,7 +58,10 @@ export class AirtableStorage implements IStorage {
       // Then fetch the specific page of data - we need to fetch ALL records and do pagination manually
       // because Airtable offset doesn't work with arbitrary offset values
       const query = this.base('History').select({
-        sort: [{ field: 'Date', direction: 'desc' }],
+        sort: [
+          { field: 'Scheduled', direction: 'desc' },
+          { field: 'Date', direction: 'desc' }
+        ],
         filterByFormula: search ? filterByFormula : ''
       });
 
@@ -83,7 +86,10 @@ export class AirtableStorage implements IStorage {
       // Query for featured articles - checking if featured is true as a boolean
       const query = this.base('History').select({
         filterByFormula: "featured = TRUE()",
-        sort: [{ field: 'Date', direction: 'desc' }],
+        sort: [
+          { field: 'Scheduled', direction: 'desc' },
+          { field: 'Date', direction: 'desc' }
+        ],
         maxRecords: 5
       });
 
@@ -98,7 +104,10 @@ export class AirtableStorage implements IStorage {
   async getRecentArticles(limit: number): Promise<Article[]> {
     try {
       const query = this.base('History').select({
-        sort: [{ field: 'Date', direction: 'desc' }],
+        sort: [
+          { field: 'Scheduled', direction: 'desc' },
+          { field: 'Date', direction: 'desc' }
+        ],
         maxRecords: limit
       });
 
@@ -348,8 +357,8 @@ export class AirtableStorage implements IStorage {
 
   private mapAirtableRecordToArticle(record: Airtable.Record<any>): Article {
 
-    // Get date field - try different possible field names
-    const dateString = record.get('publishedAt') || record.get('Published Date') || record.get('Date') || record.get('created');
+    // Get date field - prioritize Scheduled, then fall back to previous fields
+    const dateString = record.get('Scheduled') || record.get('publishedAt') || record.get('Published Date') || record.get('Date') || record.get('created');
     const publishDate = dateString ? new Date(dateString as string) : new Date();
 
     // Get created date or fallback to published date
@@ -396,6 +405,9 @@ export class AirtableStorage implements IStorage {
     const photoField = record.get('photo') || record.get('Photo');
     const photo = Array.isArray(photoField) ? photoField.join(', ') : (photoField as string || '');
 
+    // Determine status based on Finished boolean (published/draft)
+    const isFinished = record.get('Finished') === true || record.get('finished') === true;
+
     return {
       id: record.id,
       title: record.get('Name') as string || record.get('title') as string || record.get('Title') as string || '',
@@ -413,7 +425,7 @@ export class AirtableStorage implements IStorage {
       name: authorName,
       photo: photo,
       name_photo: namePhoto,
-      status: record.get('status') as string || record.get('Status') as string || undefined,
+      status: isFinished ? 'published' : 'draft',
       createdAt: createdDate,
       hashtags: record.get('hashtags') as string || record.get('Hashtags') as string || undefined
     };
