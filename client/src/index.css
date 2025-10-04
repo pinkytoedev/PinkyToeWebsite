@@ -116,10 +116,19 @@
     40% { transform: translateY(-10px); }
     60% { transform: translateY(-5px); }
   }
-  
+
   @keyframes scaleIn {
     0% { transform: scale(0.95); opacity: 0; }
     100% { transform: scale(1); opacity: 1; }
+  }
+
+  @keyframes marquee-scroll {
+    0% {
+      transform: translateX(0);
+    }
+    100% {
+      transform: translateX(calc(-1 * var(--marquee-width, 50%)));
+    }
   }
   
   /* Custom button styles */
