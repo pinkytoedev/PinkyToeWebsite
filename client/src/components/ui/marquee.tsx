@@ -24,6 +24,7 @@ export function Marquee({
   const [isPaused, setIsPaused] = React.useState(false);
   const [childrenArray, setChildrenArray] = React.useState<React.ReactNode[]>([]);
   const [animationDuration, setAnimationDuration] = React.useState<number>(20);
+  const [contentWidth, setContentWidth] = React.useState<number>(0);
 
   // Convert children to array once when they change
   React.useEffect(() => {
@@ -34,11 +35,12 @@ export function Marquee({
   const calculateDuration = React.useCallback(() => {
     if (!contentRef.current) return;
 
-    const contentWidth = contentRef.current.scrollWidth;
-    if (contentWidth === 0) return;
+    const measuredWidth = contentRef.current.scrollWidth;
+    if (measuredWidth === 0) return;
 
     const normalizedSpeed = Math.max(speed, 1);
-    setAnimationDuration(Math.max(contentWidth / normalizedSpeed, 5));
+    setAnimationDuration(Math.max(measuredWidth / normalizedSpeed, 5));
+    setContentWidth(measuredWidth);
   }, [speed]);
 
   React.useEffect(() => {
@@ -80,24 +82,34 @@ export function Marquee({
       onMouseLeave={handleMouseLeave}
     >
       <div
-        className="flex items-center whitespace-nowrap"
-        style={{
-          animationName: "marquee-scroll",
-          animationDuration: `${animationDuration}s`,
-          animationTimingFunction: "linear",
-          animationIterationCount: "infinite",
-          animationPlayState: isPaused ? "paused" : "running",
-          animationDirection: direction === "right" ? "reverse" : "normal",
-        }}
+        className="flex items-center whitespace-nowrap px-10"
+        style={(() => {
+          const marqueeStyle: React.CSSProperties & {
+            "--marquee-width"?: string;
+          } = {
+            animationName: "marquee-scroll",
+            animationDuration: `${animationDuration}s`,
+            animationTimingFunction: "linear",
+            animationIterationCount: "infinite",
+            animationPlayState: isPaused ? "paused" : "running",
+            animationDirection: direction === "right" ? "reverse" : "normal",
+          };
+
+          if (contentWidth > 0) {
+            marqueeStyle["--marquee-width"] = `${contentWidth}px`;
+          }
+
+          return marqueeStyle;
+        })()}
       >
-        <div className="flex items-center" ref={contentRef}>
+        <div className="flex items-center gap-24" ref={contentRef}>
           {childrenArray.map((child, index) => (
             <div key={`marquee-item-${index}`} className="flex items-center">
               {child}
             </div>
           ))}
         </div>
-        <div className="flex items-center" aria-hidden="true">
+        <div className="flex items-center gap-24" aria-hidden="true">
           {childrenArray.map((child, index) => (
             <div key={`marquee-item-duplicate-${index}`} className="flex items-center">
               {child}
