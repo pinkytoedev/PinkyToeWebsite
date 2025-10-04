@@ -23,7 +23,7 @@ export function Marquee({
   const contentRef = React.useRef<HTMLDivElement>(null);
   const [isPaused, setIsPaused] = React.useState(false);
   const [childrenArray, setChildrenArray] = React.useState<React.ReactNode[]>([]);
-  const [animationDuration, setAnimationDuration] = Reafct.useState<number>(20);
+  const [animationDuration, setAnimationDuration] = React.useState<number>(20);
 
   // Convert children to array once when they change
   React.useEffect(() => {
