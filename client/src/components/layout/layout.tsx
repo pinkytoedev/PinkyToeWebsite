@@ -44,7 +44,12 @@ export function Layout({ children }: LayoutProps) {
             {Array.isArray(quotes) && quotes
               .filter((quote: CarouselQuote) => quote.carousel === 'main')
               .map((quote: CarouselQuote) => (
-                <span key={quote.id} className="mx-8 text-lg drop-shadow-sm">{quote.quote}</span>
+                 <span
+                  key={quote.id}
+                  className="text-2xl md:text-3xl font-semibold tracking-wide drop-shadow-[0_3px_6px_rgba(0,0,0,0.35)] text-white"
+                >
+                  {quote.quote}
+                </span>
               ))
             }
           </Marquee>
