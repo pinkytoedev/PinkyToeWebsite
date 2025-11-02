@@ -12,14 +12,15 @@
   
   body {
     @apply font-sans antialiased text-foreground;
-    font-family: 'Lato', sans-serif;
+    font-family: 'lato', sans-serif;
   }
   
   h1, h2, h3, h4, h5, h6 {
-    font-family: 'Quicksand', sans-serif;
-    @apply font-bold text-primary;
+    /*--font-display: 'RealityStone', sans-serif;*/
+    font-family: 'RealityStone', sans-serif;
+    /*@apply font-bold text-primary;*/
   }
-  
+
   /* Custom color classes */
   .text-pinky-dark {
     color: #E93B81;
@@ -133,4 +134,13 @@
     @apply bg-white/90 rounded-xl shadow-md hover:shadow-lg transition-all duration-300
     border border-pink-200/30 overflow-hidden;
   }
+
+  @font-face {
+    font-family: RealityStone;
+    font-style: normal;
+    font-weight: 200 700;
+    font-display: swap;
+    src: url('client/src/reality-stone-personal-use.regular.ttf') format("ttf")
+  }
+
 }
