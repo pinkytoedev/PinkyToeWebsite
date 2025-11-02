@@ -3,6 +3,7 @@ import { createServer, type Server } from "http";
 import { cachedStorage } from "./index";
 import { imagesRouter } from "./routes/images";
 import { adminRouter } from "./routes/admin";
+import { webhooksRouter } from "./routes/webhooks";
 import { RefreshService } from "./services/refresh-service";
 import { CacheService } from "./services/cache-service";
 import { PublicationScheduler } from "./services/publication-scheduler";
@@ -11,6 +12,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Register the routers
   app.use('/api/images', imagesRouter);
   app.use('/api/admin', adminRouter);
+  app.use('/api/webhooks', webhooksRouter);
 
   // Cache refresh endpoint - uses same logic as refreshCachedData()
   app.post("/api/cache/refresh", async (req, res) => {
