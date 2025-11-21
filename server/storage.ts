@@ -407,15 +407,71 @@ export class AirtableStorage implements IStorage {
     // Determine status based on Finished boolean (published/draft)
     const isFinished = record.get('Finished') === true || record.get('finished') === true;
 
+    // Handle description - if missing, use first two sentences of content
+    let description = (record.get('description') as string || record.get('Description') as string || '').trim();
+    const content = record.get('content') as string || record.get('Content') as string || record.get('Body') as string || '';
+    const contentFormat = record.get('contentFormat') as any || record.get('Content Format') as any ||
+      // If content comes from Body field, assume it's HTML
+      (record.get('Body') ? 'html' : 'plaintext');
+
+    // Helper to decode HTML entities
+    const decodeHtmlEntities = (text: string): string => {
+      const entities: Record<string, string> = {
+        '&amp;': '&',
+        '&lt;': '<',
+        '&gt;': '>',
+        '&quot;': '"',
+        '&#39;': "'",
+        '&apos;': "'",
+        '&nbsp;': ' ',
+        '&rsquo;': "'",
+        '&lsquo;': "'",
+        '&rdquo;': '"',
+        '&ldquo;': '"',
+        '&mdash;': '—',
+        '&ndash;': '–'
+      };
+      return text.replace(/&[a-zA-Z0-9#]+;/g, (match) => entities[match] || match);
+    };
+
+    if (!description && content) {
+      // Strip HTML tags if format is HTML
+      let plainText = content;
+      if (contentFormat === 'html') {
+        // Remove style and meta tags and their content first
+        plainText = plainText.replace(/<style[^>]*>[\s\S]*?<\/style>/gi, '');
+        plainText = plainText.replace(/<meta[^>]*>/gi, '');
+        
+        // Replace block-level closing tags with a space to prevent text merging
+        plainText = plainText.replace(/<\/(p|div|h[1-6]|li|tr|blockquote)>/gi, ' ');
+        // Remove HTML tags
+        plainText = plainText.replace(/<[^>]*>/g, '');
+        // Decode HTML entities
+        plainText = decodeHtmlEntities(plainText);
+        // Replace multiple spaces/newlines with single space and trim
+        plainText = plainText.replace(/\s+/g, ' ').trim();
+      }
+
+      // Match sentences ending in ., !, or ?
+      // This regex captures sentences more robustly, including those with quotes
+      const sentenceMatch = plainText.match(/.*?[.!?](?:\s|$)/g);
+      
+      if (sentenceMatch && sentenceMatch.length > 0) {
+        // Take first two sentences
+        description = sentenceMatch.slice(0, 2).join('').trim();
+      } else {
+        // Fallback if no sentence structure detected: take first 200 chars
+        description = plainText.length > 200 ? plainText.substring(0, 200) + '...' : plainText;
+      }
+    }
+
     return {
       id: record.id,
       title: record.get('Name') as string || record.get('title') as string || record.get('Title') as string || '',
-      description: record.get('description') as string || record.get('Description') as string || '',
+      description: description,
       excerpt: record.get('excerpt') as string || record.get('Excerpt') as string || undefined,
-      content: record.get('content') as string || record.get('Content') as string || record.get('Body') as string || '',
-      contentFormat: record.get('contentFormat') as any || record.get('Content Format') as any ||
-        // If content comes from Body field, assume it's HTML
-        (record.get('Body') ? 'html' : 'plaintext'),
+      content: content,
+      contentFormat: contentFormat,
       imageUrl: imageUrl,
       imageType: 'url', // Always use URL type since we're proxying
       imagePath: null, // No need for local path when using proxy
