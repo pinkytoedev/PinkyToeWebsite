@@ -169,22 +169,8 @@ export class PublicationScheduler {
    * Log current scheduling context for debugging
    */
   static logSchedulingContext(): void {
-    const now = new Date();
-    const isBusinessTime = this.isBusinessHours();
-    
-    console.log('=== Publication Scheduler Context ===');
-    console.log(`Current time: ${now.toISOString()}`);
-    console.log(`Timezone: ${this.config.timezone}`);
-    console.log(`Is business hours: ${isBusinessTime}`);
-    console.log(`Business hours: ${this.config.businessHours.start}:00 - ${this.config.businessHours.end}:00`);
-    console.log(`Business days: ${this.config.businessDays.join(', ')}`);
-    
-    console.log('Content tier intervals:');
-    Object.entries(this.contentTiers).forEach(([tier, config]) => {
-      const interval = isBusinessTime ? config.businessHoursInterval : config.offHoursInterval;
-      console.log(`  ${tier}: ${Math.round(interval / (60 * 1000))} minutes (cache: ${Math.round(config.cacheExpiry / (60 * 1000))} minutes)`);
-    });
-    console.log('=====================================');
+    // Simplified logging to reduce noise
+    // Only log essential info if needed or during critical state changes
   }
 
   /**
@@ -192,6 +178,5 @@ export class PublicationScheduler {
    */
   static updateConfig(newConfig: Partial<PublicationScheduleConfig>): void {
     this.config = { ...this.config, ...newConfig };
-    console.log('Publication scheduler config updated:', this.config);
   }
 }

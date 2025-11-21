@@ -17,7 +17,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Cache refresh endpoint - uses same logic as refreshCachedData()
   app.post("/api/cache/refresh", async (req, res) => {
     try {
-      console.log('Cache refresh requested via API');
+      // console.log('Cache refresh requested via API');
       const { entity } = req.body;
 
       if (entity) {
@@ -30,7 +30,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           });
         }
 
-        console.log(`API: Refreshing ${entity} cached data`);
+        // console.log(`API: Refreshing ${entity} cached data`);
 
         // Handle the specific entity refresh (same logic as admin router)
         switch (entity) {
@@ -62,7 +62,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         });
       } else {
         // Refresh all (same logic as refreshCachedData without entity)
-        console.log('API: Refreshing all cached data');
+        // console.log('API: Refreshing all cached data');
 
         // First invalidate all caches
         CacheService.invalidateAllCaches();

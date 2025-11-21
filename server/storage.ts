@@ -39,16 +39,18 @@ export class AirtableStorage implements IStorage {
 
   async getArticles(page: number, limit: number, search = ""): Promise<{ articles: Article[], total: number }> {
     try {
-      // Create filter formula if search term is provided
-      let filterByFormula = '';
+      // Create filter formula
+      let filterByFormula = 'Finished = TRUE()';
+      
       if (search) {
         // Search in both Name and Description fields
-        filterByFormula = `OR(SEARCH("${search.replace(/"/g, '\\"')}", {Name}), SEARCH("${search.replace(/"/g, '\\"')}", {Description}))`;
+        const searchFilter = `OR(SEARCH("${search.replace(/"/g, '\\"')}", {Name}), SEARCH("${search.replace(/"/g, '\\"')}", {Description}))`;
+        filterByFormula = `AND(${filterByFormula}, ${searchFilter})`;
       }
 
       // First get count of total records matching the search
       const countQuery = this.base('History').select({
-        filterByFormula: search ? filterByFormula : ''
+        filterByFormula
         // Remove fields parameter as 'id' is automatic in Airtable
       });
 
@@ -62,7 +64,7 @@ export class AirtableStorage implements IStorage {
           { field: 'Scheduled', direction: 'desc' },
           { field: 'Date', direction: 'desc' }
         ],
-        filterByFormula: search ? filterByFormula : ''
+        filterByFormula
       });
 
       // Get all records but manually paginate them
@@ -83,9 +85,9 @@ export class AirtableStorage implements IStorage {
 
   async getFeaturedArticles(): Promise<Article[]> {
     try {
-      // Query for featured articles - checking if featured is true as a boolean
+      // Query for featured articles - checking if featured is true and Finished is true
       const query = this.base('History').select({
-        filterByFormula: "featured = TRUE()",
+        filterByFormula: "AND(featured = TRUE(), Finished = TRUE())",
         sort: [
           { field: 'Scheduled', direction: 'desc' },
           { field: 'Date', direction: 'desc' }
@@ -104,6 +106,7 @@ export class AirtableStorage implements IStorage {
   async getRecentArticles(limit: number): Promise<Article[]> {
     try {
       const query = this.base('History').select({
+        filterByFormula: "Finished = TRUE()",
         sort: [
           { field: 'Scheduled', direction: 'desc' },
           { field: 'Date', direction: 'desc' }
@@ -137,7 +140,7 @@ export class AirtableStorage implements IStorage {
 
       // Find all articles by this author
       const query = this.base('History').select({
-        filterByFormula: `{Author} = '${teamMember.name.replace(/'/g, "\\'")}'`,
+        filterByFormula: `AND({Author} = '${teamMember.name.replace(/'/g, "\\'")}', Finished = TRUE())`,
         sort: [{ field: 'Date', direction: 'desc' }],
         maxRecords: 10
       });
@@ -252,7 +255,6 @@ export class AirtableStorage implements IStorage {
     }
 
     try {
-      console.log('Fetching quotes from Airtable...');
       const query = this.base('CarouselQuote').select();
       const records = await query.all();
 
@@ -322,10 +324,7 @@ export class AirtableStorage implements IStorage {
     );
 
     if (philosophyQuotes.length === 0) {
-      console.log('No philosophy quotes found, returning any available quote');
-
       if (quotes.length === 0) {
-        console.log('No quotes available at all');
         return {
           id: 0,
           carousel: 'default',
@@ -707,10 +706,3 @@ The suffragette movement also employed humor effectively, using satirical cartoo
 export const storage: IStorage = airtableApiKey && airtableBaseId
   ? new AirtableStorage()
   : new MemStorage();
-
-console.log('Using storage implementation:', storage instanceof AirtableStorage ? 'AirtableStorage' : 'MemStorage');
-
-if (storage instanceof MemStorage) {
-  console.log('Note: Using in-memory storage with sample data.');
-  console.log('To use Airtable, ensure AIRTABLE_API_KEY and AIRTABLE_BASE_ID are set in your .env file.');
-}

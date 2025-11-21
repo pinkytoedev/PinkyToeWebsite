@@ -113,7 +113,7 @@ export class ImageService {
 
       return filepath;
     } catch (error) {
-      console.error('Error fetching and caching image:', error);
+      // console.error('Error fetching and caching image:', error);
       throw error;
     }
   }

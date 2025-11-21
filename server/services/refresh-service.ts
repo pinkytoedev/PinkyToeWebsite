@@ -39,7 +39,7 @@ export class RefreshService {
    * Start all refresh schedules with publication-aware timing
    */
   static startRefreshSchedules(): void {
-    console.log('Starting publication-aware data refresh schedules...');
+    // console.log('Starting publication-aware data refresh schedules...');
 
     // Initial refresh of all data
     this.refreshAll();
@@ -47,7 +47,7 @@ export class RefreshService {
     // Start dynamic scheduling that adapts to business hours
     this.startDynamicScheduling();
 
-    console.log('Publication-aware refresh schedules started successfully');
+    // console.log('Publication-aware refresh schedules started successfully');
   }
 
   /**
@@ -147,11 +147,11 @@ export class RefreshService {
    * Stop all refresh schedules
    */
   static stopRefreshSchedules(): void {
-    console.log('Stopping publication-aware refresh schedules...');
+    // console.log('Stopping publication-aware refresh schedules...');
     refreshTimers.forEach(timer => clearInterval(timer));
     refreshTimers = [];
     this.clearContentRefreshTimers();
-    console.log('Publication-aware refresh schedules stopped');
+    // console.log('Publication-aware refresh schedules stopped');
   }
 
 
@@ -160,7 +160,7 @@ export class RefreshService {
    * Ensures fresh data is available immediately
    */
   static async warmupCache(): Promise<void> {
-    console.log('🔥 Cache warmup started...');
+    // console.log('🔥 Cache warmup started...');
 
     try {
       // Refresh all content in priority order
@@ -176,7 +176,7 @@ export class RefreshService {
         console.error('Background warmup error (non-critical):', error);
       });
 
-      console.log('🔥 Cache warmup completed');
+      // console.log('🔥 Cache warmup completed');
     } catch (error) {
       console.error('🔥 Cache warmup failed:', error);
       // Don't throw - server should still start even if warmup fails
