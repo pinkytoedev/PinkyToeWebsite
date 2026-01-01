@@ -1,17 +1,30 @@
 {
   "data": [
     {
-      "id": "rec1",
-      "name": "Sarah Johnson",
-      "role": "Editor-in-Chief",
-      "bio": "Comedy writer and feminist scholar with a passion for empowering women through humor.",
-      "imageUrl": "/api/images/https%3A%2F%2Fimages.unsplash.com%2Fphoto-1494790108377-be9c29b29330%3Fixlib%3Drb-1.2.1%26auto%3Dformat%26fit%3Dcrop%26w%3D800%26q%3D80",
+      "id": "recl4gucQR3eekp8E",
+      "name": "Abbie Garretson",
+      "role": "Special Projects",
+      "bio": "I love Jawed!\n",
+      "imageUrl": "",
       "imageType": "url",
       "imagePath": null,
       "authorSub": [
         "recedaVMAL942KFGc",
         "recfQeaIeF6LK6Zyg",
         "recfJB6XsYhyFNvjU"
+      ]
+    },
+    {
+      "id": "recZtkL9mFlnEVuka",
+      "name": "Adrianna Egan",
+      "role": "Writer",
+      "bio": "first time using photoshop, kinda nervous",
+      "imageUrl": "",
+      "imageType": "url",
+      "imagePath": null,
+      "photoSub": [
+        "rec5S9Hlr26qdz1iD",
+        "rec3nDWzs1II1JN4t"
       ]
     },
     {
@@ -33,7 +46,7 @@
       "id": "recBzpFyNxvxVDPFv",
       "name": "Aidan Fairchild-Sandoval",
       "role": "Writer",
-      "bio": "I love Jawed!\n",
+      "bio": "Qualifications: Hot, Gay, and Brown\n",
       "imageUrl": "",
       "imageType": "url",
       "imagePath": null,
@@ -46,7 +59,21 @@
         "recKguQsiHP8cMZJE",
         "recw4Zbm225axjGv5",
         "recSeKhpNtcZC98VM",
-        "recGBxRFhrVVnOSSc"
+        "recGBxRFhrVVnOSSc",
+        "rec0E7ibAPCM2x55c"
+      ]
+    },
+    {
+      "id": "recalhUBu9vDRaZM5",
+      "name": "Alex Peplinski",
+      "role": "Writer",
+      "bio": "Alex is a sophomore from Dallas, TX studying biology on the pre-med track. In his free time, he plays the drums, sings in an a cappella group, and even writes sometimes. ",
+      "imageUrl": "",
+      "imageType": "url",
+      "imagePath": null,
+      "authorSub": [
+        "recqgp0xzlII2suZO",
+        "recucECh7TO4hqdlW"
       ]
     },
     {
@@ -63,6 +90,18 @@
       "name": "Allison Groves",
       "role": "Writer",
       "bio": "Hello! I’m Allison and I am a sophomore engineering and physics student at BU. I like long walks on the beach, being right, Bean the dog, and people who make their own chain mail. I don’t like men who read Sylvia Plath. Live long The Pinky Toe. ",
+      "imageUrl": "",
+      "imageType": "url",
+      "imagePath": null,
+      "photoSub": [
+        "recQdhe3AiLUv4rCp"
+      ]
+    },
+    {
+      "id": "rec338ivL1mTn5j2J",
+      "name": "Aly J Lee",
+      "role": "Dev",
+      "bio": "hey... hey... hey... hey... i am alyjlee... ",
       "imageUrl": "",
       "imageType": "url",
       "imagePath": null
@@ -98,23 +137,94 @@
         "recEKQltiwKfyn9lD",
         "recLy6WsOqR3jKuFZ",
         "recWuzh6A1Q1xVPoN",
-        "rec5UBfOTf4Tstduy"
+        "rec5UBfOTf4Tstduy",
+        "recNvTvYiLQKIqaIG",
+        "rec2mkCpsngtF6NFF",
+        "recQMHjPxexQSmZuf",
+        "rec6h3JeAct9rgVKL",
+        "recHDxRBg8UnhH412",
+        "recjL4rMQco3U1gtO",
+        "recGXn1Vfp4Bd2v4h"
       ],
       "photoSub": [
-        "sample-photo-1"
+        "recpJPXY4Kv85HeNK",
+        "recj7xlAfp7s7rrR2",
+        "recsW3p3JlkI2yiYl",
+        "recd3vObvDdf2zkCd",
+        "recqWG2TB9vBKrPs5",
+        "recucl9QbQsvgViZo",
+        "rectD871phxWz5wnL",
+        "recPsCUgwPiNHtaUU",
+        "recr9sW7qrFCQgO20",
+        "rec4SnBYuCJ30zX7D",
+        "rec2Bg74HMqTCCBNx",
+        "recVTm5CZUjUMybxF",
+        "rec9RoyGmN6ewlKfO",
+        "recqv92nLW3CAQs9H",
+        "recmDBYKCphtikHij",
+        "reccNWfXGOLzeMrMM",
+        "recY30NungwEfWEbd",
+        "recEXqJnuZXuXHLi7",
+        "recfnbE0T0qYfqt9E",
+        "recIvqHmrXO8aEfVm",
+        "recfGgRSmED4MuRce",
+        "rec9VM3surMszV913",
+        "recMaSCJDBIbPjFz8",
+        "rec9goJ62DEMuv3He",
+        "recvGnv4rkieTsnrp",
+        "recgzrjlNbhnSTIiQ",
+        "recZ9B8rROf67jQGp",
+        "recP7mKyQluIjnn7f",
+        "recZvw6R8g5R4wFX1",
+        "recZKxTThO1Y4TiDY",
+        "reclbSYzNzXvELMrL",
+        "rechU8eOElJT0NKSM",
+        "recu3nRER1QvayQa5",
+        "recayZL1twQt5Zx6Z",
+        "recrATeKeR0MzsId9",
+        "recO4dxuuNtdiWVzj",
+        "recApARAqXjZghKsa",
+        "recrtyzS4I8tWSZh9",
+        "recfQeaIeF6LK6Zyg",
+        "recrBzF25lXGjrpJX",
+        "recD4av5Td4ww0eg5",
+        "recop8Ui1vgkXv4J4",
+        "rec0dBv2iMdSt2YS8",
+        "recm3ncACJMqkEAv6",
+        "recURHoQeIAa2gNNA",
+        "rec5EXyPrJTabMlYY",
+        "recEKQltiwKfyn9lD",
+        "rec8YrOXZlGTRVbo7",
+        "recIEAPzfTZ7UkSJc",
+        "reci4FOenGXR6uYz5",
+        "recpLGBj4dJA5YkJp",
+        "reclMxmS6QKgVzwEY",
+        "recXdZqiuK3WGrXrB",
+        "recGOSexZqhrDRBcB",
+        "recpwIhW9uEYCmjxP",
+        "recaWRNCANRkeTxYF",
+        "recwVGsbn55yvAWMW",
+        "rec6Z60kzn1VR4eMC",
+        "rec2kbiCZuowebSjG",
+        "recpETc8UeQ7QTriz",
+        "recBwPx8YjotwpQCK",
+        "recqXnKerjLVNrCDJ",
+        "recWuzh6A1Q1xVPoN"
       ]
     },
     {
-      "id": "rec2",
-      "name": "Emily Rodriguez",
-      "role": "Lead Writer",
-      "bio": "Comedian and essayist focusing on intersectional feminism and representation in media.",
-      "imageUrl": "/api/images/https%3A%2F%2Fimages.unsplash.com%2Fphoto-1508214751196-bcfd4ca60f91%3Fixlib%3Drb-1.2.1%26auto%3Dformat%26fit%3Dcrop%26w%3D800%26q%3D80",
+      "id": "reclsRu8t2z2EyDOh",
+      "name": "Ariana Beck",
+      "role": "Writer",
+      "bio": "gay and funny. also do you wanna hang out tn\n",
+      "imageUrl": "",
       "imageType": "url",
       "imagePath": null,
       "authorSub": [
         "recsR1NjQpY119N4a",
-        "recQgVsmzZrsLuhEb"
+        "recQgVsmzZrsLuhEb",
+        "recdY7M4ilUO9HDLV",
+        "recdpJwxhVwMyyN4O"
       ]
     },
     {
@@ -136,6 +246,15 @@
       ]
     },
     {
+      "id": "recjsdwu0qVbijHCN",
+      "name": "Ava Himmelsbach",
+      "role": "Writer",
+      "bio": "Bio information not available.",
+      "imageUrl": "",
+      "imageType": "url",
+      "imagePath": null
+    },
+    {
       "id": "recUcvTwnaTRTU02g",
       "name": "Ava Rubin",
       "role": "Writer",
@@ -147,6 +266,18 @@
         "recAjCPTx2OJK9KVU",
         "recdaDlsxX43yuP7h",
         "recbE7G1vBSQyVY8j"
+      ]
+    },
+    {
+      "id": "recA9mtYAkDoVhCUe",
+      "name": "Beck Winter",
+      "role": "Writer",
+      "bio": "I love Alyjlee!",
+      "imageUrl": "",
+      "imageType": "url",
+      "imagePath": null,
+      "authorSub": [
+        "recbMPf41gZNmfpQe"
       ]
     },
     {
@@ -176,15 +307,6 @@
       ]
     },
     {
-      "id": "recGaH5clUrNQG3UZ",
-      "name": "Cassidy Wall",
-      "role": "Writer",
-      "bio": "I love Jawed!\n",
-      "imageUrl": "",
-      "imageType": "url",
-      "imagePath": null
-    },
-    {
       "id": "recHvFBgqSTJF9jNw",
       "name": "Caterina Terrizz",
       "role": "Writer",
@@ -209,20 +331,23 @@
         "recr9sW7qrFCQgO20",
         "recApARAqXjZghKsa",
         "reci4FOenGXR6uYz5",
-        "rec9goJ62DEMuv3He"
+        "rec9goJ62DEMuv3He",
+        "recn76W17mCA8wJTn",
+        "recm548IxMRzmDQ5t"
       ]
     },
     {
       "id": "rec3k3RIP9NdImFyk",
       "name": "Claire Zhang",
       "role": "Writer",
-      "bio": "I love Jawed!\n",
+      "bio": "all my good articles are anonymous sorry\n",
       "imageUrl": "",
       "imageType": "url",
       "imagePath": null,
       "authorSub": [
         "recfGgRSmED4MuRce",
-        "rec8qnAFSu1UlnbSg"
+        "rec8qnAFSu1UlnbSg",
+        "recf7nTjkGMohlsyL"
       ]
     },
     {
@@ -249,40 +374,193 @@
         "recZvw6R8g5R4wFX1",
         "recrATeKeR0MzsId9",
         "recuhMwyTcaayrf9h",
-        "recW5HnXSUGwtT1aP"
+        "recW5HnXSUGwtT1aP",
+        "recbmrNMi8ZpXXmJE",
+        "recmiNB99RNs1AIwo",
+        "recsCjl5IXLvsIEjL"
       ]
     },
     {
-      "id": "recZYbpEkFkyD2Z9w",
-      "name": "Elana Felig ",
+      "id": "recl1loLCq8sm7NHd",
+      "name": "Eli Lynch",
+      "role": "Writer",
+      "bio": "I love Jawed!\n",
+      "imageUrl": "",
+      "imageType": "url",
+      "imagePath": null
+    },
+    {
+      "id": "recNwxpWgzmS6Ts1F",
+      "name": "Elizabeth Morearty",
+      "role": "Writer",
+      "bio": "I love Jawed!\n",
+      "imageUrl": "",
+      "imageType": "url",
+      "imagePath": null,
+      "photoSub": [
+        "recg8tRoSEzgtbQVm",
+        "recg4PnGPv2x6WmXe",
+        "recy5YPSOCP1Lelpk",
+        "recKOk3k8L79JP6YJ",
+        "rec7hS0r7SWLoKJm0",
+        "recRlv2TFb1GLD6CX",
+        "recW5HnXSUGwtT1aP",
+        "recE5pKivsH3syL0L",
+        "recQgVsmzZrsLuhEb",
+        "recRV7JdEc7Y9OaIa",
+        "reczb1AUBnpSNbxYl",
+        "recGBxRFhrVVnOSSc",
+        "recwuf2fJS7PVvwZ7",
+        "reccQjSKdvuqo2AJn"
+      ]
+    },
+    {
+      "id": "recHxXPZOKZWkR0u6",
+      "name": "Ellie Tiwari",
+      "role": "Writer",
+      "bio": "I love lying!",
+      "imageUrl": "",
+      "imageType": "url",
+      "imagePath": null,
+      "authorSub": [
+        "reci4wzcJYTzYgTBw",
+        "recxJOEKQlQN8Qvyw",
+        "reczcXYZ9PEjJWHCZ"
+      ]
+    },
+    {
+      "id": "reclVuOApEAZPwIf3",
+      "name": "Emma Santos",
       "role": "Writer",
       "bio": "I love Jawed!\n",
       "imageUrl": "",
       "imageType": "url",
       "imagePath": null,
       "authorSub": [
-        "recGOSexZqhrDRBcB",
-        "recpYgNaLFFdC7vl7",
-        "recbqqFYn6IQgNJFc",
-        "recZKxTThO1Y4TiDY",
-        "recg5BL01wKq7Cj3t",
-        "recqkxTgFd50gZVYa"
-      ],
-      "photoSub": [
+        "recpLGBj4dJA5YkJp",
+        "recQNJenq5Y2qU4FD",
+        "recrBzF25lXGjrpJX",
+        "recEhUq9y6VGa76xp",
+        "recMaSCJDBIbPjFz8",
         "recscaECzXSMnY1ND",
-        "reck1otRde60Hljyg"
+        "recHVerqGlkwlygF5",
+        "recjS4MFeJ8455mJb",
+        "rec3nDWzs1II1JN4t"
       ]
     },
     {
-      "id": "rec3",
-      "name": "Jessica Lee",
-      "role": "Staff Writer",
-      "bio": "Cultural critic and humor writer exploring gender politics through a satirical lens.",
-      "imageUrl": "/api/images/https%3A%2F%2Fimages.unsplash.com%2Fphoto-1581992652564-44c42f5ad3ad%3Fixlib%3Drb-1.2.1%26auto%3Dformat%26fit%3Dcrop%26w%3D800%26q%3D80",
+      "id": "rec36a1gacl7SynQX",
+      "name": "Felipe Chiara",
+      "role": "Dev",
+      "bio": "applied math major 2028, originally from brazil somehow made my way into orlando, florida, i like puzzles and 2000s nu metal",
+      "imageUrl": "",
+      "imageType": "url",
+      "imagePath": null
+    },
+    {
+      "id": "recIEjOLcVctOQAdU",
+      "name": "Gabrielle Wylie-Chaney",
+      "role": "Writer",
+      "bio": "I love Jawed!\n",
+      "imageUrl": "",
+      "imageType": "url",
+      "imagePath": null
+    },
+    {
+      "id": "recjKUnmO7OWc3WRM",
+      "name": "Grace Donahue",
+      "role": "Writer",
+      "bio": "I love Jawed!\n",
+      "imageUrl": "",
       "imageType": "url",
       "imagePath": null,
       "authorSub": [
-        "sample-article-6"
+        "rec7EWKfby3DiL5mZ"
+      ]
+    },
+    {
+      "id": "recMqocpbtURIViuL",
+      "name": "Grace Whinnery",
+      "role": "Writer",
+      "bio": "Journalism major, BU Class of 2029.",
+      "imageUrl": "",
+      "imageType": "url",
+      "imagePath": null,
+      "photoSub": [
+        "recbMPf41gZNmfpQe",
+        "recdpJwxhVwMyyN4O",
+        "recxJOEKQlQN8Qvyw"
+      ]
+    },
+    {
+      "id": "recQ2iQmwwK2nS0yA",
+      "name": "Ibbu Quraishi",
+      "role": "Writer",
+      "bio": "I love Jawed!\n",
+      "imageUrl": "",
+      "imageType": "url",
+      "imagePath": null
+    },
+    {
+      "id": "recz8v6aNiNTiQPgx",
+      "name": "Jaclyn DiMatteo",
+      "role": "Writer",
+      "bio": "I love Jawed!\n",
+      "imageUrl": "",
+      "imageType": "url",
+      "imagePath": null,
+      "authorSub": [
+        "rec5MB6mB1c7u7vE9",
+        "reccvb6PlIVfxtpN2",
+        "recwuf2fJS7PVvwZ7"
+      ]
+    },
+    {
+      "id": "recb8PGU3nU3lCxD7",
+      "name": "Jawed Nur",
+      "role": "Writer",
+      "bio": "I love Jawed!\r\n",
+      "imageUrl": "",
+      "imageType": "url",
+      "imagePath": null
+    },
+    {
+      "id": "rec1PJwtCdLh6gGOy",
+      "name": "Katherine (Katie) Reilly",
+      "role": "Writer",
+      "bio": "I love Jawed!\n",
+      "imageUrl": "",
+      "imageType": "url",
+      "imagePath": null,
+      "photoSub": [
+        "recS4Jp5wdNISD1z6",
+        "recsR1NjQpY119N4a",
+        "recqkxTgFd50gZVYa"
+      ]
+    },
+    {
+      "id": "recqKQ3CqpPhtoz8Z",
+      "name": "Lauren Kelly",
+      "role": "Writer",
+      "bio": "hey what’s up you guys yes today i will be writing my bio for pinky winky big fat toe\n",
+      "imageUrl": "",
+      "imageType": "url",
+      "imagePath": null
+    },
+    {
+      "id": "recfCkG7cdGG2OAVU",
+      "name": "Lauren Matz",
+      "role": "Writer",
+      "bio": "I love Jawed!\n",
+      "imageUrl": "",
+      "imageType": "url",
+      "imagePath": null,
+      "authorSub": [
+        "rec2yg5XpiKie4CCL",
+        "recXfuYm7dCnXCcyF",
+        "recfNc0JwxNBLh58T",
+        "recdIGh347TpLdHUN",
+        "recQdhe3AiLUv4rCp"
       ],
       "photoSub": [
         "recMzm4xyOTAIOUv8"
@@ -310,8 +588,52 @@
       ]
     },
     {
+      "id": "recIFn7416d22TIyp",
+      "name": "Lizzy Morearty",
+      "role": "Writer",
+      "bio": "grande pink drink no fruit add-ins",
+      "imageUrl": "",
+      "imageType": "url",
+      "imagePath": null,
+      "photoSub": [
+        "recn76W17mCA8wJTn",
+        "recxfxwDeOmKlQ2N1",
+        "recx2BWsrkHp444Eg"
+      ]
+    },
+    {
+      "id": "recY9HhIdaQtlYyyL",
+      "name": "London Swanson",
+      "role": "Writer",
+      "bio": "I love Alyjlee!",
+      "imageUrl": "",
+      "imageType": "url",
+      "imagePath": null
+    },
+    {
+      "id": "recdzQhTdgxNMTV4M",
+      "name": "Lucy Wang",
+      "role": "Dev",
+      "bio": "Hey there! I'm Lucy from \"the Website Team\" at Pinky Toe! I might not be good at writing jokes, but I am good at writing code (usually for websites, like the one you're on right now!), and that's what I do here too. Quick! Pop quiz: you can usually find Lucy... A. Debugging her own code, B. Trying to not anger the geese in Boston Common, C. Choosing C as the correct answer, D. Speed-walking somewhere because she's late (again)",
+      "imageUrl": "",
+      "imageType": "url",
+      "imagePath": null
+    },
+    {
+      "id": "recesFoOMHYYFw4eg",
+      "name": "Luke Albert",
+      "role": "Writer",
+      "bio": "I love alyjlee",
+      "imageUrl": "",
+      "imageType": "url",
+      "imagePath": null,
+      "authorSub": [
+        "recwBNj08FnwtalvE"
+      ]
+    },
+    {
       "id": "recYigetjlh094xGR",
-      "name": "Maddie lam",
+      "name": "Maddie Lam",
       "role": "Writer",
       "bio": "I get a little sillay\n",
       "imageUrl": "",
@@ -319,32 +641,13 @@
       "imagePath": null,
       "photoSub": [
         "rec5qvTL1nMoz6iKW",
-        "recfoGKRrYhgZoTeZ"
+        "recfoGKRrYhgZoTeZ",
+        "recwBNj08FnwtalvE",
+        "reczcXYZ9PEjJWHCZ",
+        "recsCjl5IXLvsIEjL",
+        "recf7nTjkGMohlsyL",
+        "reclcJgOmZeWJLmRi"
       ]
-    },
-    {
-      "id": "recQWHet2vNmYMXRW",
-      "name": "Maddie lam\n",
-      "role": "Writer",
-      "bio": "I love Jawed!\n",
-      "imageUrl": "",
-      "imageType": "url",
-      "imagePath": null,
-      "photoSub": [
-        "reccvb6PlIVfxtpN2",
-        "recmqHtMe6DhCma0a",
-        "recOlI3fUexIc2CI4",
-        "rec6rPIDoZBeteIPC"
-      ]
-    },
-    {
-      "id": "recYR2vAO3pOFnDQw",
-      "name": "Maddie lam ",
-      "role": "Writer",
-      "bio": "I love Jawed!\n",
-      "imageUrl": "",
-      "imageType": "url",
-      "imagePath": null
     },
     {
       "id": "recAif1lt3Y0LaCXl",
@@ -383,14 +686,15 @@
       "authorSub": [
         "recrw6PJnxqaHk1iD",
         "recy5YPSOCP1Lelpk",
-        "recIvqHmrXO8aEfVm"
+        "recIvqHmrXO8aEfVm",
+        "rec5S9Hlr26qdz1iD"
       ]
     },
     {
       "id": "recWk21AruS7hhgkQ",
       "name": "Martin Akamine",
       "role": "Writer",
-      "bio": "I love Jawed!\n",
+      "bio": "3rd year Political Science, Philosophy, and Public Policy Analysis student at Boston University and Kilachand Honors College, passionate about public policy analysis, data management, and the intersections of politics and Ai. Just kidding! Just a bi-racial kid from the 650 trying to make it big. Deloitte, please hire me.\n",
       "imageUrl": "",
       "imageType": "url",
       "imagePath": null,
@@ -398,7 +702,9 @@
         "recmDBYKCphtikHij",
         "recvGnv4rkieTsnrp",
         "rec7hS0r7SWLoKJm0",
-        "recRV7JdEc7Y9OaIa"
+        "recRV7JdEc7Y9OaIa",
+        "rec2Sz1yNK6ZRBtco",
+        "reclcJgOmZeWJLmRi"
       ]
     },
     {
@@ -458,6 +764,24 @@
       "imagePath": null
     },
     {
+      "id": "recjGwZtdpWWznsOl",
+      "name": "Nicole Pines",
+      "role": "Writer",
+      "bio": "I love alyjlee",
+      "imageUrl": "",
+      "imageType": "url",
+      "imagePath": null
+    },
+    {
+      "id": "rec8VRcp5J8Z1xLn4",
+      "name": "Nina Lazarovici",
+      "role": "Writer",
+      "bio": "I love Alyjlee!",
+      "imageUrl": "",
+      "imageType": "url",
+      "imagePath": null
+    },
+    {
       "id": "recApV3QZzCGPxBwN",
       "name": "Noel Leibly ",
       "role": "Writer",
@@ -487,23 +811,38 @@
       ]
     },
     {
+      "id": "rec77pYgrLnRqfRb0",
+      "name": "Owen Butler",
+      "role": "Writer",
+      "bio": "I LOVE ALY!",
+      "imageUrl": "",
+      "imageType": "url",
+      "imagePath": null,
+      "authorSub": [
+        "reccQjSKdvuqo2AJn",
+        "recxfxwDeOmKlQ2N1"
+      ]
+    },
+    {
       "id": "recZVbCyEm2CjBBGv",
       "name": "Paige Schwartz",
       "role": "Writer",
-      "bio": "I love Jawed!\n",
+      "bio": "who let her in here? \n",
       "imageUrl": "",
       "imageType": "url",
       "imagePath": null,
       "authorSub": [
         "recQVDnw8VLXdQFgj",
-        "rec8UnN6O1G6w7iwG"
+        "rec8UnN6O1G6w7iwG",
+        "recPe7n8IyX9eWdf8",
+        "recJCGXlnUxuBJM8W"
       ]
     },
     {
       "id": "reccJ5e3hDhP639kD",
       "name": "Piper Hope",
       "role": "Writer",
-      "bio": "I love Jawed!\n",
+      "bio": "Piper is a senior film major who is in her fourth year writing for Pinky Toe (Terminal Unc Status). She gorgeous pop synths and one time saw Gwen Stefani at Disney World, pre her marriage to Blake Shelton so it was cool. The articles she writes for this publication are mostly okay and always worrying.  \n",
       "imageUrl": "",
       "imageType": "url",
       "imagePath": null,
@@ -537,7 +876,7 @@
     },
     {
       "id": "recUkhO4IuCasooVu",
-      "name": "Sadie ",
+      "name": "Sadie Shelkey",
       "role": "Writer",
       "bio": "I love Jawed!\n",
       "imageUrl": "",
@@ -555,19 +894,10 @@
       ]
     },
     {
-      "id": "recKGkNLkMgANmsGq",
-      "name": "Sadie Shelkey",
-      "role": "Writer",
-      "bio": "I love Jawed!\n",
-      "imageUrl": "",
-      "imageType": "url",
-      "imagePath": null
-    },
-    {
       "id": "recmtZ59TbGd1WM1z",
       "name": "Sage Clark",
       "role": "Writer",
-      "bio": "I love Jawed!\n",
+      "bio": "likes: non-binary lesbians, studs, geese, and morning skinny \ndislikes: bisexual men, partisan politics, credit card debt, and honeydew \n\nsage clark is a writer for the pinky toe paper (when he isn't fighting the sunday scaries). you'll usually find him complaining about bisexual men, fawning over studs on tiktok, or asking you for relationship advice. if you need to find him please do NOT reach out because he is currently hiding from the feds for \"reasons irrelevant\" \n\nnil desperandum!\nsage \n",
       "imageUrl": "",
       "imageType": "url",
       "imagePath": null,
@@ -576,7 +906,8 @@
         "rec5qvTL1nMoz6iKW",
         "recfoGKRrYhgZoTeZ",
         "reczOWRgpTgw5xOKo",
-        "recVYYha5S7dmL6dJ"
+        "recVYYha5S7dmL6dJ",
+        "recrL58EuGOlv5GNF"
       ]
     },
     {
@@ -592,6 +923,20 @@
         "recHdlPMYAAdqYmUY",
         "recaxS3WltQDuDcWP",
         "rectK2e7FF0Dpi9qm"
+      ]
+    },
+    {
+      "id": "recaiIQsINhfLyXpa",
+      "name": "Stella Ritter",
+      "role": "Photo",
+      "bio": "Bio information not available.",
+      "imageUrl": "",
+      "imageType": "url",
+      "imagePath": null,
+      "photoSub": [
+        "rec0E7ibAPCM2x55c",
+        "recGXn1Vfp4Bd2v4h",
+        "recucECh7TO4hqdlW"
       ]
     },
     {
@@ -655,12 +1000,16 @@
     },
     {
       "id": "rec2sLMvWLj7aRSCv",
-      "name": "Vie",
+      "name": "Vie Sun",
       "role": "Writer",
       "bio": "Hi, I'm Vie! I'm studying Health Science, CGS '26 SAR '28! I love cats, yoga, and the like. Fueled by a chronic Twitter addiction, I enjoy satirical writing about current events! Excited to channel my passions through the Pinky Toe!!!",
       "imageUrl": "",
       "imageType": "url",
-      "imagePath": null
+      "imagePath": null,
+      "authorSub": [
+        "recDNGExOLeR5nYMN",
+        "recq7RsEM67Vp0sq2"
+      ]
     },
     {
       "id": "recKvtNrK0osLf1Bs",
@@ -675,7 +1024,10 @@
         "rechU8eOElJT0NKSM",
         "recwf6Trzgk1m4uAk",
         "rec4eLXUGPBl3jldZ",
-        "recRBoofsKHcgXYIv"
+        "recRBoofsKHcgXYIv",
+        "rec6Yle5yiAjT6nwD",
+        "recLHm5tCQm15qmZO",
+        "recx2BWsrkHp444Eg"
       ]
     },
     {
@@ -697,5 +1049,5 @@
       ]
     }
   ],
-  "timestamp": 1758392626596
+  "timestamp": 1763929008079
 }
