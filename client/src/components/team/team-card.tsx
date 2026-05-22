@@ -11,6 +11,7 @@ interface TeamCardProps {
 export function TeamCard({ teamMember }: TeamCardProps) {
   // Get the image URL from MainImageLink or fall back to placeholder
   const imageSource = teamMember.imageUrl ? getImageUrl(teamMember.imageUrl) : PLACEHOLDER_IMAGE;
+  const imagePosition = teamMember.name === "Grace Whinnery" ? "top" : "center";
   console.log(`Team member ${teamMember.id} - Using imageUrl: ${teamMember.imageUrl || 'Not available, using placeholder'}`);
 
   return (
@@ -20,6 +21,7 @@ export function TeamCard({ teamMember }: TeamCardProps) {
           src={imageSource}
           alt={`${teamMember.name} photo`}
           className="h-64 w-full object-cover"
+          style={{ objectPosition: imagePosition }}
           onError={(e) => {
             const target = e.target as HTMLImageElement;
             console.error(`Failed to load team image: ${target.src}`);
