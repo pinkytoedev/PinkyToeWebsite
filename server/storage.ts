@@ -525,8 +525,15 @@ export class AirtableStorage implements IStorage {
     const photoSubField = record.get('PhotoSub') || record.get('photoSub') || record.get('Photo Sub');
     const photoSub = Array.isArray(photoSubField) ? photoSubField : (photoSubField ? [photoSubField] : undefined);
 
-    if (!imageUrl && record.id === 'recYigetjlh094xGR') {
-      imageUrl = '/member-photos/Maddie%20Lam.jpg';
+    const memberPhotoFallbacks: Record<string, string> = {
+      recYigetjlh094xGR: '/member-photos/Maddie%20Lam.jpg',
+      recepv49p3G2oFgi5: '/member-photos/Doran%20Steinfeld.jpg',
+      recMqocpbtURIViuL: '/member-photos/Grace%20Whinnery.jpg',
+      recKvtNrK0osLf1Bs: '/member-photos/Willa%20Norvell.jpg',
+    };
+
+    if (!imageUrl && memberPhotoFallbacks[record.id]) {
+      imageUrl = memberPhotoFallbacks[record.id];
     }
 
     return {
