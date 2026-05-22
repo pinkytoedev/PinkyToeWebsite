@@ -9,6 +9,7 @@ import { Link } from "wouter";
 import { formatDate } from "@/lib/utils";
 import { getImageUrl, getPhotoUrl } from "@/lib/image-helper";
 import { fetchTeamMemberById, fetchArticlesByIds } from "@/lib/api";
+import { Article } from "@shared/schema";
 
 export default function TeamMemberDetail() {
   const { id } = useParams();
