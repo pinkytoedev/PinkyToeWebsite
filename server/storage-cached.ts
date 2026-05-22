@@ -155,8 +155,6 @@ export class CachedStorage implements IStorage {
       // Try to get from cache first
       const cachedArticles = CacheService.getCachedRecentArticles();
       if (cachedArticles) {
-        console.log('Serving recent articles from cache');
-
         // Double-check integrity of results
         if (!Array.isArray(cachedArticles)) {
           console.error('Recent articles cache is not an array, fetching from original storage');
@@ -168,7 +166,6 @@ export class CachedStorage implements IStorage {
       }
 
       // If not in cache, get from original storage
-      console.log('Cache miss for recent articles, fetching from original storage');
       const articles = await this.originalStorage.getRecentArticles(limit);
 
       // Validate before caching
@@ -186,7 +183,6 @@ export class CachedStorage implements IStorage {
       // Try to serve from cache even on error
       const cachedArticles = CacheService.getCachedRecentArticles();
       if (cachedArticles) {
-        console.log('Serving recent articles from cache after error');
 
         // Double-check integrity of results even in fallback path
         if (!Array.isArray(cachedArticles)) {
@@ -210,13 +206,11 @@ export class CachedStorage implements IStorage {
       if (cachedArticles) {
         const cachedArticle = cachedArticles.articles.find(article => article.id === id);
         if (cachedArticle) {
-          console.log(`Serving article ${id} from cache`);
           return cachedArticle;
         }
       }
 
       // If not in cache, get from original storage
-      console.log(`Cache miss for article ${id}, fetching from original storage`);
       return await this.originalStorage.getArticleById(id);
     } catch (error) {
       console.error(`Error in cached getArticleById for ${id}:`, error);
@@ -226,7 +220,6 @@ export class CachedStorage implements IStorage {
       if (cachedArticles) {
         const cachedArticle = cachedArticles.articles.find(article => article.id === id);
         if (cachedArticle) {
-          console.log(`Serving article ${id} from cache after error`);
           return cachedArticle;
         }
       }
@@ -249,7 +242,6 @@ export class CachedStorage implements IStorage {
               article => article.name === teamMember.name
             );
             if (authorArticles.length > 0) {
-              console.log(`Serving articles for author ${authorId} from cache`);
               return authorArticles;
             }
           }
@@ -257,7 +249,6 @@ export class CachedStorage implements IStorage {
       }
 
       // If not in cache, get from original storage
-      console.log(`Cache miss for articles by author ${authorId}, fetching from original storage`);
       return await this.originalStorage.getArticlesByAuthorId(authorId);
     } catch (error) {
       console.error(`Error in cached getArticlesByAuthorId for ${authorId}:`, error);
@@ -273,7 +264,6 @@ export class CachedStorage implements IStorage {
               article => article.name === teamMember.name
             );
             if (authorArticles.length > 0) {
-              console.log(`Serving articles for author ${authorId} from cache after error`);
               return authorArticles;
             }
           }
@@ -290,12 +280,10 @@ export class CachedStorage implements IStorage {
       // Try to get from cache first
       const cachedTeam = CacheService.getCachedTeamMembers();
       if (cachedTeam) {
-        console.log('Serving team members from cache');
         return cachedTeam;
       }
 
       // If not in cache, get from original storage
-      console.log('Cache miss for team members, fetching from original storage');
       const team = await this.originalStorage.getTeamMembers();
 
       // Cache the result for future use
@@ -307,7 +295,6 @@ export class CachedStorage implements IStorage {
       // Try to serve from cache even on error
       const cachedTeam = CacheService.getCachedTeamMembers();
       if (cachedTeam) {
-        console.log('Serving team members from cache after error');
         return cachedTeam;
       }
 
@@ -323,13 +310,11 @@ export class CachedStorage implements IStorage {
       if (cachedTeam) {
         const cachedMember = cachedTeam.find(member => member.id === id);
         if (cachedMember) {
-          console.log(`Serving team member ${id} from cache`);
           return cachedMember;
         }
       }
 
       // If not in cache, get from original storage
-      console.log(`Cache miss for team member ${id}, fetching from original storage`);
       return await this.originalStorage.getTeamMemberById(id);
     } catch (error) {
       console.error(`Error in cached getTeamMemberById for ${id}:`, error);
@@ -339,7 +324,6 @@ export class CachedStorage implements IStorage {
       if (cachedTeam) {
         const cachedMember = cachedTeam.find(member => member.id === id);
         if (cachedMember) {
-          console.log(`Serving team member ${id} from cache after error`);
           return cachedMember;
         }
       }
@@ -354,12 +338,10 @@ export class CachedStorage implements IStorage {
       // Try to get from cache first
       const cachedQuotes = CacheService.getCachedQuotes();
       if (cachedQuotes) {
-        console.log('Serving quotes from cache');
         return cachedQuotes;
       }
 
       // If not in cache, get from original storage
-      console.log('Cache miss for quotes, fetching from original storage');
       const quotes = await this.originalStorage.getQuotes();
 
       // Cache the result for future use
@@ -371,7 +353,6 @@ export class CachedStorage implements IStorage {
       // Try to serve from cache even on error
       const cachedQuotes = CacheService.getCachedQuotes();
       if (cachedQuotes) {
-        console.log('Serving quotes from cache after error');
         return cachedQuotes;
       }
 
@@ -385,7 +366,6 @@ export class CachedStorage implements IStorage {
       // Get all quotes from cache first
       const cachedQuotes = CacheService.getCachedQuotes();
       if (cachedQuotes && cachedQuotes.length > 0) {
-        console.log('Generating quote of the day from cached quotes');
 
         // Filter for philosophy quotes
         const philosophyQuotes = cachedQuotes.filter(quote =>
@@ -427,7 +407,6 @@ export class CachedStorage implements IStorage {
       }
 
       // If not in cache, get from original storage
-      console.log('Cache miss for quote of the day, fetching from original storage');
       return await this.originalStorage.getQuoteOfDay();
     } catch (error) {
       console.error('Error in cached getQuoteOfDay:', error);

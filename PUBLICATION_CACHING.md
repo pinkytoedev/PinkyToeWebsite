@@ -46,7 +46,14 @@ The caching system has been upgraded to be **publication-aware**, meaning it ada
 - Uses the same reliable logic as admin refresh endpoints
 - API endpoint: `POST /api/cache/refresh`
 
-### 4. **Cache Warmup**
+### 4. **Publication Webhook Integration**
+- Dedicated webhook endpoint for automatic cache refresh on article publication
+- Triggered by your publishing platform when articles are published
+- Immediately updates website with new content
+- API endpoint: `POST /api/webhooks/article-published`
+
+
+### 5. **Cache Warmup**
 - Server starts with warm caches for immediate availability
 - Critical content loads first, stable content in background
 - Reduces cold start delays
@@ -85,6 +92,42 @@ Returns current scheduling information:
 - Current refresh intervals for each tier
 - Cache expiry times
 - Timestamp
+
+### Publication Webhook
+```http
+POST /api/webhooks/article-published
+```
+Webhook endpoint for automatic cache refresh when articles are published.
+
+**Request Body (all optional):**
+```json
+{
+  "event": "article.published",
+  "articleId": "rec123456",
+  "timestamp": "2025-10-10T12:00:00Z",
+  "webhookSecret": "your-secret-key"
+}
+```
+
+**Response:**
+```json
+{
+  "success": true,
+  "message": "Article publication webhook processed successfully",
+  "timestamp": "2025-10-10T12:00:00Z",
+  "refreshed": ["recentArticles", "featuredArticles", "articles"]
+}
+```
+
+**What it does:**
+1. Invalidates article-related caches (recent, featured, all articles)
+2. Refreshes data in priority order (recent → featured → all)
+3. Pre-caches article images
+4. Returns confirmation with timestamp
+
+**Security:** Set `WEBHOOK_SECRET` environment variable to require authentication.
+
+**For complete webhook integration guide, see:** `WEBHOOK_DOCUMENTATION.md`
 
 ## Configuration
 

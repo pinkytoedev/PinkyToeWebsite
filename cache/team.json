@@ -21,7 +21,11 @@
       "bio": "first time using photoshop, kinda nervous",
       "imageUrl": "",
       "imageType": "url",
-      "imagePath": null
+      "imagePath": null,
+      "photoSub": [
+        "rec5S9Hlr26qdz1iD",
+        "rec3nDWzs1II1JN4t"
+      ]
     },
     {
       "id": "recqzeh29YuQiTSz3",
@@ -42,7 +46,7 @@
       "id": "recBzpFyNxvxVDPFv",
       "name": "Aidan Fairchild-Sandoval",
       "role": "Writer",
-      "bio": "I love Jawed!\n",
+      "bio": "Qualifications: Hot, Gay, and Brown\n",
       "imageUrl": "",
       "imageType": "url",
       "imagePath": null,
@@ -55,17 +59,21 @@
         "recKguQsiHP8cMZJE",
         "recw4Zbm225axjGv5",
         "recSeKhpNtcZC98VM",
-        "recGBxRFhrVVnOSSc"
+        "recGBxRFhrVVnOSSc",
+        "rec0E7ibAPCM2x55c"
       ]
     },
     {
-      "id": "recNuVghNDeoT2Ukz",
-      "name": "Aidan Fairchild-Sandoval",
-      "role": "Writer",
-      "bio": "Qualifications: Hot, Gay, and Brown",
+      "id": "rec24nFeCGPpnIkKO",
+      "name": "Alex Gains",
+      "role": "Photo, Special Projects",
+      "bio": "",
       "imageUrl": "",
       "imageType": "url",
-      "imagePath": null
+      "imagePath": null,
+      "photoSub": [
+        "reckzwjwNhDqYT0zO"
+      ]
     },
     {
       "id": "recalhUBu9vDRaZM5",
@@ -74,7 +82,12 @@
       "bio": "Alex is a sophomore from Dallas, TX studying biology on the pre-med track. In his free time, he plays the drums, sings in an a cappella group, and even writes sometimes. ",
       "imageUrl": "",
       "imageType": "url",
-      "imagePath": null
+      "imagePath": null,
+      "authorSub": [
+        "recqgp0xzlII2suZO",
+        "recucECh7TO4hqdlW",
+        "rec1sVlrJUyKhIz2K"
+      ]
     },
     {
       "id": "recYVzIBtSDdFzydc",
@@ -90,6 +103,19 @@
       "name": "Allison Groves",
       "role": "Writer",
       "bio": "Hello! I’m Allison and I am a sophomore engineering and physics student at BU. I like long walks on the beach, being right, Bean the dog, and people who make their own chain mail. I don’t like men who read Sylvia Plath. Live long The Pinky Toe. ",
+      "imageUrl": "",
+      "imageType": "url",
+      "imagePath": null,
+      "photoSub": [
+        "recQdhe3AiLUv4rCp",
+        "recJSv3ib47Wlna2v"
+      ]
+    },
+    {
+      "id": "rec338ivL1mTn5j2J",
+      "name": "Aly J Lee",
+      "role": "Dev",
+      "bio": "hey... hey... hey... hey... i am alyjlee... ",
       "imageUrl": "",
       "imageType": "url",
       "imagePath": null
@@ -126,7 +152,17 @@
         "recLy6WsOqR3jKuFZ",
         "recWuzh6A1Q1xVPoN",
         "rec5UBfOTf4Tstduy",
-        "recNvTvYiLQKIqaIG"
+        "recNvTvYiLQKIqaIG",
+        "rec2mkCpsngtF6NFF",
+        "recQMHjPxexQSmZuf",
+        "rec6h3JeAct9rgVKL",
+        "recHDxRBg8UnhH412",
+        "recjL4rMQco3U1gtO",
+        "recGXn1Vfp4Bd2v4h",
+        "recN6AZb484y5cHVX",
+        "recUYe4s8fuj2V5mh",
+        "recW0B6uzNgT1tLuc",
+        "recUs22OGfdqvUg4r"
       ],
       "photoSub": [
         "recpJPXY4Kv85HeNK",
@@ -191,20 +227,27 @@
         "recpETc8UeQ7QTriz",
         "recBwPx8YjotwpQCK",
         "recqXnKerjLVNrCDJ",
-        "recWuzh6A1Q1xVPoN"
+        "recWuzh6A1Q1xVPoN",
+        "recGooeGiY4rLYhRZ",
+        "recUYe4s8fuj2V5mh",
+        "recW0B6uzNgT1tLuc"
       ]
     },
     {
       "id": "reclsRu8t2z2EyDOh",
       "name": "Ariana Beck",
       "role": "Writer",
-      "bio": "I love Jawed!\n",
+      "bio": "gay and funny. also do you wanna hang out tn\n",
       "imageUrl": "",
       "imageType": "url",
       "imagePath": null,
       "authorSub": [
         "recsR1NjQpY119N4a",
-        "recQgVsmzZrsLuhEb"
+        "recQgVsmzZrsLuhEb",
+        "recdY7M4ilUO9HDLV",
+        "recdpJwxhVwMyyN4O",
+        "recgYKHIWNNEBeu4p",
+        "rec7LBbdgCiMAgr1K"
       ]
     },
     {
@@ -226,6 +269,15 @@
       ]
     },
     {
+      "id": "recjsdwu0qVbijHCN",
+      "name": "Ava Himmelsbach",
+      "role": "Writer",
+      "bio": "Bio information not available.",
+      "imageUrl": "",
+      "imageType": "url",
+      "imagePath": null
+    },
+    {
       "id": "recUcvTwnaTRTU02g",
       "name": "Ava Rubin",
       "role": "Writer",
@@ -237,6 +289,18 @@
         "recAjCPTx2OJK9KVU",
         "recdaDlsxX43yuP7h",
         "recbE7G1vBSQyVY8j"
+      ]
+    },
+    {
+      "id": "recA9mtYAkDoVhCUe",
+      "name": "Beck Winter",
+      "role": "Writer",
+      "bio": "I love Alyjlee!",
+      "imageUrl": "",
+      "imageType": "url",
+      "imagePath": null,
+      "authorSub": [
+        "recbMPf41gZNmfpQe"
       ]
     },
     {
@@ -290,20 +354,25 @@
         "recr9sW7qrFCQgO20",
         "recApARAqXjZghKsa",
         "reci4FOenGXR6uYz5",
-        "rec9goJ62DEMuv3He"
+        "rec9goJ62DEMuv3He",
+        "recn76W17mCA8wJTn",
+        "recm548IxMRzmDQ5t",
+        "rec1uRRjWwjucRxJy"
       ]
     },
     {
       "id": "rec3k3RIP9NdImFyk",
       "name": "Claire Zhang",
       "role": "Writer",
-      "bio": "I love Jawed!\n",
+      "bio": "all my good articles are anonymous sorry\n",
       "imageUrl": "",
       "imageType": "url",
       "imagePath": null,
       "authorSub": [
         "recfGgRSmED4MuRce",
-        "rec8qnAFSu1UlnbSg"
+        "rec8qnAFSu1UlnbSg",
+        "recf7nTjkGMohlsyL",
+        "recjUCbbAYjrHTcMO"
       ]
     },
     {
@@ -320,7 +389,7 @@
       "name": "Doran Steinfeld",
       "role": "Writer",
       "bio": "the most famous person you've never met\n",
-      "imageUrl": "",
+      "imageUrl": "/member-photos/Doran%20Steinfeld.jpg",
       "imageType": "url",
       "imagePath": null,
       "authorSub": [
@@ -331,7 +400,10 @@
         "recrATeKeR0MzsId9",
         "recuhMwyTcaayrf9h",
         "recW5HnXSUGwtT1aP",
-        "recbmrNMi8ZpXXmJE"
+        "recbmrNMi8ZpXXmJE",
+        "recmiNB99RNs1AIwo",
+        "recsCjl5IXLvsIEjL",
+        "recOwi5HgjYQcFBk6"
       ]
     },
     {
@@ -364,7 +436,8 @@
         "recRV7JdEc7Y9OaIa",
         "reczb1AUBnpSNbxYl",
         "recGBxRFhrVVnOSSc",
-        "recwuf2fJS7PVvwZ7"
+        "recwuf2fJS7PVvwZ7",
+        "reccQjSKdvuqo2AJn"
       ]
     },
     {
@@ -374,7 +447,13 @@
       "bio": "I love lying!",
       "imageUrl": "",
       "imageType": "url",
-      "imagePath": null
+      "imagePath": null,
+      "authorSub": [
+        "reci4wzcJYTzYgTBw",
+        "recxJOEKQlQN8Qvyw",
+        "reczcXYZ9PEjJWHCZ",
+        "recrXl4B5BncEBzyo"
+      ]
     },
     {
       "id": "reclVuOApEAZPwIf3",
@@ -390,7 +469,10 @@
         "recrBzF25lXGjrpJX",
         "recEhUq9y6VGa76xp",
         "recMaSCJDBIbPjFz8",
-        "recscaECzXSMnY1ND"
+        "recscaECzXSMnY1ND",
+        "recHVerqGlkwlygF5",
+        "recjS4MFeJ8455mJb",
+        "rec3nDWzs1II1JN4t"
       ]
     },
     {
@@ -428,9 +510,17 @@
       "name": "Grace Whinnery",
       "role": "Writer",
       "bio": "Journalism major, BU Class of 2029.",
-      "imageUrl": "",
+      "imageUrl": "/member-photos/Grace%20Whinnery.jpg",
       "imageType": "url",
-      "imagePath": null
+      "imagePath": null,
+      "photoSub": [
+        "recbMPf41gZNmfpQe",
+        "recdpJwxhVwMyyN4O",
+        "recxJOEKQlQN8Qvyw",
+        "recN6AZb484y5cHVX",
+        "recrXl4B5BncEBzyo",
+        "recUs22OGfdqvUg4r"
+      ]
     },
     {
       "id": "recQ2iQmwwK2nS0yA",
@@ -459,16 +549,7 @@
       "id": "recb8PGU3nU3lCxD7",
       "name": "Jawed Nur",
       "role": "Writer",
-      "bio": "I love Jawed!\n",
-      "imageUrl": "",
-      "imageType": "url",
-      "imagePath": null
-    },
-    {
-      "id": "recR23i8C0IvVSC4Y",
-      "name": "Jawed Nur ",
-      "role": "Writer",
-      "bio": "I love Jawed!\n",
+      "bio": "I love Jawed!\r\n",
       "imageUrl": "",
       "imageType": "url",
       "imagePath": null
@@ -491,7 +572,7 @@
       "id": "recqKQ3CqpPhtoz8Z",
       "name": "Lauren Kelly",
       "role": "Writer",
-      "bio": "I love Jawed!\n",
+      "bio": "hey what’s up you guys yes today i will be writing my bio for pinky winky big fat toe\n",
       "imageUrl": "",
       "imageType": "url",
       "imagePath": null
@@ -506,7 +587,11 @@
       "imagePath": null,
       "authorSub": [
         "rec2yg5XpiKie4CCL",
-        "recXfuYm7dCnXCcyF"
+        "recXfuYm7dCnXCcyF",
+        "recfNc0JwxNBLh58T",
+        "recdIGh347TpLdHUN",
+        "recQdhe3AiLUv4rCp",
+        "reckzwjwNhDqYT0zO"
       ],
       "photoSub": [
         "recMzm4xyOTAIOUv8"
@@ -540,6 +625,25 @@
       "bio": "grande pink drink no fruit add-ins",
       "imageUrl": "",
       "imageType": "url",
+      "imagePath": null,
+      "photoSub": [
+        "recn76W17mCA8wJTn",
+        "recxfxwDeOmKlQ2N1",
+        "recx2BWsrkHp444Eg",
+        "recibm5EEzJGLKjpw",
+        "recOwi5HgjYQcFBk6",
+        "recff7YGdg3rscXVR",
+        "recYs1tIbncmWd7CQ",
+        "rec1uRRjWwjucRxJy"
+      ]
+    },
+    {
+      "id": "recY9HhIdaQtlYyyL",
+      "name": "London Swanson",
+      "role": "Writer",
+      "bio": "I love Alyjlee!",
+      "imageUrl": "",
+      "imageType": "url",
       "imagePath": null
     },
     {
@@ -552,8 +656,22 @@
       "imagePath": null
     },
     {
+      "id": "recesFoOMHYYFw4eg",
+      "name": "Luke Albert",
+      "role": "Writer",
+      "bio": "I love alyjlee",
+      "imageUrl": "",
+      "imageType": "url",
+      "imagePath": null,
+      "authorSub": [
+        "recwBNj08FnwtalvE",
+        "recVkW8HA1U0Cu1PQ",
+        "rec27wDDaHB2zbXDz"
+      ]
+    },
+    {
       "id": "recYigetjlh094xGR",
-      "name": "Maddie lam",
+      "name": "Maddie Lam",
       "role": "Writer",
       "bio": "I get a little sillay\n",
       "imageUrl": "/member-photos/Maddie%20Lam.jpg",
@@ -561,22 +679,13 @@
       "imagePath": null,
       "photoSub": [
         "rec5qvTL1nMoz6iKW",
-        "recfoGKRrYhgZoTeZ"
-      ]
-    },
-    {
-      "id": "recQWHet2vNmYMXRW",
-      "name": "Maddie lam\n",
-      "role": "Writer",
-      "bio": "I love Jawed!\n",
-      "imageUrl": "/member-photos/Maddie%20Lam.jpg",
-      "imageType": "url",
-      "imagePath": null,
-      "photoSub": [
-        "reccvb6PlIVfxtpN2",
-        "recmqHtMe6DhCma0a",
-        "recOlI3fUexIc2CI4",
-        "rec6rPIDoZBeteIPC"
+        "recfoGKRrYhgZoTeZ",
+        "recwBNj08FnwtalvE",
+        "reczcXYZ9PEjJWHCZ",
+        "recsCjl5IXLvsIEjL",
+        "recf7nTjkGMohlsyL",
+        "reclcJgOmZeWJLmRi",
+        "rec7LBbdgCiMAgr1K"
       ]
     },
     {
@@ -616,14 +725,15 @@
       "authorSub": [
         "recrw6PJnxqaHk1iD",
         "recy5YPSOCP1Lelpk",
-        "recIvqHmrXO8aEfVm"
+        "recIvqHmrXO8aEfVm",
+        "rec5S9Hlr26qdz1iD"
       ]
     },
     {
       "id": "recWk21AruS7hhgkQ",
-      "name": "Martin Akamine",
+      "name": "Martin Akamine-Alvarez",
       "role": "Writer",
-      "bio": "I love Jawed!\n",
+      "bio": "3rd year Political Science, Philosophy, and Public Policy Analysis student at Boston University and Kilachand Honors College, passionate about public policy analysis, data management, and the intersections of politics and Ai. Just kidding! Just a bi-racial kid from the 650 trying to make it big. Deloitte, please hire me.\n",
       "imageUrl": "",
       "imageType": "url",
       "imagePath": null,
@@ -631,7 +741,11 @@
         "recmDBYKCphtikHij",
         "recvGnv4rkieTsnrp",
         "rec7hS0r7SWLoKJm0",
-        "recRV7JdEc7Y9OaIa"
+        "recRV7JdEc7Y9OaIa",
+        "rec2Sz1yNK6ZRBtco",
+        "reclcJgOmZeWJLmRi",
+        "recGooeGiY4rLYhRZ",
+        "recJSv3ib47Wlna2v"
       ]
     },
     {
@@ -691,6 +805,24 @@
       "imagePath": null
     },
     {
+      "id": "recjGwZtdpWWznsOl",
+      "name": "Nicole Pines",
+      "role": "Writer",
+      "bio": "I love alyjlee",
+      "imageUrl": "",
+      "imageType": "url",
+      "imagePath": null
+    },
+    {
+      "id": "rec8VRcp5J8Z1xLn4",
+      "name": "Nina Lazarovici",
+      "role": "Writer",
+      "bio": "I love Alyjlee!",
+      "imageUrl": "",
+      "imageType": "url",
+      "imagePath": null
+    },
+    {
       "id": "recApV3QZzCGPxBwN",
       "name": "Noel Leibly ",
       "role": "Writer",
@@ -720,23 +852,38 @@
       ]
     },
     {
+      "id": "rec77pYgrLnRqfRb0",
+      "name": "Owen Butler",
+      "role": "Writer",
+      "bio": "I LOVE ALY!",
+      "imageUrl": "",
+      "imageType": "url",
+      "imagePath": null,
+      "authorSub": [
+        "reccQjSKdvuqo2AJn",
+        "recxfxwDeOmKlQ2N1"
+      ]
+    },
+    {
       "id": "recZVbCyEm2CjBBGv",
       "name": "Paige Schwartz",
       "role": "Writer",
-      "bio": "I love Jawed!\n",
+      "bio": "who let her in here? \n",
       "imageUrl": "",
       "imageType": "url",
       "imagePath": null,
       "authorSub": [
         "recQVDnw8VLXdQFgj",
-        "rec8UnN6O1G6w7iwG"
+        "rec8UnN6O1G6w7iwG",
+        "recPe7n8IyX9eWdf8",
+        "recJCGXlnUxuBJM8W"
       ]
     },
     {
       "id": "reccJ5e3hDhP639kD",
       "name": "Piper Hope",
       "role": "Writer",
-      "bio": "I love Jawed!\n",
+      "bio": "Piper is a senior film major who is in her fourth year writing for Pinky Toe (Terminal Unc Status). She gorgeous pop synths and one time saw Gwen Stefani at Disney World, pre her marriage to Blake Shelton so it was cool. The articles she writes for this publication are mostly okay and always worrying.  \n",
       "imageUrl": "",
       "imageType": "url",
       "imagePath": null,
@@ -770,7 +917,7 @@
     },
     {
       "id": "recUkhO4IuCasooVu",
-      "name": "Sadie ",
+      "name": "Sadie Shelkey",
       "role": "Writer",
       "bio": "I love Jawed!\n",
       "imageUrl": "",
@@ -788,19 +935,10 @@
       ]
     },
     {
-      "id": "recKGkNLkMgANmsGq",
-      "name": "Sadie Shelkey",
-      "role": "Writer",
-      "bio": "I love Jawed!\n",
-      "imageUrl": "",
-      "imageType": "url",
-      "imagePath": null
-    },
-    {
       "id": "recmtZ59TbGd1WM1z",
       "name": "Sage Clark",
       "role": "Writer",
-      "bio": "I love Jawed!\n",
+      "bio": "likes: non-binary lesbians, studs, geese, and morning skinny \ndislikes: bisexual men, partisan politics, credit card debt, and honeydew \n\nsage clark is a writer for the pinky toe paper (when he isn't fighting the sunday scaries). you'll usually find him complaining about bisexual men, fawning over studs on tiktok, or asking you for relationship advice. if you need to find him please do NOT reach out because he is currently hiding from the feds for \"reasons irrelevant\" \n\nnil desperandum!\nsage \n",
       "imageUrl": "",
       "imageType": "url",
       "imagePath": null,
@@ -809,7 +947,9 @@
         "rec5qvTL1nMoz6iKW",
         "recfoGKRrYhgZoTeZ",
         "reczOWRgpTgw5xOKo",
-        "recVYYha5S7dmL6dJ"
+        "recVYYha5S7dmL6dJ",
+        "recrL58EuGOlv5GNF",
+        "recNqE1nbYd76aohX"
       ]
     },
     {
@@ -825,6 +965,21 @@
         "recHdlPMYAAdqYmUY",
         "recaxS3WltQDuDcWP",
         "rectK2e7FF0Dpi9qm"
+      ]
+    },
+    {
+      "id": "recaiIQsINhfLyXpa",
+      "name": "Stella Ritter",
+      "role": "Photo",
+      "bio": "Bio information not available.",
+      "imageUrl": "",
+      "imageType": "url",
+      "imagePath": null,
+      "photoSub": [
+        "rec0E7ibAPCM2x55c",
+        "recGXn1Vfp4Bd2v4h",
+        "recucECh7TO4hqdlW",
+        "rec1sVlrJUyKhIz2K"
       ]
     },
     {
@@ -888,19 +1043,25 @@
     },
     {
       "id": "rec2sLMvWLj7aRSCv",
-      "name": "Vie",
+      "name": "Vie Sun",
       "role": "Writer",
       "bio": "Hi, I'm Vie! I'm studying Health Science, CGS '26 SAR '28! I love cats, yoga, and the like. Fueled by a chronic Twitter addiction, I enjoy satirical writing about current events! Excited to channel my passions through the Pinky Toe!!!",
       "imageUrl": "",
       "imageType": "url",
-      "imagePath": null
+      "imagePath": null,
+      "authorSub": [
+        "recDNGExOLeR5nYMN",
+        "recq7RsEM67Vp0sq2",
+        "recibm5EEzJGLKjpw",
+        "recWLjvqQoczZSuiJ"
+      ]
     },
     {
       "id": "recKvtNrK0osLf1Bs",
       "name": "Willa Norvell",
       "role": "Writer",
       "bio": "Willa is 5’8”, pescatarian, and open-minded. She enjoys Peanut Butter Banana Kind Bars, fantasy maps, and Ayesha Erotica. In the future, Willa hopes to run into Kevin Spacey on the street so that she can run the other way. She is thrilled to write for Pinky Toe once again, here’s to a great second year!\n",
-      "imageUrl": "",
+      "imageUrl": "/member-photos/Willa%20Norvell.jpg",
       "imageType": "url",
       "imagePath": null,
       "authorSub": [
@@ -908,7 +1069,12 @@
         "rechU8eOElJT0NKSM",
         "recwf6Trzgk1m4uAk",
         "rec4eLXUGPBl3jldZ",
-        "recRBoofsKHcgXYIv"
+        "recRBoofsKHcgXYIv",
+        "rec6Yle5yiAjT6nwD",
+        "recLHm5tCQm15qmZO",
+        "recx2BWsrkHp444Eg",
+        "recff7YGdg3rscXVR",
+        "recYs1tIbncmWd7CQ"
       ]
     },
     {
@@ -930,5 +1096,5 @@
       ]
     }
   ],
-  "timestamp": 1758575840514
+  "timestamp": 1767312397508
 }

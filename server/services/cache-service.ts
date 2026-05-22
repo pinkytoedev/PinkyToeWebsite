@@ -110,7 +110,7 @@ export class CacheService {
 
       // Check if cache is expired using publication-aware expiry times
       if (Date.now() - cache.timestamp > getCacheExpiry('articles')) {
-        console.log('Featured articles cache expired, returning null');
+        // console.log('Featured articles cache expired, returning null');
         return null;
       }
 
@@ -151,7 +151,7 @@ export class CacheService {
 
       // Check if cache is expired using publication-aware expiry times
       if (Date.now() - cache.timestamp > getCacheExpiry('articles')) {
-        console.log('Recent articles cache expired, returning null');
+        // console.log('Recent articles cache expired, returning null');
         return null;
       }
 
@@ -192,7 +192,7 @@ export class CacheService {
 
       // Check if cache is expired using publication-aware expiry times
       if (Date.now() - cache.timestamp > getCacheExpiry('team')) {
-        console.log('Team members cache expired, returning null');
+        // console.log('Team members cache expired, returning null');
         return null;
       }
 
@@ -233,7 +233,7 @@ export class CacheService {
 
       // Check if cache is expired using publication-aware expiry times
       if (Date.now() - cache.timestamp > getCacheExpiry('quotes')) {
-        console.log('Quotes cache expired, returning null');
+        // console.log('Quotes cache expired, returning null');
         return null;
       }
 
@@ -276,11 +276,11 @@ export class CacheService {
 
         if (lockAge < LOCK_TIMEOUT) {
           // Lock is still valid, cannot acquire
-          console.log(`Lock for ${cacheType} is held by another process (${Math.round(lockAge / 1000)}s old)`);
+          // console.log(`Lock for ${cacheType} is held by another process (${Math.round(lockAge / 1000)}s old)`);
           return false;
         } else {
           // Lock is stale, we can break it
-          console.log(`Breaking stale lock for ${cacheType} (${Math.round(lockAge / 1000)}s old)`);
+          // console.log(`Breaking stale lock for ${cacheType} (${Math.round(lockAge / 1000)}s old)`);
         }
       }
 
@@ -376,7 +376,7 @@ export class CacheService {
       // Rename to actual cache file (atomic operation)
       fs.renameSync(tempFile, FEATURED_ARTICLES_CACHE_FILE);
 
-      console.log('Featured articles cached successfully');
+      // console.log('Featured articles cached successfully');
     } catch (error) {
       console.error('Error caching featured articles:', error);
     } finally {
@@ -393,7 +393,7 @@ export class CacheService {
 
     // Try to acquire lock
     if (!this.acquireLock(cacheType)) {
-      console.warn(`Cannot cache recent articles: lock acquisition failed`);
+      // console.warn(`Cannot cache recent articles: lock acquisition failed`);
       return;
     }
 
@@ -416,7 +416,7 @@ export class CacheService {
       // Rename to actual cache file (atomic operation)
       fs.renameSync(tempFile, RECENT_ARTICLES_CACHE_FILE);
 
-      console.log('Recent articles cached successfully');
+      // console.log('Recent articles cached successfully');
     } catch (error) {
       console.error('Error caching recent articles:', error);
     } finally {
@@ -433,7 +433,7 @@ export class CacheService {
 
     // Try to acquire lock
     if (!this.acquireLock(cacheType)) {
-      console.warn(`Cannot cache team members: lock acquisition failed`);
+      // console.warn(`Cannot cache team members: lock acquisition failed`);
       return;
     }
 
@@ -456,7 +456,7 @@ export class CacheService {
       // Rename to actual cache file (atomic operation)
       fs.renameSync(tempFile, TEAM_CACHE_FILE);
 
-      console.log('Team members cached successfully');
+      // console.log('Team members cached successfully');
     } catch (error) {
       console.error('Error caching team members:', error);
     } finally {
@@ -473,7 +473,7 @@ export class CacheService {
 
     // Try to acquire lock
     if (!this.acquireLock(cacheType)) {
-      console.warn(`Cannot cache quotes: lock acquisition failed`);
+      // console.warn(`Cannot cache quotes: lock acquisition failed`);
       return;
     }
 
@@ -496,7 +496,7 @@ export class CacheService {
       // Rename to actual cache file (atomic operation)
       fs.renameSync(tempFile, QUOTES_CACHE_FILE);
 
-      console.log('Quotes cached successfully');
+      // console.log('Quotes cached successfully');
     } catch (error) {
       console.error('Error caching quotes:', error);
     } finally {
@@ -512,7 +512,7 @@ export class CacheService {
   static invalidateCache(cacheType: string): void {
     // Try to acquire lock
     if (!this.acquireLock(cacheType)) {
-      console.warn(`Cannot invalidate ${cacheType} cache: lock acquisition failed`);
+      // console.warn(`Cannot invalidate ${cacheType} cache: lock acquisition failed`);
       return;
     }
 
@@ -536,22 +536,22 @@ export class CacheService {
           cacheFile = QUOTES_CACHE_FILE;
           break;
         default:
-          console.warn(`Unknown cache type: ${cacheType}`);
+          // console.warn(`Unknown cache type: ${cacheType}`);
           return;
       }
 
       if (cacheFile && fs.existsSync(cacheFile)) {
         fs.unlinkSync(cacheFile);
-        console.log(`Cache invalidated: ${cacheType}`);
+        // console.log(`Cache invalidated: ${cacheType}`);
       } else {
-        console.log(`Cache file not found for: ${cacheType}`);
+        // console.log(`Cache file not found for: ${cacheType}`);
       }
 
       // Also clean up any temp files that might have been left behind
       const tempFile = `${cacheFile}.tmp`;
       if (fs.existsSync(tempFile)) {
         fs.unlinkSync(tempFile);
-        console.log(`Cleaned up temporary cache file: ${tempFile}`);
+        // console.log(`Cleaned up temporary cache file: ${tempFile}`);
       }
     } catch (error) {
       console.error(`Error invalidating cache for ${cacheType}:`, error);
@@ -586,14 +586,14 @@ export class CacheService {
             // Delete the cache file if it exists
             if (cacheFile && fs.existsSync(cacheFile)) {
               fs.unlinkSync(cacheFile);
-              console.log(`Cache invalidated: ${cacheType}`);
+              // console.log(`Cache invalidated: ${cacheType}`);
             }
 
             // Clean up temp files too
             const tempFile = `${cacheFile}.tmp`;
             if (tempFile && fs.existsSync(tempFile)) {
               fs.unlinkSync(tempFile);
-              console.log(`Cleaned up temporary cache file: ${tempFile}`);
+              // console.log(`Cleaned up temporary cache file: ${tempFile}`);
             }
           } catch (error) {
             console.error(`Error invalidating ${cacheType} cache:`, error);
@@ -602,13 +602,13 @@ export class CacheService {
             this.releaseLock(cacheType);
           }
         } else {
-          console.warn(`Could not acquire lock for ${cacheType}, skipping invalidation`);
+          // console.warn(`Could not acquire lock for ${cacheType}, skipping invalidation`);
         }
       } catch (error) {
         console.error(`Error in invalidation process for ${cacheType}:`, error);
       }
     }
 
-    console.log('All caches invalidation process completed');
+    // console.log('All caches invalidation process completed');
   }
 }

@@ -90,40 +90,7 @@ export function initConsoleCommands(): void {
   // TypeScript needs a type declaration for the window object extension
   (window as any).refreshCachedData = refreshCachedData;
   (window as any).apiRefresh = apiRefresh;
-
-  // Log available commands
-  console.log(
-    '%c🛠️ Admin Console Commands',
-    'font-weight: bold; font-size: 14px; color: #0066cc;'
-  );
-  console.log(
-    '%c- refreshCachedData(entity?): Refreshes cached data via admin endpoints',
-    'color: #333; font-size: 12px;'
-  );
-  console.log(
-    '%c- apiRefresh(entity?): Refreshes cached data via direct API endpoint',
-    'color: #333; font-size: 12px;'
-  );
-  console.log(
-    '%cExamples:',
-    'font-weight: bold; color: #444; font-size: 12px;'
-  );
-  console.log(
-    '%c  refreshCachedData()          // Refresh all data via admin API',
-    'color: #666; font-family: monospace;'
-  );
-  console.log(
-    '%c  refreshCachedData("articles") // Refresh only articles via admin API',
-    'color: #666; font-family: monospace;'
-  );
-  console.log(
-    '%c  apiRefresh()                 // Refresh all data via cache API',
-    'color: #666; font-family: monospace;'
-  );
-  console.log(
-    '%c  apiRefresh("team")            // Refresh only team via cache API',
-    'color: #666; font-family: monospace;'
-  );
 }
+
 
 

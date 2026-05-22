@@ -8,10 +8,15 @@
     {
       "id": 3,
       "carousel": "main",
-      "quote": "Brown Paper Bag x Baggu"
+      "quote": "67 or 69"
     },
     {
       "id": 5,
+      "carousel": "main",
+      "quote": "Brown Paper Bag x Baggu"
+    },
+    {
+      "id": 7,
       "carousel": "main",
       "quote": "One Pumpkin spice anal bath bead please!"
     },
@@ -23,13 +28,18 @@
     {
       "id": 4,
       "carousel": "philo",
-      "quote": "Down to do hard drugs, on the fence about hinge"
+      "quote": "discussion over which number reigns supreme, 67 or 69, sparks debate in 5th grade class"
     },
     {
       "id": 6,
       "carousel": "philo",
+      "quote": "Down to do hard drugs, on the fence about hinge"
+    },
+    {
+      "id": 8,
+      "carousel": "philo",
       "quote": "Moo Deng dies in Southeast Asia earthquake. It's true!"
     }
   ],
-  "timestamp": 1758575840515
+  "timestamp": 1767312397509
 }

@@ -1,0 +1,8 @@
+<svg width="400" height="300" xmlns="http://www.w3.org/2000/svg">
+          <rect width="400" height="300" fill="#fdf2f8" />
+          <rect width="400" height="60" y="120" fill="#ec4899" fill-opacity="0.8" />
+          <text x="50%" y="155" font-family="Arial" font-size="16" text-anchor="middle" fill="#ffffff">
+            Image ID: recn9SH7...
+          </text>
+          <path d="M200 85 L230 115 L200 145 L170 115 Z" fill="#ec4899" fill-opacity="0.5" />
+        </svg>

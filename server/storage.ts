@@ -39,16 +39,18 @@ export class AirtableStorage implements IStorage {
 
   async getArticles(page: number, limit: number, search = ""): Promise<{ articles: Article[], total: number }> {
     try {
-      // Create filter formula if search term is provided
-      let filterByFormula = '';
+      // Create filter formula
+      let filterByFormula = 'Finished = TRUE()';
+      
       if (search) {
         // Search in both Name and Description fields
-        filterByFormula = `OR(SEARCH("${search.replace(/"/g, '\\"')}", {Name}), SEARCH("${search.replace(/"/g, '\\"')}", {Description}))`;
+        const searchFilter = `OR(SEARCH("${search.replace(/"/g, '\\"')}", {Name}), SEARCH("${search.replace(/"/g, '\\"')}", {Description}))`;
+        filterByFormula = `AND(${filterByFormula}, ${searchFilter})`;
       }
 
       // First get count of total records matching the search
       const countQuery = this.base('History').select({
-        filterByFormula: search ? filterByFormula : ''
+        filterByFormula
         // Remove fields parameter as 'id' is automatic in Airtable
       });
 
@@ -62,7 +64,7 @@ export class AirtableStorage implements IStorage {
           { field: 'Scheduled', direction: 'desc' },
           { field: 'Date', direction: 'desc' }
         ],
-        filterByFormula: search ? filterByFormula : ''
+        filterByFormula
       });
 
       // Get all records but manually paginate them
@@ -83,9 +85,9 @@ export class AirtableStorage implements IStorage {
 
   async getFeaturedArticles(): Promise<Article[]> {
     try {
-      // Query for featured articles - checking if featured is true as a boolean
+      // Query for featured articles - checking if featured is true and Finished is true
       const query = this.base('History').select({
-        filterByFormula: "featured = TRUE()",
+        filterByFormula: "AND(featured = TRUE(), Finished = TRUE())",
         sort: [
           { field: 'Scheduled', direction: 'desc' },
           { field: 'Date', direction: 'desc' }
@@ -104,6 +106,7 @@ export class AirtableStorage implements IStorage {
   async getRecentArticles(limit: number): Promise<Article[]> {
     try {
       const query = this.base('History').select({
+        filterByFormula: "Finished = TRUE()",
         sort: [
           { field: 'Scheduled', direction: 'desc' },
           { field: 'Date', direction: 'desc' }
@@ -137,7 +140,7 @@ export class AirtableStorage implements IStorage {
 
       // Find all articles by this author
       const query = this.base('History').select({
-        filterByFormula: `{Author} = '${teamMember.name.replace(/'/g, "\\'")}'`,
+        filterByFormula: `AND({Author} = '${teamMember.name.replace(/'/g, "\\'")}', Finished = TRUE())`,
         sort: [{ field: 'Date', direction: 'desc' }],
         maxRecords: 10
       });
@@ -252,7 +255,6 @@ export class AirtableStorage implements IStorage {
     }
 
     try {
-      console.log('Fetching quotes from Airtable...');
       const query = this.base('CarouselQuote').select();
       const records = await query.all();
 
@@ -322,10 +324,7 @@ export class AirtableStorage implements IStorage {
     );
 
     if (philosophyQuotes.length === 0) {
-      console.log('No philosophy quotes found, returning any available quote');
-
       if (quotes.length === 0) {
-        console.log('No quotes available at all');
         return {
           id: 0,
           carousel: 'default',
@@ -408,15 +407,71 @@ export class AirtableStorage implements IStorage {
     // Determine status based on Finished boolean (published/draft)
     const isFinished = record.get('Finished') === true || record.get('finished') === true;
 
+    // Handle description - if missing, use first two sentences of content
+    let description = (record.get('description') as string || record.get('Description') as string || '').trim();
+    const content = record.get('content') as string || record.get('Content') as string || record.get('Body') as string || '';
+    const contentFormat = record.get('contentFormat') as any || record.get('Content Format') as any ||
+      // If content comes from Body field, assume it's HTML
+      (record.get('Body') ? 'html' : 'plaintext');
+
+    // Helper to decode HTML entities
+    const decodeHtmlEntities = (text: string): string => {
+      const entities: Record<string, string> = {
+        '&amp;': '&',
+        '&lt;': '<',
+        '&gt;': '>',
+        '&quot;': '"',
+        '&#39;': "'",
+        '&apos;': "'",
+        '&nbsp;': ' ',
+        '&rsquo;': "'",
+        '&lsquo;': "'",
+        '&rdquo;': '"',
+        '&ldquo;': '"',
+        '&mdash;': '—',
+        '&ndash;': '–'
+      };
+      return text.replace(/&[a-zA-Z0-9#]+;/g, (match) => entities[match] || match);
+    };
+
+    if (!description && content) {
+      // Strip HTML tags if format is HTML
+      let plainText = content;
+      if (contentFormat === 'html') {
+        // Remove style and meta tags and their content first
+        plainText = plainText.replace(/<style[^>]*>[\s\S]*?<\/style>/gi, '');
+        plainText = plainText.replace(/<meta[^>]*>/gi, '');
+        
+        // Replace block-level closing tags with a space to prevent text merging
+        plainText = plainText.replace(/<\/(p|div|h[1-6]|li|tr|blockquote)>/gi, ' ');
+        // Remove HTML tags
+        plainText = plainText.replace(/<[^>]*>/g, '');
+        // Decode HTML entities
+        plainText = decodeHtmlEntities(plainText);
+        // Replace multiple spaces/newlines with single space and trim
+        plainText = plainText.replace(/\s+/g, ' ').trim();
+      }
+
+      // Match sentences ending in ., !, or ?
+      // This regex captures sentences more robustly, including those with quotes
+      const sentenceMatch = plainText.match(/.*?[.!?](?:\s|$)/g);
+      
+      if (sentenceMatch && sentenceMatch.length > 0) {
+        // Take first two sentences
+        description = sentenceMatch.slice(0, 2).join('').trim();
+      } else {
+        // Fallback if no sentence structure detected: take first 200 chars
+        description = plainText.length > 200 ? plainText.substring(0, 200) + '...' : plainText;
+      }
+    }
+
     return {
       id: record.id,
       title: record.get('Name') as string || record.get('title') as string || record.get('Title') as string || '',
-      description: record.get('description') as string || record.get('Description') as string || '',
+      description: description,
       excerpt: record.get('excerpt') as string || record.get('Excerpt') as string || undefined,
-      content: record.get('content') as string || record.get('Content') as string || record.get('Body') as string || '',
-      contentFormat: record.get('contentFormat') as any || record.get('Content Format') as any ||
-        // If content comes from Body field, assume it's HTML
-        (record.get('Body') ? 'html' : 'plaintext'),
+      content: content,
+      contentFormat: contentFormat,
       imageUrl: imageUrl,
       imageType: 'url', // Always use URL type since we're proxying
       imagePath: null, // No need for local path when using proxy
@@ -469,6 +524,17 @@ export class AirtableStorage implements IStorage {
 
     const photoSubField = record.get('PhotoSub') || record.get('photoSub') || record.get('Photo Sub');
     const photoSub = Array.isArray(photoSubField) ? photoSubField : (photoSubField ? [photoSubField] : undefined);
+
+    const memberPhotoFallbacks: Record<string, string> = {
+      recYigetjlh094xGR: '/member-photos/Maddie%20Lam.jpg',
+      recepv49p3G2oFgi5: '/member-photos/Doran%20Steinfeld.jpg',
+      recMqocpbtURIViuL: '/member-photos/Grace%20Whinnery.jpg',
+      recKvtNrK0osLf1Bs: '/member-photos/Willa%20Norvell.jpg',
+    };
+
+    if (!imageUrl && memberPhotoFallbacks[record.id]) {
+      imageUrl = memberPhotoFallbacks[record.id];
+    }
 
     return {
       id: record.id,
@@ -707,10 +773,3 @@ The suffragette movement also employed humor effectively, using satirical cartoo
 export const storage: IStorage = airtableApiKey && airtableBaseId
   ? new AirtableStorage()
   : new MemStorage();
-
-console.log('Using storage implementation:', storage instanceof AirtableStorage ? 'AirtableStorage' : 'MemStorage');
-
-if (storage instanceof MemStorage) {
-  console.log('Note: Using in-memory storage with sample data.');
-  console.log('To use Airtable, ensure AIRTABLE_API_KEY and AIRTABLE_BASE_ID are set in your .env file.');
-}
