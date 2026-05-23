@@ -526,9 +526,20 @@ export class AirtableStorage implements IStorage {
     const photoSub = Array.isArray(photoSubField) ? photoSubField : (photoSubField ? [photoSubField] : undefined);
 
     const memberPhotoFallbacks: Record<string, string> = {
-      recYigetjlh094xGR: '/member-photos/Maddie%20Lam.jpg',
+      recZtkL9mFlnEVuka: '/member-photos/Adrianna%20Egan.jpg',
+      recqzeh29YuQiTSz3: '/member-photos/Adrianna%20Uykan.jpg',
+      recBzpFyNxvxVDPFv: '/member-photos/Aidan%20Fairchild-Sandoval.jpeg',
+      recalhUBu9vDRaZM5: '/member-photos/Alex%20Peplinski.jpg',
+      recn9SH70SlhqaKPt: '/member-photos/Allison%20Groves.jpg',
+      recI5LBEnOBuZZUJ1: '/member-photos/Ava%20Carrel.jpg',
       recepv49p3G2oFgi5: '/member-photos/Doran%20Steinfeld.jpg',
+      recHxXPZOKZWkR0u6: '/member-photos/Ellie%20Tiwari.jpg',
       recMqocpbtURIViuL: '/member-photos/Grace%20Whinnery.jpg',
+      recIFn7416d22TIyp: '/member-photos/Lizzy%20Morearty.jpg',
+      recdzQhTdgxNMTV4M: '/member-photos/Lucy%20Wang.jpg',
+      recYigetjlh094xGR: '/member-photos/Maddie%20Lam.jpg',
+      recuDmwmUJD3DYr8k: '/member-photos/Molly%20Doherty.jpg',
+      rec2sLMvWLj7aRSCv: '/member-photos/Vie%20Sun.jpg',
       recKvtNrK0osLf1Bs: '/member-photos/Willa%20Norvell.jpg',
     };
 
