@@ -35,7 +35,7 @@ A modern full-stack web application serving feminist humor content, built with R
    ```bash
    railway run npm run dev
    ```
-   The app will start on `http://localhost:3000` (auto-fallbacks to `3001`, `3002`, etc. if ports are busy). HTTPS for Facebook runs on `https://localhost:3001`.
+   The app will start on `http://localhost:5000` (auto-fallbacks to `5001`, `5002`, etc. if the port is busy).
 ## 📊 Website Architecture
 
 For a detailed understanding of how the website works, see the [Website Logic Flow Diagram](WEBSITE_FLOW_DIAGRAM.md).
@@ -102,7 +102,18 @@ AIRTABLE_BASE_ID=your_airtable_base_id_here
 NODE_ENV=development  # or 'production'
 PORT=5000            # Server port (default: 5000, auto-increments if busy)
 HOST=0.0.0.0         # Server host (default: 0.0.0.0)
+
+# Required in production - see .env.example for the full list
+ADMIN_TOKEN=         # Gates POST /api/admin/refresh and /api/cache/refresh
+WEBHOOK_SECRET=      # Gates POST /api/webhooks/*
 ```
+
+See [`.env.example`](.env.example) for every supported variable, including the
+optional `IMAGE_HOST_ALLOWLIST` and `LOG_REQUESTS`.
+
+> **Note:** `ADMIN_TOKEN` and `WEBHOOK_SECRET` are optional in development (the
+> endpoints stay open) but **required in production** - those routes return 503
+> when unset, because each call forces a full Airtable re-fetch.
 
 ### Development vs Production
 
@@ -143,12 +154,16 @@ export const storage: IStorage = process.env.AIRTABLE_API_KEY && process.env.AIR
 
 ## 🧪 Testing
 
-The project includes comprehensive unit tests covering:
+Unit tests currently cover:
 
-- **Storage layer**: Data operations and caching
-- **API routes**: Backend endpoint functionality  
-- **React components**: UI component behavior
-- **Services**: Business logic and utilities
+- **Caching contract**: `CachedStorage` pagination and cache-completeness rules
+- **Refresh scheduling**: business-hours timer wiring and shutdown
+- **Security boundaries**: admin/webhook auth, image-proxy allowlist, Airtable
+  formula escaping, article HTML sanitization
+- **Utilities and one component**: formatting helpers and the site header
+
+Not yet covered: the Airtable storage layer, `CacheService` file I/O, and the
+HTTP routes end to end. `supertest` is installed for the latter.
 
 ### Running Tests
 
@@ -159,9 +174,8 @@ npm test
 # Run tests in watch mode (for development)
 npm run test:watch
 
-# Generate coverage report (requires @vitest/coverage-v8)
-# npm install --save-dev @vitest/coverage-v8
-# npm run test:coverage
+# Generate a coverage report
+npm run test:coverage
 ```
 
 ## 🚀 Deployment
@@ -218,7 +232,7 @@ npm start
 
 ## 📄 License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the MIT License.
 
 ---
 
