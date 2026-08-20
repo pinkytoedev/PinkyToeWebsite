@@ -7,6 +7,28 @@ import { config } from "./config";
 const airtableApiKey = config.airtable.apiKey;
 const airtableBaseId = config.airtable.baseId;
 
+// Longest search term we'll forward to Airtable. Anything beyond this is noise
+// and just inflates the formula we send.
+const MAX_SEARCH_LENGTH = 100;
+
+/**
+ * Escape a value for interpolation into an Airtable formula string literal.
+ *
+ * The backslash must be escaped first, otherwise a trailing backslash in the
+ * input escapes our own closing quote and lets the caller continue the formula.
+ * Control characters are stripped since they can't appear in a valid literal.
+ */
+export function escapeAirtableString(value: string, quote: '"' | "'" = '"'): string {
+  const escaped = value
+    .slice(0, MAX_SEARCH_LENGTH)
+    .replace(/[\x00-\x1F\x7F]/g, '')
+    .replace(/\\/g, '\\\\');
+
+  return quote === '"'
+    ? escaped.replace(/"/g, '\\"')
+    : escaped.replace(/'/g, "\\'");
+}
+
 export interface IStorage {
   // Article methods
   getArticles(page: number, limit: number, search?: string): Promise<{ articles: Article[], total: number }>;
@@ -44,21 +66,14 @@ export class AirtableStorage implements IStorage {
       
       if (search) {
         // Search in both Name and Description fields
-        const searchFilter = `OR(SEARCH("${search.replace(/"/g, '\\"')}", {Name}), SEARCH("${search.replace(/"/g, '\\"')}", {Description}))`;
+        const term = escapeAirtableString(search);
+        const searchFilter = `OR(SEARCH("${term}", {Name}), SEARCH("${term}", {Description}))`;
         filterByFormula = `AND(${filterByFormula}, ${searchFilter})`;
       }
 
-      // First get count of total records matching the search
-      const countQuery = this.base('History').select({
-        filterByFormula
-        // Remove fields parameter as 'id' is automatic in Airtable
-      });
-
-      const totalRecords = await countQuery.all();
-      const total = totalRecords.length;
-
-      // Then fetch the specific page of data - we need to fetch ALL records and do pagination manually
-      // because Airtable offset doesn't work with arbitrary offset values
+      // Airtable's offset can't be used with arbitrary page numbers, so we fetch
+      // the matching set once and paginate in memory. The same result set gives
+      // us the total, so there's no need for a second counting scan.
       const query = this.base('History').select({
         sort: [
           { field: 'Scheduled', direction: 'desc' },
@@ -67,8 +82,8 @@ export class AirtableStorage implements IStorage {
         filterByFormula
       });
 
-      // Get all records but manually paginate them
       const allRecords = await query.all();
+      const total = allRecords.length;
       const start = (page - 1) * limit;
       const end = Math.min(start + limit, allRecords.length);
 
@@ -140,7 +155,7 @@ export class AirtableStorage implements IStorage {
 
       // Find all articles by this author
       const query = this.base('History').select({
-        filterByFormula: `AND({Author} = '${teamMember.name.replace(/'/g, "\\'")}', Finished = TRUE())`,
+        filterByFormula: `AND({Author} = '${escapeAirtableString(teamMember.name, "'")}', Finished = TRUE())`,
         sort: [{ field: 'Date', direction: 'desc' }],
         maxRecords: 10
       });

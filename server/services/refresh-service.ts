@@ -35,6 +35,9 @@ export class RefreshService {
   // Minimum time between refreshes (in milliseconds) to prevent overloading Airtable API
   private static readonly MIN_REFRESH_INTERVAL = 15 * 60 * 1000; // 15 minutes (reduced for better publication responsiveness)
 
+  // How often to check whether we've crossed a business-hours boundary
+  private static readonly SCHEDULE_MONITOR_INTERVAL = 15 * 60 * 1000; // 15 minutes
+
   /**
    * Start all refresh schedules with publication-aware timing
    */
@@ -61,7 +64,7 @@ export class RefreshService {
     // Check every 15 minutes if we need to adjust intervals
     const scheduleMonitor = setInterval(() => {
       this.checkAndUpdateScheduling();
-    }, 15 * 60 * 1000); // 15 minutes
+    }, this.SCHEDULE_MONITOR_INTERVAL);
 
     refreshTimers.push(scheduleMonitor);
   }
@@ -72,6 +75,10 @@ export class RefreshService {
   private static scheduleNextRefreshCycle(): void {
     // Clear existing timers first
     this.clearContentRefreshTimers();
+
+    // Remember which schedule these timers were built for, so the monitor can
+    // tell a real business-hours transition apart from a routine check-in.
+    this.scheduledForBusinessHours = PublicationScheduler.isBusinessHours();
 
     // Get current intervals based on business hours
     const recentArticlesInterval = PublicationScheduler.getRefreshInterval('critical'); // Recent articles are critical
@@ -96,6 +103,9 @@ export class RefreshService {
    */
   private static contentRefreshTimers: NodeJS.Timeout[] = [];
 
+  /** Business-hours state the current content timers were scheduled for. */
+  private static scheduledForBusinessHours: boolean | null = null;
+
   private static clearContentRefreshTimers(): void {
     this.contentRefreshTimers.forEach(timer => clearInterval(timer));
     this.contentRefreshTimers = [];
@@ -103,9 +113,19 @@ export class RefreshService {
 
   /**
    * Check if we need to update scheduling (e.g., transition from business to off-hours)
+   *
+   * Only reschedules on an actual business-hours transition. Rescheduling on every
+   * check would clear and recreate the content timers every SCHEDULE_MONITOR_INTERVAL,
+   * and since the shortest content interval (30 min) is longer than that, no content
+   * timer would ever survive long enough to fire.
    */
   private static checkAndUpdateScheduling(): void {
-    // Always reschedule to ensure we're using current business hours status
+    const isBusinessHours = PublicationScheduler.isBusinessHours();
+
+    if (isBusinessHours === this.scheduledForBusinessHours) {
+      return; // No transition - leave the running timers alone.
+    }
+
     this.scheduleNextRefreshCycle();
   }
 
@@ -371,6 +391,17 @@ export class RefreshService {
   /**
    * Refresh all data at once
    */
+  /**
+   * Invalidate and re-fetch a single content entity.
+   *
+   * Shared by the admin router and the legacy /api/cache/refresh endpoint so
+   * the entity list and the invalidate-then-refresh ordering live in one place.
+   */
+  static async invalidateAndRefresh(entity: RefreshableEntity): Promise<void> {
+    CacheService.invalidateCache(entity);
+    await REFRESHERS[entity]();
+  }
+
   static async refreshAll(): Promise<void> {
     // Reset all timestamps to ensure refreshes run
     const now = Date.now();
@@ -404,7 +435,9 @@ export class RefreshService {
 
       this.lastRefreshTime.articles = now;
 
-      const result = await storage.getArticles(1, 100); // Get a large batch
+      // Fetch the complete set. A partial batch would be cached as if it were
+      // the whole collection, leaving every page past the batch empty.
+      const result = await storage.getArticles(1, Number.MAX_SAFE_INTEGER);
       CacheService.cacheArticles(result);
 
       // Pre-cache images from articles to handle Airtable's expiring URLs
@@ -503,3 +536,28 @@ export class RefreshService {
     }
   }
 }
+
+/** Content entities that can be individually invalidated and re-fetched. */
+export const REFRESHABLE_ENTITIES = [
+  'articles',
+  'featuredArticles',
+  'recentArticles',
+  'team',
+  'quotes',
+] as const;
+
+export type RefreshableEntity = typeof REFRESHABLE_ENTITIES[number];
+
+/** Narrowing guard for caller-supplied entity names. */
+export function isRefreshableEntity(value: unknown): value is RefreshableEntity {
+  return typeof value === 'string'
+    && (REFRESHABLE_ENTITIES as readonly string[]).includes(value);
+}
+
+const REFRESHERS: Record<RefreshableEntity, () => Promise<void>> = {
+  articles: () => RefreshService.refreshArticles(),
+  featuredArticles: () => RefreshService.refreshFeaturedArticles(),
+  recentArticles: () => RefreshService.refreshRecentArticles(),
+  team: () => RefreshService.refreshTeam(),
+  quotes: () => RefreshService.refreshQuotes(),
+};
