@@ -140,6 +140,16 @@ export class AirtableStorage implements IStorage {
   async getArticleById(id: string): Promise<Article | undefined> {
     try {
       const record = await this.base('History').find(id);
+
+      // Every listing query filters on `Finished`, but a direct lookup by ID
+      // did not - so unpublished drafts were served in full to anyone with the
+      // record ID. That is not a theoretical hole: the Teams table's AuthorSub
+      // and PhotoSub link fields include drafts, and team profile pages fetch
+      // each linked article by ID, so drafts rendered on the public site.
+      if (record.get('Finished') !== true) {
+        return undefined;
+      }
+
       return this.mapAirtableRecordToArticle(record);
     } catch (error) {
       console.error(`Error fetching article ${id} from Airtable:`, error);
