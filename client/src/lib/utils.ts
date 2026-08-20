@@ -26,6 +26,19 @@ export function truncateText(text: string, maxLength: number): string {
   return text.slice(0, maxLength) + '...';
 }
 
+/**
+ * Whether the visitor has asked the OS to reduce motion.
+ *
+ * Auto-advancing carousels and infinite marquees are a vestibular-disorder
+ * trigger and a WCAG 2.2.2 / 2.3.3 concern, so callers should skip the
+ * animation entirely when this is true.
+ */
+export function prefersReducedMotion(): boolean {
+  if (typeof window === 'undefined' || !window.matchMedia) return false;
+
+  return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+}
+
 export function getRandomItemFromArray<T>(array: T[]): T | undefined {
   if (!array || array.length === 0) return undefined;
   const randomIndex = Math.floor(Math.random() * array.length);

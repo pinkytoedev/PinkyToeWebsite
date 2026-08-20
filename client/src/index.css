@@ -144,12 +144,35 @@
     border border-pink-200/30 overflow-hidden;
   }
 
+  /*
+   * Served from client/public/fonts. The previous src was
+   * 'client/src/reality-stone-personal-use.regular.ttf', which resolved
+   * relative to this file (client/src/client/src/...) and 404'd, and used the
+   * invalid format token "ttf" instead of "truetype" - so the face never
+   * loaded and every heading silently fell back.
+   */
   @font-face {
     font-family: RealityStone;
     font-style: normal;
     font-weight: 200 700;
     font-display: swap;
-    src: url('client/src/reality-stone-personal-use.regular.ttf') format("ttf")
+    src: url('/fonts/reality-stone.ttf') format('truetype');
+  }
+
+  /*
+   * Respect the OS "reduce motion" setting. The site otherwise runs an
+   * infinite marquee, floating logos and an auto-advancing carousel
+   * unconditionally (WCAG 2.3.3).
+   */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
   }
 
 }

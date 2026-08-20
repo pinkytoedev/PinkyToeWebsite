@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import React, { useState, useEffect, useRef } from "react";
+import { useEffect, useRef } from "react";
 import { Layout } from "@/components/layout/layout";
 import { API_ROUTES } from "@/lib/constants";
 import { FeaturedArticleCard } from "@/components/articles/featured-article-card";
@@ -9,6 +9,7 @@ import { Link } from "wouter";
 import { CarouselQuote } from "@shared/schema";
 import { getAssetPath } from "@/lib/config";
 import { fetchFeaturedArticles, fetchRecentArticles, fetchQuotes } from "@/lib/api";
+import { prefersReducedMotion } from "@/lib/utils";
 import {
   Carousel,
   CarouselContent,
@@ -24,8 +25,10 @@ declare global {
   }
 }
 
+/** How long each quote stays on screen before the carousel advances. */
+const QUOTE_ROTATION_MS = 5000;
+
 export default function Home() {
-  const [autoPlayInterval, setAutoPlayInterval] = useState<NodeJS.Timeout | null>(null);
   const carouselRef = useRef<{ scrollNext: () => void } | null>(null);
 
   const { data: featuredArticles = [], isLoading: featuredLoading } = useQuery<any[]>({
@@ -58,25 +61,23 @@ export default function Home() {
     }
   }, [quotes.length > 0]);
 
-  // Set up auto-play for the carousel
+  // Set up auto-play for the carousel.
+  //
+  // The cleanup must close over the interval created by *this* effect run.
+  // Storing it in state and clearing that instead always read the previous
+  // render's value (null on the first run), so the timer was never cleared and
+  // kept calling scrollNext() on an unmounted carousel.
   useEffect(() => {
-    if (philoQuotes.length > 0) {
-      // Start auto-play
-      const interval = setInterval(() => {
-        if (carouselRef.current) {
-          carouselRef.current.scrollNext();
-        }
-      }, 5000); // Change slide every 5 seconds
+    if (philoQuotes.length === 0) return;
 
-      setAutoPlayInterval(interval);
+    // Auto-advancing content is a WCAG 2.2.2 concern; honour the OS setting.
+    if (prefersReducedMotion()) return;
 
-      // Clean up interval on unmount
-      return () => {
-        if (autoPlayInterval) {
-          clearInterval(autoPlayInterval);
-        }
-      };
-    }
+    const interval = setInterval(() => {
+      carouselRef.current?.scrollNext();
+    }, QUOTE_ROTATION_MS);
+
+    return () => clearInterval(interval);
   }, [philoQuotes.length]); // Only depend on the quotes length, not the ref
 
   return (
