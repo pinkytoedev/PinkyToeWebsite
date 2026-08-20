@@ -7,7 +7,8 @@ import { formatDate } from "@/lib/utils";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
-import { getImageUrl, getPhotoUrl } from "@/lib/image-helper";
+import { getImageUrl } from "@/lib/image-helper";
+import { sanitizeArticleHtml } from "@/lib/sanitize";
 
 import { useState, useEffect } from "react";
 import { fetchTeamMembers, fetchArticleById } from "@/lib/api";
@@ -209,7 +210,7 @@ export default function ArticleDetail() {
 
               <div className="prose prose-lg max-w-none prose-headings:text-primary prose-a:text-primary hover:prose-a:text-pinky-dark prose-hr:border-gray-300">
                 {article.contentFormat === "html" ? (
-                  <div dangerouslySetInnerHTML={{ __html: article.content }} />
+                  <div dangerouslySetInnerHTML={{ __html: sanitizeArticleHtml(article.content) }} />
                 ) : (
                   <p className="whitespace-pre-line">{article.content}</p>
                 )}

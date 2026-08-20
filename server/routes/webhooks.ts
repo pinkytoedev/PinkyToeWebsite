@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import { RefreshService } from '../services/refresh-service';
 import { CacheService } from '../services/cache-service';
+import { requireWebhookSecret } from '../middleware/auth';
 
 export const webhooksRouter = Router();
 
@@ -38,20 +39,10 @@ export const webhooksRouter = Router();
  *   "timestamp": "2025-10-10T12:00:00Z"
  * }
  */
-webhooksRouter.post('/article-published', async (req, res) => {
+webhooksRouter.post('/article-published', requireWebhookSecret, async (req, res) => {
     const requestTimestamp = new Date().toISOString();
 
     try {
-        // Optional: Validate webhook secret if provided in environment variables
-        const expectedSecret = process.env.WEBHOOK_SECRET;
-        if (expectedSecret && req.body.webhookSecret !== expectedSecret) {
-            return res.status(401).json({
-                success: false,
-                message: 'Unauthorized: Invalid webhook secret',
-                timestamp: requestTimestamp
-            });
-        }
-
         // Extract optional metadata from the webhook payload
         const { articleId, event, timestamp } = req.body;
 
@@ -102,20 +93,10 @@ webhooksRouter.post('/article-published', async (req, res) => {
  * 
  * This endpoint can be used when team member information is updated
  */
-webhooksRouter.post('/team-updated', async (req, res) => {
+webhooksRouter.post('/team-updated', requireWebhookSecret, async (req, res) => {
     const requestTimestamp = new Date().toISOString();
 
     try {
-        // Optional: Validate webhook secret
-        const expectedSecret = process.env.WEBHOOK_SECRET;
-        if (expectedSecret && req.body.webhookSecret !== expectedSecret) {
-            return res.status(401).json({
-                success: false,
-                message: 'Unauthorized: Invalid webhook secret',
-                timestamp: requestTimestamp
-            });
-        }
-
         // Invalidate team cache
         CacheService.invalidateCache('team');
 

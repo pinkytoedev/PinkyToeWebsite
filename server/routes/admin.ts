@@ -1,8 +1,16 @@
 import { Router, Request, Response } from 'express';
 import { CacheService } from '../services/cache-service';
-import { RefreshService } from '../services/refresh-service';
+import {
+  RefreshService,
+  REFRESHABLE_ENTITIES,
+  isRefreshableEntity,
+} from '../services/refresh-service';
+import { requireAdmin } from '../middleware/auth';
 
 export const adminRouter = Router();
+
+// Every admin route invalidates caches and forces Airtable traffic.
+adminRouter.use(requireAdmin);
 
 /**
  * Refresh all cached data
@@ -41,46 +49,17 @@ adminRouter.post('/refresh/:entity', async (req: Request, res: Response) => {
   try {
     const { entity } = req.params;
     console.log(`Admin API: Refreshing ${entity} cached data`);
-    
-    // Validate entity type
-    const validEntities = ['articles', 'featuredArticles', 'recentArticles', 'team', 'quotes'];
-    if (!validEntities.includes(entity)) {
-      return res.status(400).json({ 
-        success: false, 
-        message: `Invalid entity type. Valid options are: ${validEntities.join(', ')}`
+
+    if (!isRefreshableEntity(entity)) {
+      return res.status(400).json({
+        success: false,
+        message: `Invalid entity type. Valid options are: ${REFRESHABLE_ENTITIES.join(', ')}`
       });
     }
-    
-    // Handle the specific entity refresh
-    switch (entity) {
-      case 'articles':
-        // Invalidate the specific cache and refresh the data
-        CacheService.invalidateCache('articles');
-        await RefreshService.refreshArticles();
-        break;
-        
-      case 'featuredArticles':
-        CacheService.invalidateCache('featuredArticles');
-        await RefreshService.refreshFeaturedArticles();
-        break;
-        
-      case 'recentArticles':
-        CacheService.invalidateCache('recentArticles');
-        await RefreshService.refreshRecentArticles();
-        break;
-        
-      case 'team':
-        CacheService.invalidateCache('team');
-        await RefreshService.refreshTeam();
-        break;
-        
-      case 'quotes':
-        CacheService.invalidateCache('quotes');
-        await RefreshService.refreshQuotes();
-        break;
-    }
-    
-    res.json({ 
+
+    await RefreshService.invalidateAndRefresh(entity);
+
+    res.json({
       success: true, 
       message: `${entity} cache has been invalidated and refreshed`
     });

@@ -7,6 +7,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { X } from "lucide-react";
 import { getImageUrl, getPhotoUrl } from "@/lib/image-helper";
 import { fetchTeamMembers, fetchArticleById } from "@/lib/api";
+import { sanitizeArticleHtml } from "@/lib/sanitize";
 import { useLocation, Link } from "wouter";
 
 interface ArticleDetailProps {
@@ -251,7 +252,7 @@ export function ArticleDetail({ articleId, onClose }: ArticleDetailProps) {
 
           <div className="prose prose-lg max-w-none prose-headings:text-primary prose-a:text-primary hover:prose-a:text-pinky-dark prose-hr:border-gray-300">
             {article.contentFormat === "html" ? (
-              <div dangerouslySetInnerHTML={{ __html: article.content }} />
+              <div dangerouslySetInnerHTML={{ __html: sanitizeArticleHtml(article.content) }} />
             ) : (
               <p className="whitespace-pre-line">{article.content}</p>
             )}
