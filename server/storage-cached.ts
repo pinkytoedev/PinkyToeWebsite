@@ -196,6 +196,14 @@ export class CachedStorage implements IStorage {
     }
   }
 
+  /**
+   * Always goes to origin: embargoed articles are filtered out of the cache by
+   * definition, so the cache can't say when the next one is due.
+   */
+  async getNextReleaseTime(): Promise<Date | null> {
+    return this.originalStorage.getNextReleaseTime();
+  }
+
   async getArticleById(id: string): Promise<Article | undefined> {
     try {
       // Try to find in the cached articles first

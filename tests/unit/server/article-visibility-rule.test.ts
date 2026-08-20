@@ -1,34 +1,48 @@
 import { describe, it, expect } from 'vitest';
-import { isReleased, isPubliclyVisible } from '@server/services/article-visibility';
+import {
+  isReleased,
+  isPubliclyVisible,
+  nextReleaseTime,
+} from '@server/services/article-visibility';
 
 /**
  * Publication rule:
- *   Finished off                   -> never visible, whatever the date
- *   Finished on, day reached/past  -> visible
- *   Finished on, day still ahead   -> held until that day
- *   Finished on, no date           -> visible
+ *   Finished off                     -> never visible, whatever the date
+ *   Finished on, stored time passed  -> visible
+ *   Finished on, stored time ahead   -> held until that moment
+ *   Finished on, no date             -> visible
  *
- * Days are reckoned in America/New_York, so an article dated the 25th appears
- * from the start of the 25th in New York.
+ * The stored timestamp is the release instant, to the minute.
  */
 
-/** 2026-08-20, 12:00 ET (16:00 UTC, EDT). */
+/** 2026-08-20, 12:00 ET (16:00 UTC). */
 const NOW = new Date('2026-08-20T16:00:00.000Z');
 
 describe('isReleased', () => {
-  it('releases a date in the past', () => {
-    expect(isReleased('2026-08-19T12:00:00.000Z', NOW)).toBe(true);
+  it('releases a time in the past', () => {
+    expect(isReleased('2026-08-20T15:59:00.000Z', NOW)).toBe(true);
   });
 
-  it('holds a date in the future', () => {
-    expect(isReleased('2026-08-21T12:00:00.000Z', NOW)).toBe(false);
+  it('holds a time in the future', () => {
+    expect(isReleased('2026-08-20T16:01:00.000Z', NOW)).toBe(false);
   });
 
-  it('releases anything scheduled for today, whatever the clock time', () => {
-    // Same ET day, later in the day than "now" - the day has arrived, so it
-    // publishes. This is the day-granularity rule, not a timestamp compare.
-    expect(isReleased('2026-08-20T23:30:00.000Z', NOW)).toBe(true);
-    expect(isReleased('2026-08-20T04:00:00.000Z', NOW)).toBe(true);
+  it('releases at exactly the stored instant', () => {
+    // "At or past" the stored time.
+    expect(isReleased('2026-08-20T16:00:00.000Z', NOW)).toBe(true);
+  });
+
+  it('holds later the same day rather than releasing at midnight', () => {
+    // The distinguishing case from day-granularity: same calendar day, but
+    // the stored time has not arrived, so it stays held.
+    expect(isReleased('2026-08-20T20:00:00.000Z', NOW)).toBe(false);
+  });
+
+  it('is precise to the minute', () => {
+    const releaseAt = '2026-08-25T12:00:00.000Z';
+
+    expect(isReleased(releaseAt, new Date('2026-08-25T11:59:00.000Z'))).toBe(false);
+    expect(isReleased(releaseAt, new Date('2026-08-25T12:00:00.000Z'))).toBe(true);
   });
 
   it('treats a missing date as no embargo', () => {
@@ -45,42 +59,16 @@ describe('isReleased', () => {
     expect(isReleased(new Date('2026-08-21T12:00:00.000Z'), NOW)).toBe(false);
     expect(isReleased(new Date('2026-08-19T12:00:00.000Z'), NOW)).toBe(true);
   });
-
-  describe('day boundaries in the newsroom timezone', () => {
-    it('holds until midnight New York, not midnight UTC', () => {
-      // 2026-08-21T02:00Z is already the 21st in UTC but still 22:00 on the
-      // 20th in New York, so an article dated the 21st must stay held.
-      const lateOnThe20th = new Date('2026-08-21T02:00:00.000Z');
-
-      expect(isReleased('2026-08-21T12:00:00.000Z', lateOnThe20th)).toBe(false);
-    });
-
-    it('releases at the first moment of the scheduled day in New York', () => {
-      // 04:00Z is 00:00 EDT on the 21st.
-      const midnightET = new Date('2026-08-21T04:00:00.000Z');
-
-      expect(isReleased('2026-08-21T12:00:00.000Z', midnightET)).toBe(true);
-    });
-
-    it('handles the winter offset too', () => {
-      // In January New York is EST (UTC-5), so midnight is 05:00Z.
-      const justBefore = new Date('2026-01-15T04:59:00.000Z');
-      const justAfter = new Date('2026-01-15T05:01:00.000Z');
-
-      expect(isReleased('2026-01-15T12:00:00.000Z', justBefore)).toBe(false);
-      expect(isReleased('2026-01-15T12:00:00.000Z', justAfter)).toBe(true);
-    });
-  });
 });
 
 describe('isPubliclyVisible', () => {
-  it('publishes a finished article whose day has arrived', () => {
+  it('publishes a finished article whose time has arrived', () => {
     expect(isPubliclyVisible({ finished: true, scheduled: '2026-08-19T12:00:00.000Z' }, NOW))
       .toBe(true);
   });
 
-  it('holds a finished article scheduled for a later day', () => {
-    expect(isPubliclyVisible({ finished: true, scheduled: '2026-08-25T12:00:00.000Z' }, NOW))
+  it('holds a finished article scheduled for later', () => {
+    expect(isPubliclyVisible({ finished: true, scheduled: '2026-08-20T18:00:00.000Z' }, NOW))
       .toBe(false);
   });
 
@@ -103,11 +91,50 @@ describe('isPubliclyVisible', () => {
     }
   });
 
-  it('goes live on the scheduled day without anyone touching the record', () => {
+  it('goes live at its stored time without anyone touching the record', () => {
     const article = { finished: true, scheduled: '2026-08-25T12:00:00.000Z' };
 
-    expect(isPubliclyVisible(article, new Date('2026-08-24T23:00:00.000Z'))).toBe(false);
-    // 04:00Z on the 25th = midnight ET on the 25th.
-    expect(isPubliclyVisible(article, new Date('2026-08-25T04:00:00.000Z'))).toBe(true);
+    expect(isPubliclyVisible(article, new Date('2026-08-25T11:59:59.000Z'))).toBe(false);
+    expect(isPubliclyVisible(article, new Date('2026-08-25T12:00:00.000Z'))).toBe(true);
+  });
+});
+
+/** Stand-in for an Airtable record. */
+const rec = (fields: Record<string, unknown>) => ({ get: (f: string) => fields[f] });
+
+describe('nextReleaseTime', () => {
+  it('returns the soonest pending release', () => {
+    const records = [
+      rec({ Finished: true, Scheduled: '2026-08-27T12:00:00.000Z' }),
+      rec({ Finished: true, Scheduled: '2026-08-22T09:00:00.000Z' }),
+      rec({ Finished: true, Scheduled: '2026-08-25T12:00:00.000Z' }),
+    ];
+
+    expect(nextReleaseTime(records, NOW)?.toISOString()).toBe('2026-08-22T09:00:00.000Z');
+  });
+
+  it('ignores anything already released', () => {
+    const records = [
+      rec({ Finished: true, Scheduled: '2026-08-01T12:00:00.000Z' }),
+      rec({ Finished: true, Scheduled: '2026-08-22T09:00:00.000Z' }),
+    ];
+
+    expect(nextReleaseTime(records, NOW)?.toISOString()).toBe('2026-08-22T09:00:00.000Z');
+  });
+
+  it('ignores drafts, whose date can never publish them', () => {
+    const records = [
+      rec({ Finished: false, Scheduled: '2026-08-21T09:00:00.000Z' }),
+      rec({ Finished: true, Scheduled: '2026-08-25T12:00:00.000Z' }),
+    ];
+
+    expect(nextReleaseTime(records, NOW)?.toISOString()).toBe('2026-08-25T12:00:00.000Z');
+  });
+
+  it('returns null when nothing is pending', () => {
+    expect(nextReleaseTime([rec({ Finished: true, Scheduled: '2026-01-01T00:00:00.000Z' })], NOW))
+      .toBeNull();
+    expect(nextReleaseTime([rec({ Finished: true, Scheduled: null })], NOW)).toBeNull();
+    expect(nextReleaseTime([], NOW)).toBeNull();
   });
 });

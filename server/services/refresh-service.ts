@@ -38,6 +38,13 @@ export class RefreshService {
   // How often to check whether we've crossed a business-hours boundary
   private static readonly SCHEDULE_MONITOR_INTERVAL = 15 * 60 * 1000; // 15 minutes
 
+  // Only arm a release timer for something due within this window; anything
+  // further out gets re-armed by a later refresh, closer to the time.
+  private static readonly RELEASE_SCHEDULING_HORIZON = 25 * 60 * 60 * 1000; // 25 hours
+
+  // Fire fractionally after the release instant, never before it.
+  private static readonly RELEASE_TIMER_CUSHION = 2 * 1000; // 2 seconds
+
   /**
    * Start all refresh schedules with publication-aware timing
    */
@@ -164,6 +171,90 @@ export class RefreshService {
   }
 
   /**
+   * Arm a one-shot timer for the next scheduled article's release moment.
+   *
+   * The periodic tiers refresh every 30 minutes to 6 hours, so on their own an
+   * article set for 08:00 could sit invisible for hours past its time. This
+   * fires at the moment itself and republishes the article views.
+   *
+   * Called after every article refresh, so newly scheduled work is picked up
+   * on the next cycle (or immediately, via the publication webhook).
+   */
+  static async scheduleNextRelease(): Promise<void> {
+    this.clearReleaseTimer();
+
+    let releaseAt: Date | null = null;
+    try {
+      releaseAt = await storage.getNextReleaseTime();
+    } catch (error) {
+      console.error('Could not determine next scheduled release:', error);
+      return;
+    }
+
+    if (!releaseAt) {
+      return; // Nothing embargoed.
+    }
+
+    const delay = releaseAt.getTime() - Date.now();
+
+    // Beyond the horizon the periodic refresh will re-arm this closer to the
+    // time; setTimeout also can't represent delays past ~24.8 days.
+    if (delay > this.RELEASE_SCHEDULING_HORIZON) {
+      return;
+    }
+
+    // A release that is already due (or arrives while we're arming) still needs
+    // a positive delay, and a small cushion avoids firing a hair early and
+    // filtering the article straight back out.
+    const timerDelay = Math.max(delay, 0) + this.RELEASE_TIMER_CUSHION;
+
+    console.log(
+      `Next scheduled release at ${releaseAt.toLocaleString('en-US', {
+        timeZone: PublicationScheduler.getTimezone()
+      })} (in ${Math.round(timerDelay / 1000)}s)`
+    );
+
+    this.releaseTimer = setTimeout(() => {
+      this.publishScheduledRelease().catch(error => {
+        console.error('Scheduled release refresh failed:', error);
+      });
+    }, timerDelay);
+  }
+
+  /**
+   * Refresh the article views at a release boundary, then look for the next one.
+   *
+   * Bypasses MIN_REFRESH_INTERVAL deliberately: the whole point is that the
+   * content changed at a known instant, so the throttle would defeat it.
+   */
+  private static async publishScheduledRelease(): Promise<void> {
+    console.log('Scheduled release reached, refreshing article caches');
+
+    this.lastRefreshTime.articles = 0;
+    this.lastRefreshTime.featuredArticles = 0;
+    this.lastRefreshTime.recentArticles = 0;
+
+    CacheService.invalidateCache('articles');
+    CacheService.invalidateCache('featuredArticles');
+    CacheService.invalidateCache('recentArticles');
+
+    await this.refreshRecentArticles();
+    await this.refreshFeaturedArticles();
+    await this.refreshArticles();
+
+    // refreshArticles re-arms the timer for whatever is next in the queue.
+  }
+
+  private static releaseTimer: NodeJS.Timeout | null = null;
+
+  private static clearReleaseTimer(): void {
+    if (this.releaseTimer) {
+      clearTimeout(this.releaseTimer);
+      this.releaseTimer = null;
+    }
+  }
+
+  /**
    * Stop all refresh schedules
    */
   static stopRefreshSchedules(): void {
@@ -171,6 +262,7 @@ export class RefreshService {
     refreshTimers.forEach(timer => clearInterval(timer));
     refreshTimers = [];
     this.clearContentRefreshTimers();
+    this.clearReleaseTimer();
     // console.log('Publication-aware refresh schedules stopped');
   }
 
@@ -439,6 +531,10 @@ export class RefreshService {
       // the whole collection, leaving every page past the batch empty.
       const result = await storage.getArticles(1, Number.MAX_SAFE_INTEGER);
       CacheService.cacheArticles(result);
+
+      // The set we just cached excludes anything still embargoed, so this is
+      // the point to (re-)arm the timer for whichever release is next.
+      await this.scheduleNextRelease();
 
       // Pre-cache images from articles to handle Airtable's expiring URLs
       await this.preCacheArticleImages(result.articles);

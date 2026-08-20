@@ -5,6 +5,7 @@ import { config } from "./config";
 import {
   filterPubliclyVisible,
   isPubliclyVisible,
+  nextReleaseTime,
   publicationFieldsOf,
 } from "./services/article-visibility";
 
@@ -21,6 +22,11 @@ const FEATURED_ARTICLE_COUNT = 5;
 
 // How many of an author's articles a team profile lists.
 const AUTHOR_ARTICLE_LIMIT = 10;
+
+// How far down the Scheduled-descending list to look for pending releases.
+// Everything embargoed sits at the top, so this only needs to exceed the
+// number of articles that could ever be queued at once.
+const RELEASE_LOOKAHEAD_RECORDS = 100;
 
 /**
  * Escape a value for interpolation into an Airtable formula string literal.
@@ -55,6 +61,12 @@ export interface IStorage {
   // Quote methods
   getQuotes(): Promise<CarouselQuote[]>;
   getQuoteOfDay(): Promise<CarouselQuote>;
+
+  /**
+   * When the next embargoed article becomes visible, or null if none is
+   * waiting. Drives the release timer in RefreshService.
+   */
+  getNextReleaseTime(): Promise<Date | null>;
 }
 
 export class AirtableStorage implements IStorage {
@@ -93,10 +105,9 @@ export class AirtableStorage implements IStorage {
         filterByFormula
       });
 
-      // Hold back anything whose scheduled day hasn't arrived yet. This runs
-      // here rather than in the Airtable formula so the day boundary is
-      // reckoned in the newsroom timezone, which formula functions can't do
-      // reliably.
+      // Hold back anything whose scheduled time hasn't arrived yet. This runs
+      // here rather than in the Airtable formula so the comparison uses our
+      // clock, not Airtable's cached NOW().
       const allRecords = filterPubliclyVisible(await query.all());
       const total = allRecords.length;
       const start = (page - 1) * limit;
@@ -352,6 +363,25 @@ export class AirtableStorage implements IStorage {
     } catch (error) {
       console.error('Error fetching quotes from Airtable:', error);
       return [];
+    }
+  }
+
+  async getNextReleaseTime(): Promise<Date | null> {
+    try {
+      // Embargoed articles are by definition the newest by Scheduled, so a
+      // descending sort puts every one of them at the top. Reading a single
+      // page is enough and keeps this to one request - far cheaper than
+      // scanning the table, since this runs after every article refresh.
+      const query = this.base('History').select({
+        filterByFormula: 'Finished = TRUE()',
+        sort: [{ field: 'Scheduled', direction: 'desc' }],
+        maxRecords: RELEASE_LOOKAHEAD_RECORDS
+      });
+
+      return nextReleaseTime(await query.all());
+    } catch (error) {
+      console.error('Error looking up next scheduled release:', error);
+      return null;
     }
   }
 
@@ -649,6 +679,11 @@ export class MemStorage implements IStorage {
 
   async getArticleById(id: string): Promise<Article | undefined> {
     return this.articles.find(article => article.id === id);
+  }
+
+  /** Sample data is never embargoed, so there is nothing to wait for. */
+  async getNextReleaseTime(): Promise<Date | null> {
+    return null;
   }
 
   async getArticlesByAuthorId(authorId: string): Promise<Article[]> {
