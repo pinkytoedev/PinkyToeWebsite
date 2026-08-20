@@ -22,8 +22,37 @@ const DEFAULT_ALLOWED_HOSTS = [
 /** Cap on a proxied image body. Anything larger is refused. */
 export const MAX_IMAGE_BYTES = 10 * 1024 * 1024; // 10 MB
 
-/** How long to wait on a single upstream image fetch. */
-const FETCH_TIMEOUT_MS = 10_000;
+/**
+ * Timeouts covering connect through to the last byte.
+ *
+ * The CDN these images live on is very slow on a cold object - measured at
+ * ~30-60 KB/s, so a 4 MB PNG takes over a minute - and then fast once its edge
+ * has the file. That splits the budget in two:
+ *
+ *   foreground  a browser is waiting on this <img>, so give up reasonably
+ *               soon and serve the placeholder
+ *   background  pre-caching and refresh, where nobody is waiting and the whole
+ *               point is to get the file onto disk so no visitor ever pays
+ *               this cost
+ *
+ * A single tight timeout is what broke images: it turned slow ones into broken
+ * ones without ever caching them.
+ */
+const DEFAULT_FETCH_TIMEOUT_MS = 20_000;
+const DEFAULT_BACKGROUND_FETCH_TIMEOUT_MS = 180_000;
+
+/** Timeout budget for a fetch, honouring the env overrides. */
+export function getFetchTimeoutMs(background = false): number {
+  const configured = background
+    ? Number(process.env.IMAGE_BACKGROUND_FETCH_TIMEOUT_MS)
+    : Number(process.env.IMAGE_FETCH_TIMEOUT_MS);
+
+  if (Number.isFinite(configured) && configured > 0) {
+    return configured;
+  }
+
+  return background ? DEFAULT_BACKGROUND_FETCH_TIMEOUT_MS : DEFAULT_FETCH_TIMEOUT_MS;
+}
 
 /** Redirects to follow. Enough for CDN shuffling, not enough to be a hop chain. */
 const MAX_REDIRECTS = 2;
@@ -90,8 +119,14 @@ export function validateImageUrl(rawUrl: string): URL | null {
  * Throws ImageFetchError for a blocked or oversized target; returns the
  * response plus its body so callers don't re-read the stream.
  */
+export interface FetchImageOptions {
+  /** Use the patient budget: nothing is blocked on this request. */
+  background?: boolean;
+}
+
 export async function fetchImage(
-  rawUrl: string
+  rawUrl: string,
+  { background = false }: FetchImageOptions = {}
 ): Promise<{ response: Response; buffer: Buffer; contentType: string }> {
   const url = validateImageUrl(rawUrl);
   if (!url) {
@@ -101,7 +136,7 @@ export async function fetchImage(
   const response = await fetch(url.toString(), {
     redirect: 'follow',
     follow: MAX_REDIRECTS,
-    signal: AbortSignal.timeout(FETCH_TIMEOUT_MS),
+    signal: AbortSignal.timeout(getFetchTimeoutMs(background)),
     headers: { Accept: 'image/*' },
   });
 

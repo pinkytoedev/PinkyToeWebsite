@@ -401,7 +401,7 @@ async function refreshImageInBackground(id: string, fileHash: string) {
     
     try {
       console.log(`Background refreshing image: ${fullUrl}`);
-      const { buffer, contentType } = await fetchImage(fullUrl);
+      const { buffer, contentType } = await fetchImage(fullUrl, { background: true });
       const ext = extensionForContentType(contentType);
 
       try {

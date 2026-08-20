@@ -3,7 +3,10 @@ import { CacheService } from "./cache-service";
 import { PublicationScheduler } from "./publication-scheduler";
 import { ImageService } from "./image-service";
 import { Article, Team } from "@shared/schema";
-import fetch from "node-fetch";
+import {
+  fetchImage,
+  extensionForContentType,
+} from "../utils/safe-image-fetch";
 import fs from "fs";
 import path from "path";
 import crypto from "crypto";
@@ -13,6 +16,13 @@ const UPLOADS_DIR = path.join(process.cwd(), 'uploads');
 if (!fs.existsSync(UPLOADS_DIR)) {
   fs.mkdirSync(UPLOADS_DIR, { recursive: true });
 }
+
+// How many images to pre-cache at once. The CDN degrades badly under a few
+// hundred parallel requests, which is what an unbounded fan-out produced.
+const PRECACHE_CONCURRENCY = 4;
+
+// Imgur rate-limits aggressively, so it gets a tighter budget.
+const IMGUR_PRECACHE_CONCURRENCY = 1;
 
 // Track timers for cleanup
 let refreshTimers: NodeJS.Timeout[] = [];
@@ -301,49 +311,61 @@ export class RefreshService {
   static async preCacheImage(url: string): Promise<void> {
     if (!url || typeof url !== 'string') return;
 
-    // Skip URLs that aren't http/https
-    if (!url.startsWith('http')) return;
+    // Articles carry the proxy path, not the origin URL - imageUrl is set to
+    // ImageService.getProxyUrl(...) during mapping. Recover the origin here.
+    // Without this the whole pre-cache pipeline silently did nothing, because
+    // every URL it was handed began with "/api/images/".
+    const originUrl = ImageService.toOriginUrl(url);
+    if (!originUrl) return;
 
     try {
-      // Generate a filename based on URL
-      const fileHash = crypto.createHash('md5').update(url).digest('hex');
+      // The proxy hashes the decoded origin URL, so hash the same thing here
+      // or the file we write will never be found on a request.
+      const fileHash = crypto.createHash('md5').update(originUrl).digest('hex');
 
       // Look for cached version first - if it exists, don't re-download
-      const cachedFiles = fs.readdirSync(UPLOADS_DIR).filter(f => f.startsWith(fileHash));
+      const cachedFiles = fs.readdirSync(UPLOADS_DIR)
+        .filter(f => f.startsWith(fileHash) && !f.includes('_ratelimited'));
       if (cachedFiles.length > 0) {
         // We already have this image cached
         return;
       }
 
-      // Fetch the image
-      const response = await fetch(url);
+      const { buffer, contentType } = await fetchImage(originUrl, { background: true });
+      const ext = extensionForContentType(contentType);
 
-      if (!response.ok) {
-        console.error(`Failed to fetch image: ${url} (Status: ${response.status})`);
-        return;
-      }
-
-      // Get content type and determine extension
-      const contentType = response.headers.get('content-type') || 'image/jpeg';
-
-      // Skip if not an image
-      if (!contentType.startsWith('image/')) {
-        console.error(`URL doesn't point to an image: ${url} (Content-Type: ${contentType})`);
-        return;
-      }
-
-      const ext = contentType.includes('png') ? '.png' :
-        contentType.includes('gif') ? '.gif' :
-          contentType.includes('webp') ? '.webp' : '.jpg';
-
-      // Save the image
-      const buffer = await response.buffer();
-      const filepath = path.join(UPLOADS_DIR, `${fileHash}${ext}`);
-      fs.writeFileSync(filepath, buffer);
-    } catch (error) {
-      console.error(`Error pre-caching image ${url}:`, error);
+      fs.writeFileSync(path.join(UPLOADS_DIR, `${fileHash}${ext}`), buffer);
+    } catch (error: any) {
+      console.error(`Error pre-caching image ${originUrl}:`, error?.message || error);
       // Don't throw - we want to continue even if some images fail
     }
+  }
+
+  /**
+   * Run tasks with bounded concurrency.
+   *
+   * The previous "batching" here built the promise array by calling the async
+   * function up front, so every fetch was already in flight before the first
+   * batch was awaited and the batch size did nothing. Taking thunks makes the
+   * limit real, which matters: the image CDN slows down sharply when hit with
+   * a few hundred parallel requests.
+   */
+  private static async runWithConcurrency(
+    tasks: Array<() => Promise<void>>,
+    limit: number
+  ): Promise<void> {
+    let next = 0;
+
+    const worker = async () => {
+      while (next < tasks.length) {
+        const task = tasks[next++];
+        await task();
+      }
+    };
+
+    await Promise.all(
+      Array.from({ length: Math.min(limit, tasks.length) }, worker)
+    );
   }
 
   /**
@@ -380,37 +402,16 @@ export class RefreshService {
     }
 
 
-    // Process non-Imgur URLs first (typically less rate-limited)
-    const otherPromises: Promise<void>[] = [];
-    Array.from(otherUrls).forEach(url => {
-      otherPromises.push(this.preCacheImage(url));
-    });
+    // Non-Imgur hosts tolerate more parallelism than Imgur's rate limit does.
+    await this.runWithConcurrency(
+      Array.from(otherUrls).map(url => () => this.preCacheImage(url)),
+      PRECACHE_CONCURRENCY
+    );
 
-    // Process non-Imgur URLs with higher concurrency
-    const otherBatchSize = 5;
-    for (let i = 0; i < otherPromises.length; i += otherBatchSize) {
-      const batch = otherPromises.slice(i, i + otherBatchSize);
-      await Promise.all(batch);
-    }
-
-    // Process Imgur URLs with much lower concurrency to respect rate limits
-    const imgurPromises: Promise<void>[] = [];
-    Array.from(imgurUrls).forEach(url => {
-      imgurPromises.push(this.preCacheImage(url));
-    });
-
-    // Very small batch size for Imgur to avoid rate limiting
-    const imgurBatchSize = 2;
-    for (let i = 0; i < imgurPromises.length; i += imgurBatchSize) {
-      const batch = imgurPromises.slice(i, i + imgurBatchSize);
-      await Promise.all(batch);
-
-      // Add a 3 second delay between batches to avoid overwhelming Imgur
-      if (i + imgurBatchSize < imgurPromises.length) {
-        await new Promise(resolve => setTimeout(resolve, 3000));
-      }
-    }
-
+    await this.runWithConcurrency(
+      Array.from(imgurUrls).map(url => () => this.preCacheImage(url)),
+      IMGUR_PRECACHE_CONCURRENCY
+    );
   }
 
   /**
@@ -447,37 +448,16 @@ export class RefreshService {
     }
 
 
-    // Process non-Imgur URLs first (typically less rate-limited)
-    const otherPromises: Promise<void>[] = [];
-    Array.from(otherUrls).forEach(url => {
-      otherPromises.push(this.preCacheImage(url));
-    });
+    // Non-Imgur hosts tolerate more parallelism than Imgur's rate limit does.
+    await this.runWithConcurrency(
+      Array.from(otherUrls).map(url => () => this.preCacheImage(url)),
+      PRECACHE_CONCURRENCY
+    );
 
-    // Process non-Imgur URLs with higher concurrency
-    const otherBatchSize = 5;
-    for (let i = 0; i < otherPromises.length; i += otherBatchSize) {
-      const batch = otherPromises.slice(i, i + otherBatchSize);
-      await Promise.all(batch);
-    }
-
-    // Process Imgur URLs with much lower concurrency to respect rate limits
-    const imgurPromises: Promise<void>[] = [];
-    Array.from(imgurUrls).forEach(url => {
-      imgurPromises.push(this.preCacheImage(url));
-    });
-
-    // Very small batch size for Imgur to avoid rate limiting
-    const imgurBatchSize = 2;
-    for (let i = 0; i < imgurPromises.length; i += imgurBatchSize) {
-      const batch = imgurPromises.slice(i, i + imgurBatchSize);
-      await Promise.all(batch);
-
-      // Add a 3 second delay between batches to avoid overwhelming Imgur
-      if (i + imgurBatchSize < imgurPromises.length) {
-        await new Promise(resolve => setTimeout(resolve, 3000));
-      }
-    }
-
+    await this.runWithConcurrency(
+      Array.from(imgurUrls).map(url => () => this.preCacheImage(url)),
+      IMGUR_PRECACHE_CONCURRENCY
+    );
   }
 
   /**

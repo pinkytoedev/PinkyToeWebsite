@@ -1,8 +1,9 @@
-import { describe, it, expect, afterEach } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import {
   validateImageUrl,
   extensionForContentType,
   contentTypeForExtension,
+  getFetchTimeoutMs,
 } from '@server/utils/safe-image-fetch';
 
 /**
@@ -63,6 +64,55 @@ describe('validateImageUrl', () => {
 
     expect(validateImageUrl('https://images.example.test/a.jpg')).not.toBeNull();
     expect(validateImageUrl('https://i.ibb.co/a.jpg')).toBeNull();
+  });
+});
+
+describe('getFetchTimeoutMs', () => {
+  const KEYS = ['IMAGE_FETCH_TIMEOUT_MS', 'IMAGE_BACKGROUND_FETCH_TIMEOUT_MS'] as const;
+  const saved: Record<string, string | undefined> = {};
+
+  beforeEach(() => {
+    for (const k of KEYS) { saved[k] = process.env[k]; delete process.env[k]; }
+  });
+
+  afterEach(() => {
+    for (const k of KEYS) {
+      if (saved[k] === undefined) delete process.env[k];
+      else process.env[k] = saved[k]!;
+    }
+  });
+
+  it('gives background work a far longer budget than a waiting browser', () => {
+    // The regression: one tight budget for both. The CDN serves cold objects
+    // at ~30-60 KB/s, so a multi-megabyte image cannot finish inside a
+    // browser-friendly window - and a foreground timeout cached nothing, so
+    // the image stayed broken on every later load too. Background fetches have
+    // to be patient enough to actually get the file onto disk.
+    expect(getFetchTimeoutMs(true)).toBeGreaterThan(getFetchTimeoutMs(false));
+  });
+
+  it('keeps the foreground budget short enough for a page load', () => {
+    expect(getFetchTimeoutMs(false)).toBeLessThanOrEqual(30_000);
+  });
+
+  it('is patient enough in the background for a large slow file', () => {
+    // 4 MB at the observed ~60 KB/s is a bit over a minute.
+    expect(getFetchTimeoutMs(true)).toBeGreaterThanOrEqual(120_000);
+  });
+
+  it('honours env overrides', () => {
+    process.env.IMAGE_FETCH_TIMEOUT_MS = '1234';
+    process.env.IMAGE_BACKGROUND_FETCH_TIMEOUT_MS = '5678';
+
+    expect(getFetchTimeoutMs(false)).toBe(1234);
+    expect(getFetchTimeoutMs(true)).toBe(5678);
+  });
+
+  it('ignores junk overrides and falls back to the defaults', () => {
+    for (const bad of ['', 'soon', '0', '-5']) {
+      process.env.IMAGE_FETCH_TIMEOUT_MS = bad;
+      expect(getFetchTimeoutMs(false)).toBe(20_000);
+    }
   });
 });
 
