@@ -16,4 +16,10 @@ coverage/
 *.lcov
 
 # Temporary files
-/tmp/# GitHub Pages deployment fix
+/tmp/
+
+# Runtime-generated caches. Both directories are recreated on boot
+# (CacheService/RefreshService mkdir them), so they must not be versioned:
+# committing them churns the history and bloats the clone.
+cache/
+uploads/
