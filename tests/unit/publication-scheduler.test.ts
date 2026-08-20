@@ -52,6 +52,7 @@ describe('PublicationScheduler', () => {
     it('should handle unknown content tiers gracefully', () => {
       // @ts-expect-error - Testing invalid tier
       const interval = PublicationScheduler.getRefreshInterval('invalid');
+      // @ts-expect-error - Testing invalid tier
       const expiry = PublicationScheduler.getCacheExpiry('invalid');
       
       // Should fall back to stable tier
