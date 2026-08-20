@@ -89,6 +89,13 @@ describe('AirtableStorage.getArticleById', () => {
     }
   });
 
+  it('does not return a finished article whose scheduled day has not arrived', async () => {
+    const farFuture = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString();
+    find.mockResolvedValue(record('recEmbargoed', { ...PUBLISHED, Scheduled: farFuture }));
+
+    expect(await (await makeStorage()).getArticleById('recEmbargoed')).toBeUndefined();
+  });
+
   it('returns undefined when the record does not exist', async () => {
     find.mockRejectedValue(Object.assign(new Error('Not found'), { statusCode: 404 }));
 

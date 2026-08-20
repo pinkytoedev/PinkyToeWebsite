@@ -56,6 +56,15 @@ export class PublicationScheduler {
   } satisfies Record<string, ContentTierConfig>;
 
   /**
+   * The newsroom's timezone. Publication days are reckoned in it, so an
+   * article scheduled for the 25th goes live on the 25th in New York rather
+   * than whenever UTC happens to roll over.
+   */
+  static getTimezone(): string {
+    return this.config.timezone;
+  }
+
+  /**
    * Check if current time is during business hours
    */
   static isBusinessHours(date: Date = new Date()): boolean {

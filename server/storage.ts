@@ -2,6 +2,11 @@ import { Article, Team, CarouselQuote } from "@shared/schema";
 import Airtable from "airtable";
 import { ImageService } from "./services/image-service";
 import { config } from "./config";
+import {
+  filterPubliclyVisible,
+  isPubliclyVisible,
+  publicationFieldsOf,
+} from "./services/article-visibility";
 
 // Initialize Airtable
 const airtableApiKey = config.airtable.apiKey;
@@ -10,6 +15,12 @@ const airtableBaseId = config.airtable.baseId;
 // Longest search term we'll forward to Airtable. Anything beyond this is noise
 // and just inflates the formula we send.
 const MAX_SEARCH_LENGTH = 100;
+
+// How many featured articles the homepage rail shows.
+const FEATURED_ARTICLE_COUNT = 5;
+
+// How many of an author's articles a team profile lists.
+const AUTHOR_ARTICLE_LIMIT = 10;
 
 /**
  * Escape a value for interpolation into an Airtable formula string literal.
@@ -82,7 +93,11 @@ export class AirtableStorage implements IStorage {
         filterByFormula
       });
 
-      const allRecords = await query.all();
+      // Hold back anything whose scheduled day hasn't arrived yet. This runs
+      // here rather than in the Airtable formula so the day boundary is
+      // reckoned in the newsroom timezone, which formula functions can't do
+      // reliably.
+      const allRecords = filterPubliclyVisible(await query.all());
       const total = allRecords.length;
       const start = (page - 1) * limit;
       const end = Math.min(start + limit, allRecords.length);
@@ -106,12 +121,13 @@ export class AirtableStorage implements IStorage {
         sort: [
           { field: 'Scheduled', direction: 'desc' },
           { field: 'Date', direction: 'desc' }
-        ],
-        maxRecords: 5
+        ]
+        // No maxRecords: unreleased articles have to be filtered out before
+        // the cap is applied, or they would eat slots and short the list.
       });
 
-      const records = await query.all();
-      return records.map(this.mapAirtableRecordToArticle);
+      const records = filterPubliclyVisible(await query.all());
+      return records.slice(0, FEATURED_ARTICLE_COUNT).map(this.mapAirtableRecordToArticle);
     } catch (error) {
       console.error('Error fetching featured articles from Airtable:', error);
       return [];
@@ -125,12 +141,12 @@ export class AirtableStorage implements IStorage {
         sort: [
           { field: 'Scheduled', direction: 'desc' },
           { field: 'Date', direction: 'desc' }
-        ],
-        maxRecords: limit
+        ]
+        // See getFeaturedArticles: cap after filtering, not before.
       });
 
-      const records = await query.all();
-      return records.map(this.mapAirtableRecordToArticle);
+      const records = filterPubliclyVisible(await query.all());
+      return records.slice(0, limit).map(this.mapAirtableRecordToArticle);
     } catch (error) {
       console.error('Error fetching recent articles from Airtable:', error);
       return [];
@@ -141,12 +157,12 @@ export class AirtableStorage implements IStorage {
     try {
       const record = await this.base('History').find(id);
 
-      // Every listing query filters on `Finished`, but a direct lookup by ID
-      // did not - so unpublished drafts were served in full to anyone with the
-      // record ID. That is not a theoretical hole: the Teams table's AuthorSub
-      // and PhotoSub link fields include drafts, and team profile pages fetch
-      // each linked article by ID, so drafts rendered on the public site.
-      if (record.get('Finished') !== true) {
+      // Listing queries all gate on Finished/Scheduled, but a direct lookup by
+      // ID did not - so drafts were served in full to anyone with the record
+      // ID. Not theoretical: the Teams table's AuthorSub and PhotoSub link
+      // fields include drafts, and team profile pages fetch each linked
+      // article by ID, so drafts rendered on the public site.
+      if (!isPubliclyVisible(publicationFieldsOf(record))) {
         return undefined;
       }
 
@@ -166,12 +182,12 @@ export class AirtableStorage implements IStorage {
       // Find all articles by this author
       const query = this.base('History').select({
         filterByFormula: `AND({Author} = '${escapeAirtableString(teamMember.name, "'")}', Finished = TRUE())`,
-        sort: [{ field: 'Date', direction: 'desc' }],
-        maxRecords: 10
+        sort: [{ field: 'Date', direction: 'desc' }]
+        // See getFeaturedArticles: cap after filtering, not before.
       });
 
-      const records = await query.all();
-      return records.map(this.mapAirtableRecordToArticle);
+      const records = filterPubliclyVisible(await query.all());
+      return records.slice(0, AUTHOR_ARTICLE_LIMIT).map(this.mapAirtableRecordToArticle);
     } catch (error) {
       console.error(`Error fetching articles for author ${authorId} from Airtable:`, error);
       return [];
