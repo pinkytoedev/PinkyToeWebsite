@@ -3,7 +3,10 @@ import { CacheService } from "./cache-service";
 import { PublicationScheduler } from "./publication-scheduler";
 import { ImageService } from "./image-service";
 import { Article, Team } from "@shared/schema";
-import fetch from "node-fetch";
+import {
+  fetchImage,
+  extensionForContentType,
+} from "../utils/safe-image-fetch";
 import fs from "fs";
 import path from "path";
 import crypto from "crypto";
@@ -13,6 +16,13 @@ const UPLOADS_DIR = path.join(process.cwd(), 'uploads');
 if (!fs.existsSync(UPLOADS_DIR)) {
   fs.mkdirSync(UPLOADS_DIR, { recursive: true });
 }
+
+// How many images to pre-cache at once. The CDN degrades badly under a few
+// hundred parallel requests, which is what an unbounded fan-out produced.
+const PRECACHE_CONCURRENCY = 4;
+
+// Imgur rate-limits aggressively, so it gets a tighter budget.
+const IMGUR_PRECACHE_CONCURRENCY = 1;
 
 // Track timers for cleanup
 let refreshTimers: NodeJS.Timeout[] = [];
@@ -34,6 +44,16 @@ export class RefreshService {
 
   // Minimum time between refreshes (in milliseconds) to prevent overloading Airtable API
   private static readonly MIN_REFRESH_INTERVAL = 15 * 60 * 1000; // 15 minutes (reduced for better publication responsiveness)
+
+  // How often to check whether we've crossed a business-hours boundary
+  private static readonly SCHEDULE_MONITOR_INTERVAL = 15 * 60 * 1000; // 15 minutes
+
+  // Only arm a release timer for something due within this window; anything
+  // further out gets re-armed by a later refresh, closer to the time.
+  private static readonly RELEASE_SCHEDULING_HORIZON = 25 * 60 * 60 * 1000; // 25 hours
+
+  // Fire fractionally after the release instant, never before it.
+  private static readonly RELEASE_TIMER_CUSHION = 2 * 1000; // 2 seconds
 
   /**
    * Start all refresh schedules with publication-aware timing
@@ -61,7 +81,7 @@ export class RefreshService {
     // Check every 15 minutes if we need to adjust intervals
     const scheduleMonitor = setInterval(() => {
       this.checkAndUpdateScheduling();
-    }, 15 * 60 * 1000); // 15 minutes
+    }, this.SCHEDULE_MONITOR_INTERVAL);
 
     refreshTimers.push(scheduleMonitor);
   }
@@ -72,6 +92,10 @@ export class RefreshService {
   private static scheduleNextRefreshCycle(): void {
     // Clear existing timers first
     this.clearContentRefreshTimers();
+
+    // Remember which schedule these timers were built for, so the monitor can
+    // tell a real business-hours transition apart from a routine check-in.
+    this.scheduledForBusinessHours = PublicationScheduler.isBusinessHours();
 
     // Get current intervals based on business hours
     const recentArticlesInterval = PublicationScheduler.getRefreshInterval('critical'); // Recent articles are critical
@@ -96,6 +120,9 @@ export class RefreshService {
    */
   private static contentRefreshTimers: NodeJS.Timeout[] = [];
 
+  /** Business-hours state the current content timers were scheduled for. */
+  private static scheduledForBusinessHours: boolean | null = null;
+
   private static clearContentRefreshTimers(): void {
     this.contentRefreshTimers.forEach(timer => clearInterval(timer));
     this.contentRefreshTimers = [];
@@ -103,9 +130,19 @@ export class RefreshService {
 
   /**
    * Check if we need to update scheduling (e.g., transition from business to off-hours)
+   *
+   * Only reschedules on an actual business-hours transition. Rescheduling on every
+   * check would clear and recreate the content timers every SCHEDULE_MONITOR_INTERVAL,
+   * and since the shortest content interval (30 min) is longer than that, no content
+   * timer would ever survive long enough to fire.
    */
   private static checkAndUpdateScheduling(): void {
-    // Always reschedule to ensure we're using current business hours status
+    const isBusinessHours = PublicationScheduler.isBusinessHours();
+
+    if (isBusinessHours === this.scheduledForBusinessHours) {
+      return; // No transition - leave the running timers alone.
+    }
+
     this.scheduleNextRefreshCycle();
   }
 
@@ -144,6 +181,90 @@ export class RefreshService {
   }
 
   /**
+   * Arm a one-shot timer for the next scheduled article's release moment.
+   *
+   * The periodic tiers refresh every 30 minutes to 6 hours, so on their own an
+   * article set for 08:00 could sit invisible for hours past its time. This
+   * fires at the moment itself and republishes the article views.
+   *
+   * Called after every article refresh, so newly scheduled work is picked up
+   * on the next cycle (or immediately, via the publication webhook).
+   */
+  static async scheduleNextRelease(): Promise<void> {
+    this.clearReleaseTimer();
+
+    let releaseAt: Date | null = null;
+    try {
+      releaseAt = await storage.getNextReleaseTime();
+    } catch (error) {
+      console.error('Could not determine next scheduled release:', error);
+      return;
+    }
+
+    if (!releaseAt) {
+      return; // Nothing embargoed.
+    }
+
+    const delay = releaseAt.getTime() - Date.now();
+
+    // Beyond the horizon the periodic refresh will re-arm this closer to the
+    // time; setTimeout also can't represent delays past ~24.8 days.
+    if (delay > this.RELEASE_SCHEDULING_HORIZON) {
+      return;
+    }
+
+    // A release that is already due (or arrives while we're arming) still needs
+    // a positive delay, and a small cushion avoids firing a hair early and
+    // filtering the article straight back out.
+    const timerDelay = Math.max(delay, 0) + this.RELEASE_TIMER_CUSHION;
+
+    console.log(
+      `Next scheduled release at ${releaseAt.toLocaleString('en-US', {
+        timeZone: PublicationScheduler.getTimezone()
+      })} (in ${Math.round(timerDelay / 1000)}s)`
+    );
+
+    this.releaseTimer = setTimeout(() => {
+      this.publishScheduledRelease().catch(error => {
+        console.error('Scheduled release refresh failed:', error);
+      });
+    }, timerDelay);
+  }
+
+  /**
+   * Refresh the article views at a release boundary, then look for the next one.
+   *
+   * Bypasses MIN_REFRESH_INTERVAL deliberately: the whole point is that the
+   * content changed at a known instant, so the throttle would defeat it.
+   */
+  private static async publishScheduledRelease(): Promise<void> {
+    console.log('Scheduled release reached, refreshing article caches');
+
+    this.lastRefreshTime.articles = 0;
+    this.lastRefreshTime.featuredArticles = 0;
+    this.lastRefreshTime.recentArticles = 0;
+
+    CacheService.invalidateCache('articles');
+    CacheService.invalidateCache('featuredArticles');
+    CacheService.invalidateCache('recentArticles');
+
+    await this.refreshRecentArticles();
+    await this.refreshFeaturedArticles();
+    await this.refreshArticles();
+
+    // refreshArticles re-arms the timer for whatever is next in the queue.
+  }
+
+  private static releaseTimer: NodeJS.Timeout | null = null;
+
+  private static clearReleaseTimer(): void {
+    if (this.releaseTimer) {
+      clearTimeout(this.releaseTimer);
+      this.releaseTimer = null;
+    }
+  }
+
+  /**
    * Stop all refresh schedules
    */
   static stopRefreshSchedules(): void {
@@ -151,6 +272,7 @@ export class RefreshService {
     refreshTimers.forEach(timer => clearInterval(timer));
     refreshTimers = [];
     this.clearContentRefreshTimers();
+    this.clearReleaseTimer();
     // console.log('Publication-aware refresh schedules stopped');
   }
 
@@ -189,49 +311,61 @@ export class RefreshService {
   static async preCacheImage(url: string): Promise<void> {
     if (!url || typeof url !== 'string') return;
 
-    // Skip URLs that aren't http/https
-    if (!url.startsWith('http')) return;
+    // Articles carry the proxy path, not the origin URL - imageUrl is set to
+    // ImageService.getProxyUrl(...) during mapping. Recover the origin here.
+    // Without this the whole pre-cache pipeline silently did nothing, because
+    // every URL it was handed began with "/api/images/".
+    const originUrl = ImageService.toOriginUrl(url);
+    if (!originUrl) return;
 
     try {
-      // Generate a filename based on URL
-      const fileHash = crypto.createHash('md5').update(url).digest('hex');
+      // The proxy hashes the decoded origin URL, so hash the same thing here
+      // or the file we write will never be found on a request.
+      const fileHash = crypto.createHash('md5').update(originUrl).digest('hex');
 
       // Look for cached version first - if it exists, don't re-download
-      const cachedFiles = fs.readdirSync(UPLOADS_DIR).filter(f => f.startsWith(fileHash));
+      const cachedFiles = fs.readdirSync(UPLOADS_DIR)
+        .filter(f => f.startsWith(fileHash) && !f.includes('_ratelimited'));
       if (cachedFiles.length > 0) {
         // We already have this image cached
         return;
       }
 
-      // Fetch the image
-      const response = await fetch(url);
+      const { buffer, contentType } = await fetchImage(originUrl, { background: true });
+      const ext = extensionForContentType(contentType);
 
-      if (!response.ok) {
-        console.error(`Failed to fetch image: ${url} (Status: ${response.status})`);
-        return;
-      }
-
-      // Get content type and determine extension
-      const contentType = response.headers.get('content-type') || 'image/jpeg';
-
-      // Skip if not an image
-      if (!contentType.startsWith('image/')) {
-        console.error(`URL doesn't point to an image: ${url} (Content-Type: ${contentType})`);
-        return;
-      }
-
-      const ext = contentType.includes('png') ? '.png' :
-        contentType.includes('gif') ? '.gif' :
-          contentType.includes('webp') ? '.webp' : '.jpg';
-
-      // Save the image
-      const buffer = await response.buffer();
-      const filepath = path.join(UPLOADS_DIR, `${fileHash}${ext}`);
-      fs.writeFileSync(filepath, buffer);
-    } catch (error) {
-      console.error(`Error pre-caching image ${url}:`, error);
+      fs.writeFileSync(path.join(UPLOADS_DIR, `${fileHash}${ext}`), buffer);
+    } catch (error: any) {
+      console.error(`Error pre-caching image ${originUrl}:`, error?.message || error);
       // Don't throw - we want to continue even if some images fail
     }
+  }
+
+  /**
+   * Run tasks with bounded concurrency.
+   *
+   * The previous "batching" here built the promise array by calling the async
+   * function up front, so every fetch was already in flight before the first
+   * batch was awaited and the batch size did nothing. Taking thunks makes the
+   * limit real, which matters: the image CDN slows down sharply when hit with
+   * a few hundred parallel requests.
+   */
+  private static async runWithConcurrency(
+    tasks: Array<() => Promise<void>>,
+    limit: number
+  ): Promise<void> {
+    let next = 0;
+
+    const worker = async () => {
+      while (next < tasks.length) {
+        const task = tasks[next++];
+        await task();
+      }
+    };
+
+    await Promise.all(
+      Array.from({ length: Math.min(limit, tasks.length) }, worker)
+    );
   }
 
   /**
@@ -268,37 +402,16 @@ export class RefreshService {
     }
 
 
-    // Process non-Imgur URLs first (typically less rate-limited)
-    const otherPromises: Promise<void>[] = [];
-    Array.from(otherUrls).forEach(url => {
-      otherPromises.push(this.preCacheImage(url));
-    });
+    // Non-Imgur hosts tolerate more parallelism than Imgur's rate limit does.
+    await this.runWithConcurrency(
+      Array.from(otherUrls).map(url => () => this.preCacheImage(url)),
+      PRECACHE_CONCURRENCY
+    );
 
-    // Process non-Imgur URLs with higher concurrency
-    const otherBatchSize = 5;
-    for (let i = 0; i < otherPromises.length; i += otherBatchSize) {
-      const batch = otherPromises.slice(i, i + otherBatchSize);
-      await Promise.all(batch);
-    }
-
-    // Process Imgur URLs with much lower concurrency to respect rate limits
-    const imgurPromises: Promise<void>[] = [];
-    Array.from(imgurUrls).forEach(url => {
-      imgurPromises.push(this.preCacheImage(url));
-    });
-
-    // Very small batch size for Imgur to avoid rate limiting
-    const imgurBatchSize = 2;
-    for (let i = 0; i < imgurPromises.length; i += imgurBatchSize) {
-      const batch = imgurPromises.slice(i, i + imgurBatchSize);
-      await Promise.all(batch);
-
-      // Add a 3 second delay between batches to avoid overwhelming Imgur
-      if (i + imgurBatchSize < imgurPromises.length) {
-        await new Promise(resolve => setTimeout(resolve, 3000));
-      }
-    }
-
+    await this.runWithConcurrency(
+      Array.from(imgurUrls).map(url => () => this.preCacheImage(url)),
+      IMGUR_PRECACHE_CONCURRENCY
+    );
   }
 
   /**
@@ -335,42 +448,32 @@ export class RefreshService {
     }
 
 
-    // Process non-Imgur URLs first (typically less rate-limited)
-    const otherPromises: Promise<void>[] = [];
-    Array.from(otherUrls).forEach(url => {
-      otherPromises.push(this.preCacheImage(url));
-    });
+    // Non-Imgur hosts tolerate more parallelism than Imgur's rate limit does.
+    await this.runWithConcurrency(
+      Array.from(otherUrls).map(url => () => this.preCacheImage(url)),
+      PRECACHE_CONCURRENCY
+    );
 
-    // Process non-Imgur URLs with higher concurrency
-    const otherBatchSize = 5;
-    for (let i = 0; i < otherPromises.length; i += otherBatchSize) {
-      const batch = otherPromises.slice(i, i + otherBatchSize);
-      await Promise.all(batch);
-    }
-
-    // Process Imgur URLs with much lower concurrency to respect rate limits
-    const imgurPromises: Promise<void>[] = [];
-    Array.from(imgurUrls).forEach(url => {
-      imgurPromises.push(this.preCacheImage(url));
-    });
-
-    // Very small batch size for Imgur to avoid rate limiting
-    const imgurBatchSize = 2;
-    for (let i = 0; i < imgurPromises.length; i += imgurBatchSize) {
-      const batch = imgurPromises.slice(i, i + imgurBatchSize);
-      await Promise.all(batch);
-
-      // Add a 3 second delay between batches to avoid overwhelming Imgur
-      if (i + imgurBatchSize < imgurPromises.length) {
-        await new Promise(resolve => setTimeout(resolve, 3000));
-      }
-    }
-
+    await this.runWithConcurrency(
+      Array.from(imgurUrls).map(url => () => this.preCacheImage(url)),
+      IMGUR_PRECACHE_CONCURRENCY
+    );
   }
 
   /**
    * Refresh all data at once
    */
+  /**
+   * Invalidate and re-fetch a single content entity.
+   *
+   * Shared by the admin router and the legacy /api/cache/refresh endpoint so
+   * the entity list and the invalidate-then-refresh ordering live in one place.
+   */
+  static async invalidateAndRefresh(entity: RefreshableEntity): Promise<void> {
+    CacheService.invalidateCache(entity);
+    await REFRESHERS[entity]();
+  }
+
   static async refreshAll(): Promise<void> {
     // Reset all timestamps to ensure refreshes run
     const now = Date.now();
@@ -404,8 +507,14 @@ export class RefreshService {
 
       this.lastRefreshTime.articles = now;
 
-      const result = await storage.getArticles(1, 100); // Get a large batch
+      // Fetch the complete set. A partial batch would be cached as if it were
+      // the whole collection, leaving every page past the batch empty.
+      const result = await storage.getArticles(1, Number.MAX_SAFE_INTEGER);
       CacheService.cacheArticles(result);
+
+      // The set we just cached excludes anything still embargoed, so this is
+      // the point to (re-)arm the timer for whichever release is next.
+      await this.scheduleNextRelease();
 
       // Pre-cache images from articles to handle Airtable's expiring URLs
       await this.preCacheArticleImages(result.articles);
@@ -503,3 +612,28 @@ export class RefreshService {
     }
   }
 }
+
+/** Content entities that can be individually invalidated and re-fetched. */
+export const REFRESHABLE_ENTITIES = [
+  'articles',
+  'featuredArticles',
+  'recentArticles',
+  'team',
+  'quotes',
+] as const;
+
+export type RefreshableEntity = typeof REFRESHABLE_ENTITIES[number];
+
+/** Narrowing guard for caller-supplied entity names. */
+export function isRefreshableEntity(value: unknown): value is RefreshableEntity {
+  return typeof value === 'string'
+    && (REFRESHABLE_ENTITIES as readonly string[]).includes(value);
+}
+
+const REFRESHERS: Record<RefreshableEntity, () => Promise<void>> = {
+  articles: () => RefreshService.refreshArticles(),
+  featuredArticles: () => RefreshService.refreshFeaturedArticles(),
+  recentArticles: () => RefreshService.refreshRecentArticles(),
+  team: () => RefreshService.refreshTeam(),
+  quotes: () => RefreshService.refreshQuotes(),
+};

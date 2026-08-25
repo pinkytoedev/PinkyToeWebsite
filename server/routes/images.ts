@@ -1,11 +1,58 @@
 import { Router, Request, Response } from 'express';
 import { ImageService } from '../services/image-service';
-import fetch from 'node-fetch';
 import fs from 'fs';
 import path from 'path';
 import crypto from 'crypto';
+import {
+  fetchImage,
+  validateImageUrl,
+  ImageFetchError,
+  extensionForContentType,
+  contentTypeForExtension,
+} from '../utils/safe-image-fetch';
 
 export const imagesRouter = Router();
+
+/**
+ * Find a cached image for a hash.
+ *
+ * Rate-limited SVG placeholders are stored as `<hash>_ratelimited.svg` and are
+ * deliberately excluded: they are a temporary failure marker with their own
+ * expiry handling, not a cached copy of the image.
+ */
+function findCachedImage(fileHash: string): string | null {
+  try {
+    const match = fs
+      .readdirSync(UPLOADS_DIR)
+      .find(f => f.startsWith(fileHash) && !f.includes('_ratelimited'));
+
+    return match ?? null;
+  } catch (error) {
+    console.error('Error reading uploads directory:', error);
+    return null;
+  }
+}
+
+/**
+ * Stream a cached file, falling back to the placeholder if the read fails
+ * (the file can be unlinked between the directory scan and the open).
+ */
+function streamCachedImage(cachedPath: string, res: Response, maxAge = 86400): void {
+  res.setHeader('Content-Type', contentTypeForExtension(path.extname(cachedPath)));
+  res.setHeader('Cache-Control', `public, max-age=${maxAge}`);
+
+  const stream = fs.createReadStream(cachedPath);
+  stream.on('error', error => {
+    console.error(`Error streaming cached image ${cachedPath}:`, error);
+    if (!res.headersSent) {
+      res.redirect('/api/images/placeholder');
+    } else {
+      res.end();
+    }
+  });
+
+  stream.pipe(res);
+}
 
 /**
  * Placeholder image endpoint 
@@ -55,57 +102,27 @@ imagesRouter.get('/:id', async (req: Request, res: Response) => {
     const fileHash = crypto.createHash('md5').update(decodedId).digest('hex');
     
     // Look for cached version first
-    const cachedFiles = fs.readdirSync(UPLOADS_DIR).filter(f => f.startsWith(fileHash));
-    if (cachedFiles.length > 0) {
-      // Use the cached file
-      const cachedFile = cachedFiles[0];
-      const ext = path.extname(cachedFile);
-      const contentType = ext === '.png' ? 'image/png' : 
-                          ext === '.gif' ? 'image/gif' : 
-                          ext === '.webp' ? 'image/webp' : 'image/jpeg';
-      
-      res.setHeader('Content-Type', contentType);
-      res.setHeader('Cache-Control', 'public, max-age=86400'); // Cache for 24 hours
-      
-      // Stream the file
+    const cachedFile = findCachedImage(fileHash);
+    if (cachedFile) {
       const cachedPath = path.join(UPLOADS_DIR, cachedFile);
-      fs.createReadStream(cachedPath).pipe(res);
-      
+      streamCachedImage(cachedPath, res);
+
       // After sending cached response, fetch fresh version in background if old
-      const stats = fs.statSync(cachedPath);
-      const fileAge = Date.now() - stats.mtimeMs;
-      
-      // If file is more than a day old, refresh in background
-      if (fileAge > 24 * 60 * 60 * 1000) {
-        refreshImageInBackground(decodedId, fileHash);
+      try {
+        const fileAge = Date.now() - fs.statSync(cachedPath).mtimeMs;
+        if (fileAge > 24 * 60 * 60 * 1000) {
+          refreshImageInBackground(decodedId, fileHash);
+        }
+      } catch (statError) {
+        console.error(`Error checking age of ${cachedPath}:`, statError);
       }
-      
+
       return;
     }
-    
+
     // Handle Airtable record IDs (starting with 'rec')
     if (decodedId.startsWith('rec')) {
       try {
-        // First check if we have this image cached already
-        const cachedFiles = fs.readdirSync(UPLOADS_DIR).filter(f => f.startsWith(fileHash));
-        if (cachedFiles.length > 0) {
-          // Use the cached file
-          const cachedFile = cachedFiles[0];
-          const ext = path.extname(cachedFile);
-          const contentType = ext === '.png' ? 'image/png' : 
-                              ext === '.gif' ? 'image/gif' : 
-                              ext === '.webp' ? 'image/webp' : 
-                              ext === '.svg' ? 'image/svg+xml' : 'image/jpeg';
-          
-          res.setHeader('Content-Type', contentType);
-          res.setHeader('Cache-Control', 'public, max-age=86400'); // Cache for 24 hours
-          
-          // Stream the file
-          const cachedPath = path.join(UPLOADS_DIR, cachedFile);
-          fs.createReadStream(cachedPath).pipe(res);
-          return;
-        }
-
         console.log(`Processing Airtable record ID: ${decodedId}`);
         
         // For Airtable record IDs, we fallback to a placeholder since we don't have direct access
@@ -176,6 +193,42 @@ imagesRouter.get('/:id', async (req: Request, res: Response) => {
 });
 
 /**
+ * Build the "Imgur rate limited" placeholder SVG for a URL.
+ */
+function buildRateLimitedSvg(fullUrl: string): string {
+  let imgurId = 'unknown';
+  if (fullUrl.includes('i.imgur.com/')) {
+    imgurId = fullUrl.split('i.imgur.com/')[1].split('.')[0];
+  }
+
+  return `<svg width="400" height="300" xmlns="http://www.w3.org/2000/svg">
+    <rect width="400" height="300" fill="#fdf2f8" />
+    <rect width="400" height="90" y="105" fill="#ec4899" fill-opacity="0.8" />
+    <text x="50%" y="135" font-family="Arial" font-size="16" text-anchor="middle" fill="#ffffff">
+      Imgur Image: ${imgurId}
+    </text>
+    <text x="50%" y="160" font-family="Arial" font-size="14" text-anchor="middle" fill="#ffffff">
+      (Rate Limited - Try Again Later)
+    </text>
+    <text x="50%" y="185" font-family="Arial" font-size="12" text-anchor="middle" fill="#ffffff">
+      Imgur limits to 520 requests/hour
+    </text>
+    <path d="M200 55 L230 85 L200 115 L170 85 Z" fill="#ec4899" fill-opacity="0.5" />
+  </svg>`;
+}
+
+/**
+ * Persist the rate-limited marker so we stop hammering a throttled upstream.
+ */
+function writeRateLimitedPlaceholder(fileHash: string, svg: string): void {
+  try {
+    fs.writeFileSync(path.join(UPLOADS_DIR, `${fileHash}_ratelimited.svg`), svg);
+  } catch (writeError: any) {
+    console.error('Failed to save SVG placeholder:', writeError);
+  }
+}
+
+/**
  * Handle fetching and caching an image from a URL
  */
 async function handleUrlImage(url: string, fileHash: string, res: Response) {
@@ -188,22 +241,27 @@ async function handleUrlImage(url: string, fileHash: string, res: Response) {
     
     // If the URL doesn't start with http/https, add it
     const fullUrl = url.startsWith('http') ? url : `https://${url}`;
-    
+
+    // Reject anything outside the allowlist before doing any work. Without this
+    // the proxy will fetch whatever the caller names, including internal hosts.
+    if (!validateImageUrl(fullUrl)) {
+      console.warn(`Blocked proxy request for non-allowlisted URL: ${fullUrl}`);
+      return res.redirect('/api/images/placeholder');
+    }
+
     // First check for rate-limited placeholder
     // This helps us avoid repeatedly hitting rate-limited services (especially Imgur)
-    const rateLimitedFiles = fs.readdirSync(UPLOADS_DIR).filter(f => f === `${fileHash}_ratelimited.svg`);
-    if (rateLimitedFiles.length > 0) {
+    const rateLimitedPath = path.join(UPLOADS_DIR, `${fileHash}_ratelimited.svg`);
+    if (fs.existsSync(rateLimitedPath)) {
       // If we have a rate-limited placeholder, check its age
-      const rateLimitedPath = path.join(UPLOADS_DIR, rateLimitedFiles[0]);
       const stats = fs.statSync(rateLimitedPath);
       const fileAge = Date.now() - stats.mtimeMs;
-      
+
       // Use the rate-limited placeholder for 1 hour to avoid overwhelming Imgur
       if (fileAge < 60 * 60 * 1000) { // 1 hour
         console.log(`Using rate-limited placeholder for ${fullUrl} (age: ${Math.round(fileAge/1000)}s)`);
-        res.setHeader('Content-Type', 'image/svg+xml');
-        res.setHeader('Cache-Control', 'public, max-age=1800'); // Cache for 30 minutes
-        return fs.createReadStream(rateLimitedPath).pipe(res);
+        streamCachedImage(rateLimitedPath, res, 1800);
+        return;
       } else {
         // If the placeholder is old, delete it so we can try fetching again
         try {
@@ -243,45 +301,36 @@ async function handleUrlImage(url: string, fileHash: string, res: Response) {
         }
       }
       
-      // Fetch the image
+      // Fetch the image through the allowlisted, size- and time-bounded client.
       console.log(`Fetching image: ${fullUrl}`);
-      const response = await fetch(fullUrl);
-      
+      const { buffer, contentType } = await fetchImage(fullUrl);
+
+      const ext = extensionForContentType(contentType);
+
+      try {
+        const filepath = path.join(UPLOADS_DIR, `${fileHash}${ext}`);
+        fs.writeFileSync(filepath, buffer);
+      } catch (writeError: any) {
+        console.error('Error writing image to disk:', writeError);
+        // Continue anyway to serve the image from memory
+      }
+
+      // Serve the image
+      res.setHeader('Content-Type', contentType);
+      res.setHeader('Cache-Control', 'public, max-age=86400'); // Cache for 24 hours
+      res.end(buffer);
+    } catch (fetchError: any) {
+      const status = fetchError instanceof ImageFetchError ? fetchError.status : undefined;
+
       // Handle rate limiting (429) specially
-      if (response.status === 429) {
+      if (status === 429) {
         console.error(`Rate limited when fetching image: ${fullUrl}`);
-        
+
         // If this is an Imgur URL, create a special placeholder for it
         if (fullUrl.includes('imgur.com')) {
-          // Extract the image ID from the URL
-          let imgurId = 'unknown';
-          if (fullUrl.includes('i.imgur.com/')) {
-            imgurId = fullUrl.split('i.imgur.com/')[1].split('.')[0];
-          }
-          
-          const svg = `<svg width="400" height="300" xmlns="http://www.w3.org/2000/svg">
-            <rect width="400" height="300" fill="#fdf2f8" />
-            <rect width="400" height="90" y="105" fill="#ec4899" fill-opacity="0.8" />
-            <text x="50%" y="135" font-family="Arial" font-size="16" text-anchor="middle" fill="#ffffff">
-              Imgur Image: ${imgurId}
-            </text>
-            <text x="50%" y="160" font-family="Arial" font-size="14" text-anchor="middle" fill="#ffffff">
-              (Rate Limited - Try Again Later)
-            </text>
-            <text x="50%" y="185" font-family="Arial" font-size="12" text-anchor="middle" fill="#ffffff">
-              Imgur limits to 520 requests/hour
-            </text>
-            <path d="M200 55 L230 85 L200 115 L170 85 Z" fill="#ec4899" fill-opacity="0.5" />
-          </svg>`;
-          
-          // Save this SVG for future requests
-          try {
-            const filepath = path.join(UPLOADS_DIR, `${fileHash}_ratelimited.svg`);
-            fs.writeFileSync(filepath, svg);
-          } catch (writeError: any) {
-            console.error('Failed to save SVG placeholder:', writeError);
-          }
-          
+          const svg = buildRateLimitedSvg(fullUrl);
+          writeRateLimitedPlaceholder(fileHash, svg);
+
           res.setHeader('Content-Type', 'image/svg+xml');
           res.setHeader('Cache-Control', 'public, max-age=3600'); // Cache for 1 hour
           return res.send(svg);
@@ -290,43 +339,8 @@ async function handleUrlImage(url: string, fileHash: string, res: Response) {
         // For non-Imgur rate limited requests, redirect to placeholder
         return res.redirect('/api/images/placeholder');
       }
-      
-      // Handle other failed responses
-      if (!response.ok) {
-        console.error(`Failed to fetch image: ${fullUrl} (Status: ${response.status})`);
-        return res.redirect('/api/images/placeholder');
-      }
-      
-      // Get content type and determine extension
-      const contentType = response.headers.get('content-type') || 'image/jpeg';
-      
-      // Check if it's actually an image
-      if (!contentType.startsWith('image/')) {
-        console.error(`URL doesn't point to an image: ${fullUrl} (Content-Type: ${contentType})`);
-        return res.redirect('/api/images/placeholder');
-      }
-      
-      const ext = contentType.includes('png') ? '.png' : 
-                  contentType.includes('gif') ? '.gif' : 
-                  contentType.includes('webp') ? '.webp' : '.jpg';
-      
-      // Save the image
-      const buffer = await response.buffer();
-      
-      try {
-        const filepath = path.join(UPLOADS_DIR, `${fileHash}${ext}`);
-        fs.writeFileSync(filepath, buffer);
-      } catch (writeError: any) {
-        console.error('Error writing image to disk:', writeError);
-        // Continue anyway to serve the image from memory
-      }
-      
-      // Serve the image
-      res.setHeader('Content-Type', contentType);
-      res.setHeader('Cache-Control', 'public, max-age=86400'); // Cache for 24 hours
-      res.end(buffer);
-    } catch (fetchError: any) {
-      console.error(`Error fetching image from URL: ${fullUrl}`, fetchError);
+
+      console.error(`Error fetching image from URL: ${fullUrl}`, fetchError?.message || fetchError);
       return res.redirect('/api/images/placeholder');
     }
   } catch (error: any) {
@@ -345,13 +359,10 @@ async function refreshImageInBackground(id: string, fileHash: string) {
   }
   
   // Check if we've recently had rate limit issues with this image
-  const rateLimitedFiles = fs.readdirSync(UPLOADS_DIR).filter(f => f === `${fileHash}_ratelimited.svg`);
-  if (rateLimitedFiles.length > 0) {
-    // If we have a rate-limited placeholder, check its age
-    const rateLimitedPath = path.join(UPLOADS_DIR, rateLimitedFiles[0]);
-    const stats = fs.statSync(rateLimitedPath);
-    const fileAge = Date.now() - stats.mtimeMs;
-    
+  const rateLimitedMarker = path.join(UPLOADS_DIR, `${fileHash}_ratelimited.svg`);
+  if (fs.existsSync(rateLimitedMarker)) {
+    const fileAge = Date.now() - fs.statSync(rateLimitedMarker).mtimeMs;
+
     // Skip refresh if rate limited recently (within last 30 minutes)
     if (fileAge < 30 * 60 * 1000) {
       console.log(`Skipping refresh for rate-limited image: ${id}`);
@@ -390,82 +401,38 @@ async function refreshImageInBackground(id: string, fileHash: string) {
     
     try {
       console.log(`Background refreshing image: ${fullUrl}`);
-      const response = await fetch(fullUrl);
-      
-      // Handle rate limiting specially
-      if (response.status === 429) {
-        console.error(`Rate limited when background refreshing image: ${fullUrl}`);
-        
-        // Create rate limited placeholder if this is an Imgur URL
-        if (fullUrl.includes('imgur.com')) {
-          let imgurId = 'unknown';
-          if (fullUrl.includes('i.imgur.com/')) {
-            imgurId = fullUrl.split('i.imgur.com/')[1].split('.')[0];
-          }
-          
-          const svg = `<svg width="400" height="300" xmlns="http://www.w3.org/2000/svg">
-            <rect width="400" height="300" fill="#fdf2f8" />
-            <rect width="400" height="90" y="105" fill="#ec4899" fill-opacity="0.8" />
-            <text x="50%" y="135" font-family="Arial" font-size="16" text-anchor="middle" fill="#ffffff">
-              Imgur Image: ${imgurId}
-            </text>
-            <text x="50%" y="160" font-family="Arial" font-size="14" text-anchor="middle" fill="#ffffff">
-              (Rate Limited - Try Again Later)
-            </text>
-            <text x="50%" y="185" font-family="Arial" font-size="12" text-anchor="middle" fill="#ffffff">
-              Imgur limits to 520 requests/hour
-            </text>
-            <path d="M200 55 L230 85 L200 115 L170 85 Z" fill="#ec4899" fill-opacity="0.5" />
-          </svg>`;
-          
-          try {
-            const filepath = path.join(UPLOADS_DIR, `${fileHash}_ratelimited.svg`);
-            fs.writeFileSync(filepath, svg);
-            console.log(`Created rate-limited placeholder for: ${fullUrl}`);
-          } catch (writeError: any) {
-            console.error('Failed to save SVG placeholder:', writeError);
-          }
-        }
-        
-        return;
-      }
-      
-      if (!response.ok) {
-        console.error(`Failed to refresh image: ${fullUrl} (Status: ${response.status})`);
-        return;
-      }
-      
-      // Get content type and determine extension
-      const contentType = response.headers.get('content-type') || 'image/jpeg';
-      
-      // Skip if not an image
-      if (!contentType.startsWith('image/')) {
-        console.error(`URL doesn't point to an image: ${fullUrl} (Content-Type: ${contentType})`);
-        return;
-      }
-      
-      const ext = contentType.includes('png') ? '.png' : 
-                 contentType.includes('gif') ? '.gif' : 
-                 contentType.includes('webp') ? '.webp' : '.jpg';
-      
+      const { buffer, contentType } = await fetchImage(fullUrl, { background: true });
+      const ext = extensionForContentType(contentType);
+
       try {
-        // Save the image
-        const buffer = await response.buffer();
-        const filepath = path.join(UPLOADS_DIR, `${fileHash}${ext}`);
-        fs.writeFileSync(filepath, buffer);
+        fs.writeFileSync(path.join(UPLOADS_DIR, `${fileHash}${ext}`), buffer);
         console.log(`Successfully refreshed image: ${fullUrl}`);
-        
+
         // If this was previously rate limited, cleanup the rate limited placeholder
-        const rateLimitedPath = path.join(UPLOADS_DIR, `${fileHash}_ratelimited.svg`);
-        if (fs.existsSync(rateLimitedPath)) {
-          fs.unlinkSync(rateLimitedPath);
+        if (fs.existsSync(rateLimitedMarker)) {
+          fs.unlinkSync(rateLimitedMarker);
           console.log(`Removed rate-limited placeholder after successful refresh: ${fullUrl}`);
         }
       } catch (writeError: any) {
         console.error('Error writing refreshed image to disk:', writeError);
       }
     } catch (fetchError: any) {
-      console.error(`Error fetching image: ${fullUrl}`, fetchError);
+      const status = fetchError instanceof ImageFetchError ? fetchError.status : undefined;
+
+      // Handle rate limiting specially
+      if (status === 429) {
+        console.error(`Rate limited when background refreshing image: ${fullUrl}`);
+
+        // Create rate limited placeholder if this is an Imgur URL
+        if (fullUrl.includes('imgur.com')) {
+          writeRateLimitedPlaceholder(fileHash, buildRateLimitedSvg(fullUrl));
+          console.log(`Created rate-limited placeholder for: ${fullUrl}`);
+        }
+
+        return;
+      }
+
+      console.error(`Error fetching image: ${fullUrl}`, fetchError?.message || fetchError);
     }
   } catch (error: any) {
     // Just log the error, don't interrupt the request flow

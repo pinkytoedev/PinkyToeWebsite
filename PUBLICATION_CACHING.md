@@ -43,15 +43,42 @@ The caching system has been upgraded to be **publication-aware**, meaning it ada
 
 ### 3. **Direct Cache Refresh API**
 - Direct API endpoint for cache refresh operations
-- Uses the same reliable logic as admin refresh endpoints
-- API endpoint: `POST /api/cache/refresh`
+- Shares the admin router's logic and authentication
+- API endpoint: `POST /api/cache/refresh` (legacy alias for `POST /api/admin/refresh`)
 
 ### 4. **Publication Webhook Integration**
 - Dedicated webhook endpoint for automatic cache refresh on article publication
 - Triggered by your publishing platform when articles are published
 - Immediately updates website with new content
 - API endpoint: `POST /api/webhooks/article-published`
+- **Authentication:** requires `WEBHOOK_SECRET`, sent as the `X-Webhook-Secret`
+  header (preferred) or a `webhookSecret` body field. Returns 503 in production
+  when unset.
 
+
+### 5. **Scheduled Release**
+- Publication is gated on two Airtable fields on the `History` table:
+  - `Finished` (checkbox) — the editor has signed the piece off
+  - `Scheduled` (datetime) — the moment it goes live
+- An article is public only when **both** hold: `Finished` is ticked **and** the
+  stored `Scheduled` time has passed.
+- `Scheduled` is a **gate, not a trigger**. It can delay a finished article, but
+  it never publishes an unfinished one, however old the date.
+
+| `Finished` | `Scheduled` | Visible? |
+|---|---|---|
+| off | any | No — draft |
+| on | passed | Yes |
+| on | still ahead | No — held until that moment |
+| on | empty | Yes |
+
+- The release time is honoured **to the minute**, not rounded to the day.
+- A one-shot timer is armed for the next pending release, so the article appears
+  at its stored time rather than waiting for the next periodic refresh. The
+  timer invalidates and rebuilds the articles, featured and recent caches, then
+  re-arms for whatever is next in the queue.
+- Releases further out than 25 hours are picked up by a later refresh, closer to
+  the time.
 
 ### 5. **Cache Warmup**
 - Server starts with warm caches for immediate availability
@@ -63,8 +90,13 @@ The caching system has been upgraded to be **publication-aware**, meaning it ada
 ### Cache Refresh
 ```http
 POST /api/cache/refresh
+Authorization: Bearer $ADMIN_TOKEN
 ```
-Refreshes all cached data using the same logic as `refreshCachedData()`.
+Refreshes all cached data. Equivalent to `POST /api/admin/refresh`.
+
+**Authentication:** requires `ADMIN_TOKEN`, sent as `Authorization: Bearer <token>`
+or `X-Admin-Token: <token>`. In production the endpoint returns **503** when
+`ADMIN_TOKEN` is unset; in development it is open.
 
 **Request Body (optional):**
 ```json

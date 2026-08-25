@@ -1,0 +1,22 @@
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 5
+    groups:
+      # Radix ships ~25 packages that move together; one PR instead of 25.
+      radix:
+        patterns: ["@radix-ui/*"]
+      types:
+        patterns: ["@types/*"]
+    ignore:
+      # Majors are migrations, not upgrades - raise them deliberately.
+      - dependency-name: "*"
+        update-types: ["version-update:semver-major"]
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: monthly

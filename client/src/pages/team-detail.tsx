@@ -140,7 +140,7 @@ export default function TeamMemberDetail() {
                         </div>
                       ) : authoredArticles && authoredArticles.length > 0 ? (
                         <div className="max-h-64 md:max-h-80 overflow-y-auto space-y-3 pr-2 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100">
-                          {authoredArticles
+                          {[...authoredArticles]
                             .sort((a, b) => new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime())
                             .map((article) => {
                               const articleImageUrl = article.imageUrl ? getImageUrl(article.imageUrl) : getPhotoUrl(article.photo);
@@ -177,7 +177,7 @@ export default function TeamMemberDetail() {
                         </div>
                       ) : photoCreditArticles && photoCreditArticles.length > 0 ? (
                         <div className="max-h-64 md:max-h-80 overflow-y-auto space-y-3 pr-2 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100">
-                          {photoCreditArticles
+                          {[...photoCreditArticles]
                             .sort((a, b) => new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime())
                             .map((article) => {
                               const articleImageUrl = article.imageUrl ? getImageUrl(article.imageUrl) : getPhotoUrl(article.photo);

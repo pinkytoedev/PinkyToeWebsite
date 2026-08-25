@@ -4,9 +4,27 @@ import { cachedStorage } from "./index";
 import { imagesRouter } from "./routes/images";
 import { adminRouter } from "./routes/admin";
 import { webhooksRouter } from "./routes/webhooks";
-import { RefreshService } from "./services/refresh-service";
+import {
+  RefreshService,
+  REFRESHABLE_ENTITIES,
+  isRefreshableEntity,
+} from "./services/refresh-service";
 import { CacheService } from "./services/cache-service";
 import { PublicationScheduler } from "./services/publication-scheduler";
+import { requireAdmin } from "./middleware/auth";
+import { z } from "zod";
+
+/** Query contract for GET /api/articles. */
+const articleQuerySchema = z.object({
+  page: z.coerce.number().int().min(1).default(1),
+  limit: z.coerce.number().int().min(1).max(50).default(6),
+  search: z.string().max(100).default(""),
+});
+
+/** Query contract for GET /api/articles/recent. */
+const recentArticlesQuerySchema = z.object({
+  limit: z.coerce.number().int().min(1).max(50).default(4),
+});
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Register the routers
@@ -14,67 +32,36 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.use('/api/admin', adminRouter);
   app.use('/api/webhooks', webhooksRouter);
 
-  // Cache refresh endpoint - uses same logic as refreshCachedData()
-  app.post("/api/cache/refresh", async (req, res) => {
+  // Legacy alias for POST /api/admin/refresh[/:entity]. Kept because it is
+  // documented in PUBLICATION_CACHING.md and used by the console helpers;
+  // shares the admin gate and the same refresh logic.
+  app.post("/api/cache/refresh", requireAdmin, async (req, res) => {
     try {
-      // console.log('Cache refresh requested via API');
-      const { entity } = req.body;
+      const { entity } = req.body ?? {};
 
       if (entity) {
-        // Refresh specific entity (same logic as refreshCachedData with entity)
-        const validEntities = ['articles', 'featuredArticles', 'recentArticles', 'team', 'quotes'];
-        if (!validEntities.includes(entity)) {
+        if (!isRefreshableEntity(entity)) {
           return res.status(400).json({
             success: false,
-            message: `Invalid entity type. Valid options are: ${validEntities.join(', ')}`
+            message: `Invalid entity type. Valid options are: ${REFRESHABLE_ENTITIES.join(', ')}`
           });
         }
 
-        // console.log(`API: Refreshing ${entity} cached data`);
+        await RefreshService.invalidateAndRefresh(entity);
 
-        // Handle the specific entity refresh (same logic as admin router)
-        switch (entity) {
-          case 'articles':
-            CacheService.invalidateCache('articles');
-            await RefreshService.refreshArticles();
-            break;
-          case 'featuredArticles':
-            CacheService.invalidateCache('featuredArticles');
-            await RefreshService.refreshFeaturedArticles();
-            break;
-          case 'recentArticles':
-            CacheService.invalidateCache('recentArticles');
-            await RefreshService.refreshRecentArticles();
-            break;
-          case 'team':
-            CacheService.invalidateCache('team');
-            await RefreshService.refreshTeam();
-            break;
-          case 'quotes':
-            CacheService.invalidateCache('quotes');
-            await RefreshService.refreshQuotes();
-            break;
-        }
-
-        res.json({
+        return res.json({
           success: true,
           message: `${entity} cache has been invalidated and refreshed`
         });
-      } else {
-        // Refresh all (same logic as refreshCachedData without entity)
-        // console.log('API: Refreshing all cached data');
-
-        // First invalidate all caches
-        CacheService.invalidateAllCaches();
-
-        // Then trigger a refresh of all data
-        await RefreshService.refreshAll();
-
-        res.json({
-          success: true,
-          message: 'All caches have been invalidated and data refreshed'
-        });
       }
+
+      CacheService.invalidateAllCaches();
+      await RefreshService.refreshAll();
+
+      res.json({
+        success: true,
+        message: 'All caches have been invalidated and data refreshed'
+      });
     } catch (error) {
       console.error("Cache refresh failed:", error);
       res.status(500).json({
@@ -132,10 +119,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // API routes for articles
   app.get("/api/articles", async (req, res) => {
     try {
-      const page = parseInt(req.query.page as string) || 1;
-      const limit = parseInt(req.query.limit as string) || 6;
-      const search = req.query.search as string || "";
+      // Validate rather than parseInt-and-hope: an unbounded `limit` makes every
+      // request pull the whole History table, and a negative one silently
+      // truncates via slice().
+      const parsed = articleQuerySchema.safeParse(req.query);
+      if (!parsed.success) {
+        return res.status(400).json({
+          message: "Invalid query parameters",
+          issues: parsed.error.issues.map(i => ({ path: i.path.join('.'), message: i.message })),
+        });
+      }
 
+      const { page, limit, search } = parsed.data;
       const result = await cachedStorage.getArticles(page, limit, search);
       res.json(result);
     } catch (error) {
@@ -156,8 +151,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.get("/api/articles/recent", async (req, res) => {
     try {
-      const limit = parseInt(req.query.limit as string) || 4;
-      const recentArticles = await cachedStorage.getRecentArticles(limit);
+      const parsed = recentArticlesQuerySchema.safeParse(req.query);
+      if (!parsed.success) {
+        return res.status(400).json({ message: "Invalid query parameters" });
+      }
+
+      const recentArticles = await cachedStorage.getRecentArticles(parsed.data.limit);
       res.json(recentArticles);
     } catch (error) {
       console.error("Error fetching recent articles:", error);

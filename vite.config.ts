@@ -32,5 +32,9 @@ export default defineConfig({
   build: {
     outDir: path.resolve(__dirname, "dist/public"),
     emptyOutDir: true,
+    // Without this, production stack traces point into a single minified
+    // bundle and are unreadable. 'hidden' keeps the maps out of the served
+    // JS via sourceMappingURL while still emitting them for error tooling.
+    sourcemap: "hidden",
   },
 });

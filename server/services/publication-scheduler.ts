@@ -29,7 +29,7 @@ export class PublicationScheduler {
     businessDays: [1, 2, 3, 4, 5] // Monday-Friday
   };
 
-  private static contentTiers: Record<string, ContentTierConfig> = {
+  private static contentTiers = {
     // Tier 1: Critical content (homepage, breaking news)
     critical: {
       name: 'Critical Content',
@@ -53,7 +53,16 @@ export class PublicationScheduler {
       offHoursInterval: 360 * 60 * 1000,      // 6 hours during off-hours
       cacheExpiry: 480 * 60 * 1000            // 8 hours cache expiry (longer than off-hours interval)
     }
-  };
+  } satisfies Record<string, ContentTierConfig>;
+
+  /**
+   * The newsroom's timezone. Publication days are reckoned in it, so an
+   * article scheduled for the 25th goes live on the 25th in New York rather
+   * than whenever UTC happens to roll over.
+   */
+  static getTimezone(): string {
+    return this.config.timezone;
+  }
 
   /**
    * Check if current time is during business hours

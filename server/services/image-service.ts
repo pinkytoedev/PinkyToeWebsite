@@ -50,6 +50,23 @@ export class ImageService {
    * Get image URL through proxy to handle Airtable's expiring URLs
    * Format: /api/images/:encodedUrl
    */
+  /**
+   * Recover the origin URL from a proxy path, the inverse of getProxyUrl.
+   *
+   * Returns null for anything that isn't a fetchable http(s) origin - a bare
+   * Airtable record id, a local /member-photos path, or junk.
+   */
+  static toOriginUrl(url: string): string | null {
+    const PROXY_PREFIX = '/api/images/';
+
+    let candidate = url;
+    if (candidate.startsWith(PROXY_PREFIX)) {
+      candidate = decodeURIComponent(candidate.slice(PROXY_PREFIX.length));
+    }
+
+    return candidate.startsWith('http') ? candidate : null;
+  }
+
   static getProxyUrl(url: string): string {
     // If it's already a proxy URL, return it as is
     if (url.startsWith('/api/images/')) {

@@ -11,16 +11,26 @@ import { nanoid } from "nanoid";
 
 const viteLogger = createLogger();
 
+/**
+ * Structured-ish server log line.
+ *
+ * Per-request logging is noisy in production, so it is suppressed there unless
+ * LOG_REQUESTS is set. Startup, shutdown and error diagnostics go through
+ * console.error/console.log directly so they are never suppressed.
+ */
 export function log(message: string, source = "express") {
-  // Only log errors or critical messages in production to reduce noise
-  // const formattedTime = new Date().toLocaleTimeString("en-US", {
-  //   hour: "numeric",
-  //   minute: "2-digit",
-  //   second: "2-digit",
-  //   hour12: true,
-  // });
+  if (process.env.NODE_ENV === "production" && !process.env.LOG_REQUESTS) {
+    return;
+  }
 
-  // console.log(`${formattedTime} [${source}] ${message}`);
+  const formattedTime = new Date().toLocaleTimeString("en-US", {
+    hour: "numeric",
+    minute: "2-digit",
+    second: "2-digit",
+    hour12: true,
+  });
+
+  console.log(`${formattedTime} [${source}] ${message}`);
 }
 
 export async function setupVite(app: Express, server: Server) {

@@ -2,10 +2,49 @@ import { Article, Team, CarouselQuote } from "@shared/schema";
 import Airtable from "airtable";
 import { ImageService } from "./services/image-service";
 import { config } from "./config";
+import {
+  filterPubliclyVisible,
+  isPubliclyVisible,
+  nextReleaseTime,
+  publicationFieldsOf,
+} from "./services/article-visibility";
 
 // Initialize Airtable
 const airtableApiKey = config.airtable.apiKey;
 const airtableBaseId = config.airtable.baseId;
+
+// Longest search term we'll forward to Airtable. Anything beyond this is noise
+// and just inflates the formula we send.
+const MAX_SEARCH_LENGTH = 100;
+
+// How many featured articles the homepage rail shows.
+const FEATURED_ARTICLE_COUNT = 5;
+
+// How many of an author's articles a team profile lists.
+const AUTHOR_ARTICLE_LIMIT = 10;
+
+// How far down the Scheduled-descending list to look for pending releases.
+// Everything embargoed sits at the top, so this only needs to exceed the
+// number of articles that could ever be queued at once.
+const RELEASE_LOOKAHEAD_RECORDS = 100;
+
+/**
+ * Escape a value for interpolation into an Airtable formula string literal.
+ *
+ * The backslash must be escaped first, otherwise a trailing backslash in the
+ * input escapes our own closing quote and lets the caller continue the formula.
+ * Control characters are stripped since they can't appear in a valid literal.
+ */
+export function escapeAirtableString(value: string, quote: '"' | "'" = '"'): string {
+  const escaped = value
+    .slice(0, MAX_SEARCH_LENGTH)
+    .replace(/[\x00-\x1F\x7F]/g, '')
+    .replace(/\\/g, '\\\\');
+
+  return quote === '"'
+    ? escaped.replace(/"/g, '\\"')
+    : escaped.replace(/'/g, "\\'");
+}
 
 export interface IStorage {
   // Article methods
@@ -22,6 +61,12 @@ export interface IStorage {
   // Quote methods
   getQuotes(): Promise<CarouselQuote[]>;
   getQuoteOfDay(): Promise<CarouselQuote>;
+
+  /**
+   * When the next embargoed article becomes visible, or null if none is
+   * waiting. Drives the release timer in RefreshService.
+   */
+  getNextReleaseTime(): Promise<Date | null>;
 }
 
 export class AirtableStorage implements IStorage {
@@ -44,21 +89,14 @@ export class AirtableStorage implements IStorage {
       
       if (search) {
         // Search in both Name and Description fields
-        const searchFilter = `OR(SEARCH("${search.replace(/"/g, '\\"')}", {Name}), SEARCH("${search.replace(/"/g, '\\"')}", {Description}))`;
+        const term = escapeAirtableString(search);
+        const searchFilter = `OR(SEARCH("${term}", {Name}), SEARCH("${term}", {Description}))`;
         filterByFormula = `AND(${filterByFormula}, ${searchFilter})`;
       }
 
-      // First get count of total records matching the search
-      const countQuery = this.base('History').select({
-        filterByFormula
-        // Remove fields parameter as 'id' is automatic in Airtable
-      });
-
-      const totalRecords = await countQuery.all();
-      const total = totalRecords.length;
-
-      // Then fetch the specific page of data - we need to fetch ALL records and do pagination manually
-      // because Airtable offset doesn't work with arbitrary offset values
+      // Airtable's offset can't be used with arbitrary page numbers, so we fetch
+      // the matching set once and paginate in memory. The same result set gives
+      // us the total, so there's no need for a second counting scan.
       const query = this.base('History').select({
         sort: [
           { field: 'Scheduled', direction: 'desc' },
@@ -67,8 +105,11 @@ export class AirtableStorage implements IStorage {
         filterByFormula
       });
 
-      // Get all records but manually paginate them
-      const allRecords = await query.all();
+      // Hold back anything whose scheduled time hasn't arrived yet. This runs
+      // here rather than in the Airtable formula so the comparison uses our
+      // clock, not Airtable's cached NOW().
+      const allRecords = filterPubliclyVisible(await query.all());
+      const total = allRecords.length;
       const start = (page - 1) * limit;
       const end = Math.min(start + limit, allRecords.length);
 
@@ -91,12 +132,13 @@ export class AirtableStorage implements IStorage {
         sort: [
           { field: 'Scheduled', direction: 'desc' },
           { field: 'Date', direction: 'desc' }
-        ],
-        maxRecords: 5
+        ]
+        // No maxRecords: unreleased articles have to be filtered out before
+        // the cap is applied, or they would eat slots and short the list.
       });
 
-      const records = await query.all();
-      return records.map(this.mapAirtableRecordToArticle);
+      const records = filterPubliclyVisible(await query.all());
+      return records.slice(0, FEATURED_ARTICLE_COUNT).map(this.mapAirtableRecordToArticle);
     } catch (error) {
       console.error('Error fetching featured articles from Airtable:', error);
       return [];
@@ -110,12 +152,12 @@ export class AirtableStorage implements IStorage {
         sort: [
           { field: 'Scheduled', direction: 'desc' },
           { field: 'Date', direction: 'desc' }
-        ],
-        maxRecords: limit
+        ]
+        // See getFeaturedArticles: cap after filtering, not before.
       });
 
-      const records = await query.all();
-      return records.map(this.mapAirtableRecordToArticle);
+      const records = filterPubliclyVisible(await query.all());
+      return records.slice(0, limit).map(this.mapAirtableRecordToArticle);
     } catch (error) {
       console.error('Error fetching recent articles from Airtable:', error);
       return [];
@@ -125,6 +167,16 @@ export class AirtableStorage implements IStorage {
   async getArticleById(id: string): Promise<Article | undefined> {
     try {
       const record = await this.base('History').find(id);
+
+      // Listing queries all gate on Finished/Scheduled, but a direct lookup by
+      // ID did not - so drafts were served in full to anyone with the record
+      // ID. Not theoretical: the Teams table's AuthorSub and PhotoSub link
+      // fields include drafts, and team profile pages fetch each linked
+      // article by ID, so drafts rendered on the public site.
+      if (!isPubliclyVisible(publicationFieldsOf(record))) {
+        return undefined;
+      }
+
       return this.mapAirtableRecordToArticle(record);
     } catch (error) {
       console.error(`Error fetching article ${id} from Airtable:`, error);
@@ -140,13 +192,13 @@ export class AirtableStorage implements IStorage {
 
       // Find all articles by this author
       const query = this.base('History').select({
-        filterByFormula: `AND({Author} = '${teamMember.name.replace(/'/g, "\\'")}', Finished = TRUE())`,
-        sort: [{ field: 'Date', direction: 'desc' }],
-        maxRecords: 10
+        filterByFormula: `AND({Author} = '${escapeAirtableString(teamMember.name, "'")}', Finished = TRUE())`,
+        sort: [{ field: 'Date', direction: 'desc' }]
+        // See getFeaturedArticles: cap after filtering, not before.
       });
 
-      const records = await query.all();
-      return records.map(this.mapAirtableRecordToArticle);
+      const records = filterPubliclyVisible(await query.all());
+      return records.slice(0, AUTHOR_ARTICLE_LIMIT).map(this.mapAirtableRecordToArticle);
     } catch (error) {
       console.error(`Error fetching articles for author ${authorId} from Airtable:`, error);
       return [];
@@ -311,6 +363,25 @@ export class AirtableStorage implements IStorage {
     } catch (error) {
       console.error('Error fetching quotes from Airtable:', error);
       return [];
+    }
+  }
+
+  async getNextReleaseTime(): Promise<Date | null> {
+    try {
+      // Embargoed articles are by definition the newest by Scheduled, so a
+      // descending sort puts every one of them at the top. Reading a single
+      // page is enough and keeps this to one request - far cheaper than
+      // scanning the table, since this runs after every article refresh.
+      const query = this.base('History').select({
+        filterByFormula: 'Finished = TRUE()',
+        sort: [{ field: 'Scheduled', direction: 'desc' }],
+        maxRecords: RELEASE_LOOKAHEAD_RECORDS
+      });
+
+      return nextReleaseTime(await query.all());
+    } catch (error) {
+      console.error('Error looking up next scheduled release:', error);
+      return null;
     }
   }
 
@@ -608,6 +679,11 @@ export class MemStorage implements IStorage {
 
   async getArticleById(id: string): Promise<Article | undefined> {
     return this.articles.find(article => article.id === id);
+  }
+
+  /** Sample data is never embargoed, so there is nothing to wait for. */
+  async getNextReleaseTime(): Promise<Date | null> {
+    return null;
   }
 
   async getArticlesByAuthorId(authorId: string): Promise<Article[]> {

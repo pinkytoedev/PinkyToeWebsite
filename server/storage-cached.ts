@@ -13,6 +13,28 @@ export class CachedStorage implements IStorage {
     this.originalStorage = storage;
   }
 
+  /**
+   * Whether the cached article set actually contains the requested page.
+   *
+   * The cache may legitimately hold fewer articles than `total` (the refresh
+   * service fetches a bounded batch), so a page past the end of the cached
+   * slice has to fall through to origin rather than being reported as empty.
+   */
+  private static cacheCoversPage(
+    cached: { articles: Article[], total: number },
+    page: number,
+    limit: number
+  ): boolean {
+    // A complete cache is authoritative for every page, including empty ones
+    // past the end.
+    if (cached.articles.length >= cached.total) {
+      return true;
+    }
+
+    // A partial cache may only serve pages that sit entirely inside its slice.
+    return (page - 1) * limit + limit <= cached.articles.length;
+  }
+
   async getArticles(page: number, limit: number, search = ""): Promise<{ articles: Article[], total: number }> {
     try {
       // For search queries, bypass cache
@@ -20,40 +42,25 @@ export class CachedStorage implements IStorage {
         return await this.originalStorage.getArticles(page, limit, search);
       }
 
+      // Validate page number
+      if (page < 1) {
+        page = 1;
+      }
+
       // Try to get from cache first
       const cachedArticles = CacheService.getCachedArticles();
-      if (cachedArticles) {
-        // Validate page number
-        if (page < 1) {
-          page = 1;
-        }
-
+      if (cachedArticles && CachedStorage.cacheCoversPage(cachedArticles, page, limit)) {
         // Apply pagination to cached data
         const start = (page - 1) * limit;
-
-        // Ensure that we're not trying to access beyond the end of the array
-        if (start >= cachedArticles.articles.length) {
-          return {
-            articles: [],
-            total: cachedArticles.total
-          };
-        }
-
         const end = Math.min(start + limit, cachedArticles.articles.length);
-        const pagedArticles = cachedArticles.articles.slice(start, end);
-
-        // Double-check integrity of paged results
-        if (!pagedArticles || !Array.isArray(pagedArticles)) {
-          throw new Error('Article pagination failed');
-        }
 
         return {
-          articles: pagedArticles,
+          articles: cachedArticles.articles.slice(start, end),
           total: cachedArticles.total
         };
       }
 
-      // If not in cache, get from original storage
+      // Not in cache, or the cache doesn't hold this page - go to origin.
       const result = await this.originalStorage.getArticles(page, limit, search);
 
       // Validate result before caching
@@ -61,37 +68,27 @@ export class CachedStorage implements IStorage {
         return { articles: [], total: 0 };
       }
 
-      // Cache the result for future use (only cache first page without search)
-      if (page === 1 && !search) {
+      // Only cache a *complete* article set. Caching a single page here would
+      // poison the cache: later requests would read those few articles back as
+      // if they were the whole collection and every other page would be empty.
+      if (!search && result.articles.length >= result.total) {
         CacheService.cacheArticles(result);
       }
 
       return result;
     } catch (error) {
       console.error('Error in cached getArticles:', error);
-      // Try to serve from cache even on error
+      // Origin is unavailable, so serve whatever the cache holds - even a
+      // partial page beats an error page.
       const cachedArticles = CacheService.getCachedArticles();
       if (cachedArticles) {
-        // Validate page number
-        if (page < 1) {
-          page = 1;
-        }
-
-        // Apply pagination to cached data with improved safety
-        const start = (page - 1) * limit;
-
-        if (start >= cachedArticles.articles.length) {
-          return {
-            articles: [],
-            total: cachedArticles.total
-          };
-        }
-
+        const start = Math.max(0, (page - 1) * limit);
         const end = Math.min(start + limit, cachedArticles.articles.length);
-        const pagedArticles = cachedArticles.articles.slice(start, end);
 
         return {
-          articles: pagedArticles,
+          articles: start < cachedArticles.articles.length
+            ? cachedArticles.articles.slice(start, end)
+            : [],
           total: cachedArticles.total
         };
       }
@@ -197,6 +194,14 @@ export class CachedStorage implements IStorage {
       console.error('No recent articles cache available and original storage failed, returning empty array');
       return [];
     }
+  }
+
+  /**
+   * Always goes to origin: embargoed articles are filtered out of the cache by
+   * definition, so the cache can't say when the next one is due.
+   */
+  async getNextReleaseTime(): Promise<Date | null> {
+    return this.originalStorage.getNextReleaseTime();
   }
 
   async getArticleById(id: string): Promise<Article | undefined> {
