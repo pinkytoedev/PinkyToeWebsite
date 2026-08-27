@@ -9,6 +9,8 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useLocation } from "wouter";
+import { cn } from "@/lib/utils";
+import { isImageLedArticle } from "@/lib/article-content";
 
 export default function Articles() {
   const [page, setPage] = useState(1);
@@ -120,9 +122,33 @@ export default function Articles() {
           )}
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 grid-flow-row-dense gap-6 mb-8">
+          {/*
+            `grid-flow-row-dense` earns its keep here. A full-width card can
+            only sit on an empty row, so without it a normal card followed by
+            an image-led one leaves two thirds of a row blank, which reads as a
+            broken layout rather than a deliberate one. Dense packing backfills
+            those gaps with the next cards that fit.
+
+            The cost is that backfilling can lift a later article above an
+            image-led one, so the grid is no longer strictly date-ordered. Each
+            card carries its own date, and the alternative was visible holes on
+            most pages.
+          */}
           {articles.map((article: any) => (
-            <div key={article.id} onClick={() => handleArticleClick(article.id)} className="h-full">
+            <div
+              key={article.id}
+              onClick={() => handleArticleClick(article.id)}
+              className={cn(
+                "h-full",
+                // A post with no body is the image and the headline, so it gets
+                // a row to itself rather than a third of one. It also has to be
+                // a row of its own: sharing with normal cards would stretch
+                // them to the height of a tall image and leave them mostly
+                // empty, since grid rows size to their tallest item.
+                isImageLedArticle(article) && "md:col-span-2 lg:col-span-3",
+              )}
+            >
               <ArticleCard article={article} />
             </div>
           ))}
