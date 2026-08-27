@@ -20,6 +20,7 @@ export function Marquee({
   children,
 }: MarqueeProps) {
   const containerRef = React.useRef<HTMLDivElement>(null);
+  const trackRef = React.useRef<HTMLDivElement>(null);
   const contentRef = React.useRef<HTMLDivElement>(null);
   const [isPaused, setIsPaused] = React.useState(false);
   const [childrenArray, setChildrenArray] = React.useState<React.ReactNode[]>([]);
@@ -35,12 +36,23 @@ export function Marquee({
   const calculateDuration = React.useCallback(() => {
     if (!contentRef.current) return;
 
-    const measuredWidth = contentRef.current.scrollWidth;
+    // Fractional width, not scrollWidth: the integer rounding shows up as a
+    // visible jump every time the loop restarts.
+    const measuredWidth =
+      contentRef.current.getBoundingClientRect().width || contentRef.current.scrollWidth;
     if (measuredWidth === 0) return;
 
+    // The copy has to travel its own width *plus* the gap separating it from
+    // the duplicate, or the seam closes up and two quotes collide once per lap.
+    // Read the gap rather than hard-coding it so it tracks the class below.
+    const gap = trackRef.current
+      ? parseFloat(window.getComputedStyle(trackRef.current).columnGap) || 0
+      : 0;
+    const distance = measuredWidth + gap;
+
     const normalizedSpeed = Math.max(speed, 1);
-    setAnimationDuration(Math.max(measuredWidth / normalizedSpeed, 5));
-    setContentWidth(measuredWidth);
+    setAnimationDuration(Math.max(distance / normalizedSpeed, 5));
+    setContentWidth(distance);
   }, [speed]);
 
   React.useEffect(() => {
@@ -82,7 +94,13 @@ export function Marquee({
       onMouseLeave={handleMouseLeave}
     >
       <div
-        className="flex items-center whitespace-nowrap px-10"
+        ref={trackRef}
+        // The gap belongs on the track, not only inside each copy. Quotes
+        // within a copy sat 96px apart while the join between the two copies
+        // was 0px, so once per lap the last quote and the first ran straight
+        // into each other with no space — which is what "the quotes look
+        // squished" was. The more quotes there are, the more often it shows.
+        className="flex items-center gap-24 whitespace-nowrap px-10"
         style={(() => {
           const marqueeStyle: React.CSSProperties & {
             "--marquee-width"?: string;
