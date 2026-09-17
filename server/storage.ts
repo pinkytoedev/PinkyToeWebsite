@@ -1,6 +1,7 @@
 import { Article, Team, CarouselQuote } from "@shared/schema";
 import Airtable from "airtable";
 import { ImageService } from "./services/image-service";
+import { deriveDescriptionFromContent } from "./utils/article-description";
 import { config } from "./config";
 import {
   filterPubliclyVisible,
@@ -478,68 +479,24 @@ export class AirtableStorage implements IStorage {
     // Determine status based on Finished boolean (published/draft)
     const isFinished = record.get('Finished') === true || record.get('finished') === true;
 
-    // Handle description - if missing, use first two sentences of content
-    let description = (record.get('description') as string || record.get('Description') as string || '').trim();
+    const editorDescription = (record.get('description') as string || record.get('Description') as string || '').trim();
     const content = record.get('content') as string || record.get('Content') as string || record.get('Body') as string || '';
     const contentFormat = record.get('contentFormat') as any || record.get('Content Format') as any ||
       // If content comes from Body field, assume it's HTML
       (record.get('Body') ? 'html' : 'plaintext');
 
-    // Helper to decode HTML entities
-    const decodeHtmlEntities = (text: string): string => {
-      const entities: Record<string, string> = {
-        '&amp;': '&',
-        '&lt;': '<',
-        '&gt;': '>',
-        '&quot;': '"',
-        '&#39;': "'",
-        '&apos;': "'",
-        '&nbsp;': ' ',
-        '&rsquo;': "'",
-        '&lsquo;': "'",
-        '&rdquo;': '"',
-        '&ldquo;': '"',
-        '&mdash;': '—',
-        '&ndash;': '–'
-      };
-      return text.replace(/&[a-zA-Z0-9#]+;/g, (match) => entities[match] || match);
-    };
-
-    if (!description && content) {
-      // Strip HTML tags if format is HTML
-      let plainText = content;
-      if (contentFormat === 'html') {
-        // Remove style and meta tags and their content first
-        plainText = plainText.replace(/<style[^>]*>[\s\S]*?<\/style>/gi, '');
-        plainText = plainText.replace(/<meta[^>]*>/gi, '');
-        
-        // Replace block-level closing tags with a space to prevent text merging
-        plainText = plainText.replace(/<\/(p|div|h[1-6]|li|tr|blockquote)>/gi, ' ');
-        // Remove HTML tags
-        plainText = plainText.replace(/<[^>]*>/g, '');
-        // Decode HTML entities
-        plainText = decodeHtmlEntities(plainText);
-        // Replace multiple spaces/newlines with single space and trim
-        plainText = plainText.replace(/\s+/g, ' ').trim();
-      }
-
-      // Match sentences ending in ., !, or ?
-      // This regex captures sentences more robustly, including those with quotes
-      const sentenceMatch = plainText.match(/.*?[.!?](?:\s|$)/g);
-      
-      if (sentenceMatch && sentenceMatch.length > 0) {
-        // Take first two sentences
-        description = sentenceMatch.slice(0, 2).join('').trim();
-      } else {
-        // Fallback if no sentence structure detected: take first 200 chars
-        description = plainText.length > 200 ? plainText.substring(0, 200) + '...' : plainText;
-      }
-    }
+    // Most posts leave the description empty, so the opening of the article
+    // stands in for one. Saying which is which matters: as a teaser on a card
+    // it reads well, but on the article itself it sits directly above the
+    // sentences it was cut from, and the reader reads them twice.
+    const descriptionIsExcerpt = !editorDescription;
+    const description = editorDescription || deriveDescriptionFromContent(content, contentFormat);
 
     return {
       id: record.id,
       title: record.get('Name') as string || record.get('title') as string || record.get('Title') as string || '',
       description: description,
+      descriptionIsExcerpt: descriptionIsExcerpt,
       excerpt: record.get('excerpt') as string || record.get('Excerpt') as string || undefined,
       content: content,
       contentFormat: contentFormat,
@@ -769,6 +726,7 @@ export class MemStorage implements IStorage {
         id: 'article1',
         title: 'The Evolution of Feminist Comedy',
         description: 'How humor has been a powerful tool for feminist movements throughout history, breaking barriers and challenging stereotypes.',
+        descriptionIsExcerpt: false, // Written by hand, not cut from the body.
         excerpt: 'A look at feminist comedy through the decades.',
         content: `Throughout history, women have used humor as a powerful tool to challenge patriarchal structures, break barriers, and advocate for equality. From the witty satires of Jane Austen to the groundbreaking stand-up of contemporary comedians, feminist humor has evolved significantly while maintaining its core purpose: to critique, challenge, and change the status quo.
 
@@ -793,6 +751,7 @@ The suffragette movement also employed humor effectively, using satirical cartoo
         id: 'article2',
         title: 'Finding Your Voice: Women in Comedy',
         description: 'Interviews with rising female comedians who are reshaping the landscape of humor and representation.',
+        descriptionIsExcerpt: false,
         content: 'Full article content here...',
         contentFormat: 'plaintext',
         imageUrl: ImageService.getProxyUrl('https://images.unsplash.com/photo-1507676184212-d03ab07a01bf?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80'),
@@ -810,6 +769,7 @@ The suffragette movement also employed humor effectively, using satirical cartoo
         id: 'article3',
         title: 'Breaking the Glass Ceiling in Comedy Writing',
         description: 'A look at the structural barriers women face in comedy writing rooms and the trailblazers breaking through.',
+        descriptionIsExcerpt: false,
         content: 'Full article content here...',
         contentFormat: 'plaintext',
         imageUrl: ImageService.getProxyUrl('https://images.unsplash.com/photo-1496449903678-68ddcb189a24?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80'),
