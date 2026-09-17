@@ -37,6 +37,17 @@ export const articleSchema = z.object({
   id: z.string(), // Changed to string for Airtable IDs
   title: z.string(),
   description: z.string(),
+  /**
+   * Whether `description` is the opening of the article rather than something
+   * an editor wrote. Most posts leave the field empty, and the list needs
+   * something under each headline, so the body stands in for one.
+   *
+   * The article page uses this to stay silent: a stand-in shown there sits
+   * directly above the sentences it was cut from. Optional, and treated as a
+   * stand-in when absent, so a cached response from before this existed errs
+   * towards saying it once rather than twice.
+   */
+  descriptionIsExcerpt: z.boolean().optional(),
   excerpt: z.string().optional(), // Added excerpt field
   content: z.string(),
   contentFormat: z

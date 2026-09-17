@@ -94,10 +94,19 @@ export function ArticleView({ article, authorHref, photoCreditHref, className }:
             photoCreditHref={photoCreditHref}
           />
 
-          {/* The card list shows this as a teaser; on the article itself it is
-              a standfirst, and it is the one thing that tells a reader on a
-              wide screen what they are about to read before they scroll. */}
-          {!imageLed && article.description && (
+          {/*
+            A standfirst, but only when an editor wrote one. When the CMS
+            field is left empty the API fills it with the opening of the
+            article, which is a good teaser on a card and a bad one here: it
+            would sit directly above the very sentences it was cut from and
+            make the reader read them twice.
+
+            Tested against `false` rather than for falsiness on purpose. A
+            response cached before the flag existed carries no opinion, and
+            between showing an opening twice and dropping a standfirst until
+            the cache turns over, the second is the smaller loss.
+          */}
+          {!imageLed && article.description && article.descriptionIsExcerpt === false && (
             <p className="mt-4 text-base text-gray-600 sm:text-lg">{article.description}</p>
           )}
         </div>
