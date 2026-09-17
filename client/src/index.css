@@ -176,3 +176,223 @@
   }
 
 }
+@layer components {
+  /*
+   * Article rendering. The markup that uses these lives in
+   * client/src/components/articles/article-view.tsx, which explains why the
+   * lead image is sized against the viewport and the body against a measure.
+   */
+
+  /* Reserve something before the image arrives, so the headline does not jump
+   * down the page as it loads. */
+  .article-hero {
+    min-height: 9rem;
+  }
+
+  /*
+   * A copy of the lead image, blurred, filling whatever the image itself does
+   * not. A portrait picture in a wide frame otherwise sits between two flat
+   * pink slabs, which reads as a layout that broke rather than one that fit.
+   * Same URL as the image in front of it, so it costs no extra request.
+   */
+  .article-hero__backdrop {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transform: scale(1.2);
+    filter: blur(32px) saturate(1.25);
+    opacity: 0.4;
+    pointer-events: none;
+  }
+
+  /*
+   * Capped against the viewport rather than at a fixed height. The old
+   * `max-h-[650px]` was taller than the screen of most phones, so a portrait
+   * image pushed the headline out of view entirely; `svh` keeps that true
+   * while a mobile browser's address bar is still expanded.
+   */
+  .article-hero__media {
+    max-height: min(52vh, 360px);
+    max-height: min(52svh, 360px);
+  }
+
+  /* A post with no body is the picture, so it gets the room. */
+  .article-hero__media--lead {
+    max-height: min(64vh, 460px);
+    max-height: min(64svh, 460px);
+  }
+
+  @media (min-width: 640px) {
+    .article-hero {
+      min-height: 12rem;
+    }
+
+    .article-hero__media {
+      max-height: min(58vh, 440px);
+      max-height: min(58svh, 440px);
+    }
+
+    .article-hero__media--lead {
+      max-height: min(70vh, 560px);
+      max-height: min(70svh, 560px);
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .article-hero__media {
+      max-height: min(62vh, 500px);
+      max-height: min(62svh, 500px);
+    }
+
+    .article-hero__media--lead {
+      max-height: min(74vh, 620px);
+      max-height: min(74svh, 620px);
+    }
+  }
+
+  /*
+   * The reading column.
+   *
+   * This replaces `prose prose-lg max-w-none`, which stretched 18px text the
+   * full width of the container - past 110 characters a line on a desktop,
+   * where the eye starts losing its place on the return sweep. Owning the
+   * rules outright also keeps article bodies from inheriting whatever the
+   * typography plugin decides a `<p>` should be next.
+   */
+  .article-prose {
+    max-width: 62ch;
+    margin-inline: auto;
+    color: #4a4145;
+    font-size: 1.0625rem;
+    line-height: 1.7;
+    overflow-wrap: break-word;
+  }
+
+  @media (min-width: 768px) {
+    .article-prose {
+      font-size: 1.125rem;
+      line-height: 1.72;
+    }
+  }
+
+  .article-prose > :first-child {
+    margin-top: 0;
+  }
+
+  .article-prose > :last-child {
+    margin-bottom: 0;
+  }
+
+  .article-prose p {
+    margin: 0 0 1.05em;
+  }
+
+  /*
+   * Body headings use the UI face, not the display face the base layer puts on
+   * every `h1`-`h6`. RealityStone is a poster font; at subhead size inside
+   * running text it is louder than the headline it sits under.
+   */
+  .article-prose :is(h1, h2, h3, h4, h5, h6) {
+    font-family: 'Quicksand', sans-serif;
+    font-weight: 700;
+    line-height: 1.25;
+    color: hsl(var(--primary));
+    margin: 1.8em 0 0.6em;
+  }
+
+  .article-prose h1 { font-size: 1.7em; }
+  .article-prose h2 { font-size: 1.45em; }
+  .article-prose h3 { font-size: 1.22em; }
+  .article-prose :is(h4, h5, h6) { font-size: 1.08em; }
+
+  .article-prose a {
+    color: hsl(var(--primary));
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.18em;
+    /*
+     * Bodies regularly carry a bare pasted URL as the link text. Without this
+     * it sets as one unbreakable 400px word and scrolls the entire page
+     * sideways on a phone.
+     */
+    overflow-wrap: anywhere;
+  }
+
+  .article-prose a:hover {
+    color: #E93B81;
+  }
+
+  .article-prose strong {
+    font-weight: 700;
+  }
+
+  .article-prose em {
+    font-style: italic;
+  }
+
+  .article-prose :is(ul, ol) {
+    margin: 0 0 1.05em;
+    padding-left: 1.4em;
+  }
+
+  .article-prose ul { list-style: disc; }
+  .article-prose ol { list-style: decimal; }
+
+  .article-prose li {
+    margin: 0.35em 0;
+  }
+
+  .article-prose li > :is(ul, ol) {
+    margin: 0.35em 0;
+  }
+
+  .article-prose blockquote {
+    margin: 1.5em 0;
+    padding: 0.25em 0 0.25em 1.1em;
+    border-left: 3px solid rgba(255, 77, 141, 0.45);
+    color: #6b5f63;
+    font-style: italic;
+  }
+
+  /* Docs exports fixed pixel widths; on a phone those overflow the column. */
+  .article-prose img {
+    display: block;
+    height: auto;
+    max-width: 100%;
+    margin: 1.75em auto;
+    border-radius: 0.75rem;
+  }
+
+  .article-prose hr {
+    margin: 2.25em 0;
+    border: 0;
+    border-top: 1px solid rgba(0, 0, 0, 0.12);
+  }
+
+  /* Scroll the table, not the page. */
+  .article-prose table {
+    display: block;
+    width: 100%;
+    overflow-x: auto;
+    border-collapse: collapse;
+    margin: 1.5em 0;
+    font-size: 0.95em;
+  }
+
+  .article-prose :is(th, td) {
+    border: 1px solid rgba(0, 0, 0, 0.12);
+    padding: 0.5em 0.7em;
+    text-align: left;
+  }
+
+  .article-prose pre {
+    overflow-x: auto;
+    padding: 1em;
+    margin: 1.5em 0;
+    border-radius: 0.5rem;
+    background: rgba(0, 0, 0, 0.05);
+    font-size: 0.9em;
+  }
+}

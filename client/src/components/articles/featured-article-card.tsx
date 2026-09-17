@@ -2,7 +2,7 @@ import { Link } from "wouter";
 import { Article } from "@shared/schema";
 import { formatDate } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { getImageUrl, getPhotoUrl } from "@/lib/image-helper";
+import { getImageUrl } from "@/lib/image-helper";
 import { PLACEHOLDER_IMAGE } from "@/lib/constants";
 
 interface FeaturedArticleCardProps {
@@ -12,44 +12,50 @@ interface FeaturedArticleCardProps {
 export function FeaturedArticleCard({ article }: FeaturedArticleCardProps) {
   // Use imageUrl from MainImageLink or fall back to placeholder
   const imageSource = article.imageUrl ? getImageUrl(article.imageUrl) : PLACEHOLDER_IMAGE;
-  console.log(`Featured article ${article.id} - Using imageUrl: ${article.imageUrl || 'Not available, using placeholder'}`);
-  console.log(`Featured article ${article.id} - Final imageSource: ${imageSource}`);
 
   return (
     <Link href={`/articles/${article.id}`} className="block">
-      <div className="article-card bg-pink-50 rounded-lg shadow-lg overflow-hidden cursor-pointer hover:shadow-xl transition-shadow">
-        <div className="md:flex">
-          <div className="md:w-2/5 flex items-center justify-center">
-            <div className="h-80 w-full bg-pink-100/50 relative overflow-hidden">
+      <div className="article-card cursor-pointer overflow-hidden rounded-lg bg-pink-50 shadow-lg transition-shadow hover:shadow-xl">
+        <div className="md:flex md:items-stretch">
+          <div className="md:w-2/5">
+            {/*
+              Shorter than a screen on a phone, and matched to the text column
+              on desktop. The old fixed 20rem box was most of a phone viewport
+              before the headline appeared, and left a gap beside a long
+              standfirst on desktop.
+            */}
+            <div className="relative flex h-52 w-full items-center justify-center overflow-hidden bg-pink-100/50 sm:h-64 md:h-full md:min-h-[18rem]">
+              {/* Fills the letterboxing a portrait image leaves behind. */}
+              <img src={imageSource} alt="" aria-hidden="true" className="article-hero__backdrop" />
               <img
                 src={imageSource}
                 alt={article.title}
-                className="absolute inset-0 w-full h-full object-contain object-center"
+                className="relative max-h-full max-w-full object-contain"
                 onError={(e) => {
                   const target = e.target as HTMLImageElement;
-                  console.error(`Failed to load image: ${target.src}`);
+                  if (target.src.endsWith(PLACEHOLDER_IMAGE)) return;
                   // Fallback to our local placeholder if image fails to load
                   target.src = PLACEHOLDER_IMAGE;
                 }}
               />
             </div>
           </div>
-          <div className="p-6 md:w-3/5">
-            <div className="uppercase tracking-wide text-sm text-primary font-semibold">Featured</div>
-            <h2 className="font-quicksand font-bold text-2xl mt-2 mb-4 text-pinky-dark">
+          <div className="p-5 sm:p-6 md:w-3/5">
+            <div className="text-sm font-semibold uppercase tracking-wide text-primary">Featured</div>
+            <h2 className="font-quicksand mb-3 mt-2 text-xl font-bold text-pinky-dark sm:text-2xl">
               {article.title}
             </h2>
-            <p className="text-gray-600 mb-4">
+            <p className="mb-4 text-gray-600 line-clamp-4">
               {article.description}
             </p>
             <div className="flex items-center">
               <div className="text-sm">
-                <p className="text-primary font-semibold">{Array.isArray(article.name) ? article.name[0] : article.name}</p>
+                <p className="font-semibold text-primary">{Array.isArray(article.name) ? article.name[0] : article.name}</p>
                 <p className="text-gray-500">{formatDate(article.publishedAt)}</p>
               </div>
             </div>
             <div className="mt-4">
-              <Button className="bg-primary hover:bg-pinky-dark text-white font-quicksand font-bold py-2 px-4 rounded transition-colors">
+              <Button className="font-quicksand rounded bg-primary py-2 px-4 font-bold text-white transition-colors hover:bg-pinky-dark">
                 Read More
               </Button>
             </div>

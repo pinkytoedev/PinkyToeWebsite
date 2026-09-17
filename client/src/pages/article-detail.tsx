@@ -1,22 +1,21 @@
+import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { useParams, useLocation, Link } from "wouter";
+import { useParams, useLocation } from "wouter";
 import { Article, Team } from "@shared/schema";
 import { Layout } from "@/components/layout/layout";
-import { API_ROUTES, PLACEHOLDER_IMAGE } from "@/lib/constants";
-import { formatDate } from "@/lib/utils";
+import { API_ROUTES } from "@/lib/constants";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
-import { getImageUrl } from "@/lib/image-helper";
-import { sanitizeArticleHtml } from "@/lib/sanitize";
-
-import { useState, useEffect } from "react";
 import { fetchTeamMembers, fetchArticleById } from "@/lib/api";
+import { ArticleView } from "@/components/articles/article-view";
+import { findTeamMemberByName } from "@/lib/team-matching";
 
 export default function ArticleDetail() {
   const { id } = useParams();
   const [, setLocation] = useLocation();
   const [teamMembers, setTeamMembers] = useState<Team[]>([]);
+
   const { data: article, isLoading, error } = useQuery<Article>({
     queryKey: [API_ROUTES.ARTICLE_BY_ID(id || '')],
     queryFn: () => fetchArticleById(id || ''),
@@ -39,84 +38,22 @@ export default function ArticleDetail() {
     getTeamMembers();
   }, []);
 
-  // Find team member by name with partial matching
-  const findTeamMemberByName = (name: string | string[] | undefined): Team | undefined => {
-    if (!name || !teamMembers.length) {
-      console.log('Team members data not available yet or name is empty');
-      return undefined;
-    }
-
-    // Handle array of names (take the first one)
-    const nameToMatch = Array.isArray(name) ? name[0] : name;
-
-    if (!nameToMatch) return undefined;
-
-    // Normalize the name for comparison (remove extra spaces, lowercase)
-    const normalizedName = nameToMatch.trim().toLowerCase();
-
-    // First try exact match
-    const exactMatch = teamMembers.find(member => {
-      return member.name.toLowerCase() === normalizedName;
-    });
-
-    if (exactMatch) return exactMatch;
-
-    // If no exact match, try partial matching (if name contains member name or vice versa)
-    return teamMembers.find(member => {
-      const memberName = member.name.toLowerCase();
-      return normalizedName.includes(memberName) || memberName.includes(normalizedName);
-    });
-  };
+  // Arriving from the middle of a scrolled list otherwise drops the reader
+  // into the middle of the article.
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [id]);
 
   const goBack = () => {
     setLocation('/articles');
   };
 
-
-  // Get the image URL from MainImageLink if article is available, or use placeholder
-  const imageSource = article && article.imageUrl
-    ? getImageUrl(article.imageUrl)
-    : PLACEHOLDER_IMAGE;
-
-  if (article) {
-    console.log(`Article detail ${article.id} - Using imageUrl: ${article.imageUrl || 'Not available, using placeholder'}`);
-  }
-
-  // Get team member IDs if available
-  const authorTeamMember = article?.name ? findTeamMemberByName(article.name) : undefined;
-
-  // Better extraction of photo credit name - handle multiple formats
-  let photoName = '';
-  if (article?.name_photo) {
-    if (typeof article.name_photo === 'string') {
-      photoName = article.name_photo
-        .replace(/Photo by /i, '')  // Remove "Photo by " with case insensitivity
-        .replace(/Photo credit:/i, '') // Remove "Photo credit:" with case insensitivity
-        .trim();
-    } else if (Array.isArray(article.name_photo)) {
-      // If it's an array and has items, take the first item
-      const photoArray = article.name_photo as string[];
-      if (photoArray.length > 0) {
-        const photoCredit = photoArray[0];
-        if (typeof photoCredit === 'string') {
-          photoName = photoCredit
-            .replace(/Photo by /i, '')
-            .replace(/Photo credit:/i, '')
-            .trim();
-        } else {
-          console.log('Photo credit item is not a string:', photoCredit);
-        }
-      }
-    } else {
-      console.log('Photo credit is not in an expected format:', article.name_photo);
-    }
-  }
-
-  const photoTeamMember = photoName ? findTeamMemberByName(photoName) : undefined;
+  const authorTeamMember = findTeamMemberByName(teamMembers, article?.name);
+  const photoTeamMember = findTeamMemberByName(teamMembers, article?.name_photo);
 
   return (
     <Layout>
-      <div className="max-w-4xl mx-auto">
+      <div className="mx-auto w-full max-w-5xl">
         <Button
           variant="ghost"
           className="mb-4 flex items-center text-primary hover:text-pinky-dark"
@@ -127,98 +64,41 @@ export default function ArticleDetail() {
         </Button>
 
         {isLoading ? (
-          <div className="bg-white rounded-lg shadow-lg overflow-hidden">
-            <Skeleton className="w-full h-80" />
-            <div className="p-6 space-y-6">
-              <Skeleton className="h-10 w-3/4" />
-
-              <div className="flex items-center">
-                <div className="space-y-2">
-                  <Skeleton className="h-4 w-32" />
-                  <Skeleton className="h-4 w-24" />
-                </div>
-              </div>
-
-              <div className="space-y-4">
-                <Skeleton className="h-4 w-full" />
-                <Skeleton className="h-4 w-full" />
-                <Skeleton className="h-4 w-3/4" />
-                <Skeleton className="h-4 w-full" />
-                <Skeleton className="h-4 w-full" />
-              </div>
-            </div>
-          </div>
+          <ArticleSkeleton />
         ) : error ? (
-          <div className="bg-white rounded-lg shadow-lg p-6">
-            <h2 className="font-quicksand font-bold text-2xl text-red-500 mb-4">Error</h2>
+          <div className="rounded-2xl bg-white p-6 shadow-lg">
+            <h2 className="font-quicksand text-2xl font-bold text-red-500 mb-4">Error</h2>
             <p className="text-gray-700">Failed to load article. Please try again later.</p>
           </div>
         ) : article ? (
-          <div className="bg-pink-50 rounded-lg shadow-lg overflow-hidden">
-            <div className="flex justify-center bg-pink-100/50 py-6">
-              <img
-                src={imageSource}
-                alt={article.title}
-                className="max-w-full max-h-[650px] object-contain"
-                onError={(e) => {
-                  const target = e.target as HTMLImageElement;
-                  console.error(`Failed to load image: ${target.src}`);
-                  target.src = PLACEHOLDER_IMAGE;
-                }}
-              />
-            </div>
-            <div className="p-6">
-              <h1 className="font-quicksand font-bold text-3xl text-primary mb-4">
-                {article.title}
-              </h1>
-
-              <div className="flex items-center mb-6">
-                <div className="text-sm">
-                  {authorTeamMember ? (
-                    <Link href={`/team/${authorTeamMember.id}`}>
-                      <p className="text-primary font-semibold cursor-pointer hover:underline">
-                        {Array.isArray(article.name) ? article.name[0] : article.name} {/* Clickable author name */}
-                      </p>
-                    </Link>
-                  ) : (
-                    <p className="text-primary font-semibold">{Array.isArray(article.name) ? article.name[0] : article.name}</p>
-                  )}
-                  <p className="text-gray-500">{formatDate(article.publishedAt)}</p>
-                  {article.name_photo && (
-                    photoTeamMember ? (
-                      <Link href={`/team/${photoTeamMember.id}`}>
-                        <p className="text-gray-500 text-xs mt-1 cursor-pointer hover:underline">
-                          Photo Credit: {typeof article.name_photo === 'string'
-                            ? article.name_photo
-                            : Array.isArray(article.name_photo)
-                              ? (article.name_photo as string[])[0]
-                              : ''}
-                        </p>
-                      </Link>
-                    ) : (
-                      <p className="text-gray-500 text-xs mt-1">
-                        Photo Credit: {typeof article.name_photo === 'string'
-                          ? article.name_photo
-                          : Array.isArray(article.name_photo)
-                            ? (article.name_photo as string[])[0]
-                            : ''}
-                      </p>
-                    )
-                  )}
-                </div>
-              </div>
-
-              <div className="prose prose-lg max-w-none prose-headings:text-primary prose-a:text-primary hover:prose-a:text-pinky-dark prose-hr:border-gray-300">
-                {article.contentFormat === "html" ? (
-                  <div dangerouslySetInnerHTML={{ __html: sanitizeArticleHtml(article.content) }} />
-                ) : (
-                  <p className="whitespace-pre-line">{article.content}</p>
-                )}
-              </div>
-            </div>
-          </div>
+          <ArticleView
+            article={article}
+            authorHref={authorTeamMember ? `/team/${authorTeamMember.id}` : undefined}
+            photoCreditHref={photoTeamMember ? `/team/${photoTeamMember.id}` : undefined}
+          />
         ) : null}
       </div>
     </Layout>
+  );
+}
+
+/** Shaped like the article it stands in for, so nothing moves when it lands. */
+function ArticleSkeleton() {
+  return (
+    <div className="-mx-6 overflow-hidden bg-pink-50 shadow-lg sm:mx-0 sm:rounded-2xl">
+      <div className="p-4 sm:p-6 lg:grid lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] lg:items-center lg:gap-10 lg:p-8">
+        <Skeleton className="h-56 w-full rounded-xl sm:h-72 lg:h-80" />
+        <div className="mt-5 space-y-3 lg:mt-0">
+          <Skeleton className="h-9 w-full" />
+          <Skeleton className="h-9 w-2/3" />
+          <Skeleton className="h-4 w-48" />
+        </div>
+      </div>
+      <div className="mx-auto max-w-[62ch] space-y-3 px-4 pb-8 sm:px-6 lg:px-8 lg:pb-12">
+        {[...Array(6)].map((_, i) => (
+          <Skeleton key={i} className={i % 3 === 2 ? "h-4 w-3/4" : "h-4 w-full"} />
+        ))}
+      </div>
+    </div>
   );
 }
