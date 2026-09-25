@@ -4,6 +4,9 @@
  * This module exposes admin functionality to be run from the browser's console.
  * Do not import these directly in your components - they are meant to be
  * attached to the window object and called from the console.
+ *
+ * The refresh endpoints require ADMIN_TOKEN in production, so pass it as the
+ * last argument; without it the server answers 401 Unauthorized.
  */
 
 /** Builds the headers for an admin-gated request, adding the token if one was given. */
@@ -26,6 +29,7 @@ function adminHeaders(token?: string): Record<string, string> {
  *
  * @param token The ADMIN_TOKEN value. Required in production; omit only in development.
  * @param entity Optional entity name to refresh specific data ('articles', 'team', 'quotes', etc.). If not provided, all data will be refreshed.
+ * @param token The website's ADMIN_TOKEN. Required in production.
  * @returns Promise that resolves when the refresh is complete
  */
 export async function refreshCachedData(token?: string, entity?: string): Promise<void> {
@@ -67,6 +71,7 @@ export async function refreshCachedData(token?: string, entity?: string): Promis
  *
  * @param token The ADMIN_TOKEN value. Required in production; omit only in development.
  * @param entity Optional entity name to refresh specific data
+ * @param token The website's ADMIN_TOKEN. Required in production.
  * @returns Promise that resolves when the refresh is complete
  */
 export async function apiRefresh(token?: string, entity?: string): Promise<void> {

@@ -506,58 +506,73 @@ export class CacheService {
   }
 
   /**
-   * Invalidate a specific cache with locking
+   * Per-cache invalidation counter.
+   *
+   * A refresh that started fetching before an invalidation still holds the old
+   * data; if it writes afterwards it puts the stale copy straight back, and the
+   * site keeps serving it until the cache expires. Writers capture the
+   * generation before fetching and skip the write if it has moved since.
+   */
+  private static generations: Record<string, number> = {};
+
+  /** Current invalidation generation for a cache type. */
+  static getGeneration(cacheType: string): number {
+    return this.generations[cacheType] ?? 0;
+  }
+
+  /** Whether `cacheType` has been invalidated since `generation` was read. */
+  static isStale(cacheType: string, generation: number): boolean {
+    return this.getGeneration(cacheType) !== generation;
+  }
+
+  private static cacheFileFor(cacheType: string): string | null {
+    switch (cacheType) {
+      case 'articles': return ARTICLES_CACHE_FILE;
+      case 'featuredArticles': return FEATURED_ARTICLES_CACHE_FILE;
+      case 'recentArticles': return RECENT_ARTICLES_CACHE_FILE;
+      case 'team': return TEAM_CACHE_FILE;
+      case 'quotes': return QUOTES_CACHE_FILE;
+      default: return null;
+    }
+  }
+
+  /**
+   * Invalidate a specific cache.
+   *
+   * This must not be skipped when another write holds the lock: a silently
+   * dropped invalidation leaves the old copy live for the full cache expiry.
+   * Deleting the file is safe without the lock (the writer renames a temp file
+   * into place, and bumping the generation makes it discard stale data first),
+   * so the lock only guards cleanup of the writer's temp file.
+   *
    * @param cacheType The type of cache to invalidate ('articles', 'featuredArticles', 'recentArticles', 'team', 'quotes')
    */
   static invalidateCache(cacheType: string): void {
-    // Try to acquire lock
-    if (!this.acquireLock(cacheType)) {
-      // console.warn(`Cannot invalidate ${cacheType} cache: lock acquisition failed`);
+    const cacheFile = this.cacheFileFor(cacheType);
+    if (!cacheFile) {
       return;
     }
 
+    this.generations[cacheType] = this.getGeneration(cacheType) + 1;
+
+    const locked = this.acquireLock(cacheType);
+
     try {
-      let cacheFile: string | null = null;
-
-      switch (cacheType) {
-        case 'articles':
-          cacheFile = ARTICLES_CACHE_FILE;
-          break;
-        case 'featuredArticles':
-          cacheFile = FEATURED_ARTICLES_CACHE_FILE;
-          break;
-        case 'recentArticles':
-          cacheFile = RECENT_ARTICLES_CACHE_FILE;
-          break;
-        case 'team':
-          cacheFile = TEAM_CACHE_FILE;
-          break;
-        case 'quotes':
-          cacheFile = QUOTES_CACHE_FILE;
-          break;
-        default:
-          // console.warn(`Unknown cache type: ${cacheType}`);
-          return;
-      }
-
-      if (cacheFile && fs.existsSync(cacheFile)) {
+      if (fs.existsSync(cacheFile)) {
         fs.unlinkSync(cacheFile);
-        // console.log(`Cache invalidated: ${cacheType}`);
-      } else {
-        // console.log(`Cache file not found for: ${cacheType}`);
       }
 
-      // Also clean up any temp files that might have been left behind
+      // Only clean up the temp file when no writer is using it.
       const tempFile = `${cacheFile}.tmp`;
-      if (fs.existsSync(tempFile)) {
+      if (locked && fs.existsSync(tempFile)) {
         fs.unlinkSync(tempFile);
-        // console.log(`Cleaned up temporary cache file: ${tempFile}`);
       }
     } catch (error) {
       console.error(`Error invalidating cache for ${cacheType}:`, error);
     } finally {
-      // Always release lock
-      this.releaseLock(cacheType);
+      if (locked) {
+        this.releaseLock(cacheType);
+      }
     }
   }
 
@@ -567,48 +582,8 @@ export class CacheService {
   static invalidateAllCaches(): void {
     const cacheTypes = ['articles', 'featuredArticles', 'recentArticles', 'team', 'quotes'];
 
-    // Invalidate each cache type individually
     for (const cacheType of cacheTypes) {
-      try {
-        // Acquire lock for this specific cache type
-        if (this.acquireLock(cacheType)) {
-          try {
-            // Get the correct cache file path
-            let cacheFile: string | null = null;
-            switch (cacheType) {
-              case 'articles': cacheFile = ARTICLES_CACHE_FILE; break;
-              case 'featuredArticles': cacheFile = FEATURED_ARTICLES_CACHE_FILE; break;
-              case 'recentArticles': cacheFile = RECENT_ARTICLES_CACHE_FILE; break;
-              case 'team': cacheFile = TEAM_CACHE_FILE; break;
-              case 'quotes': cacheFile = QUOTES_CACHE_FILE; break;
-            }
-
-            // Delete the cache file if it exists
-            if (cacheFile && fs.existsSync(cacheFile)) {
-              fs.unlinkSync(cacheFile);
-              // console.log(`Cache invalidated: ${cacheType}`);
-            }
-
-            // Clean up temp files too
-            const tempFile = `${cacheFile}.tmp`;
-            if (tempFile && fs.existsSync(tempFile)) {
-              fs.unlinkSync(tempFile);
-              // console.log(`Cleaned up temporary cache file: ${tempFile}`);
-            }
-          } catch (error) {
-            console.error(`Error invalidating ${cacheType} cache:`, error);
-          } finally {
-            // Always release the lock
-            this.releaseLock(cacheType);
-          }
-        } else {
-          // console.warn(`Could not acquire lock for ${cacheType}, skipping invalidation`);
-        }
-      } catch (error) {
-        console.error(`Error in invalidation process for ${cacheType}:`, error);
-      }
+      this.invalidateCache(cacheType);
     }
-
-    // console.log('All caches invalidation process completed');
   }
 }

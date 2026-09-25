@@ -1,6 +1,5 @@
 import { Router } from 'express';
 import { RefreshService } from '../services/refresh-service';
-import { CacheService } from '../services/cache-service';
 import { requireWebhookSecret } from '../middleware/auth';
 
 export const webhooksRouter = Router();
@@ -46,21 +45,9 @@ webhooksRouter.post('/article-published', requireWebhookSecret, async (req, res)
         // Extract optional metadata from the webhook payload
         const { articleId, event, timestamp } = req.body;
 
-        // Invalidate relevant caches to ensure fresh data
-        CacheService.invalidateCache('recentArticles');
-        CacheService.invalidateCache('featuredArticles');
-        CacheService.invalidateCache('articles');
-
-        // Trigger refresh of article-related data in priority order
-        
-        // Refresh in priority order: recent articles first (most visible to users)
-        await RefreshService.refreshRecentArticles();
-        
-        // Then featured articles (homepage visibility)
-        await RefreshService.refreshFeaturedArticles();
-        
-        // Finally all articles (complete catalog)
-        await RefreshService.refreshArticles();
+        // Invalidate and rebuild article caches in priority order (recent,
+        // featured, then the full catalog), bypassing the refresh throttle.
+        await RefreshService.forceRefreshArticleCaches();
 
         // Send success response
         res.status(200).json({
@@ -97,11 +84,8 @@ webhooksRouter.post('/team-updated', requireWebhookSecret, async (req, res) => {
     const requestTimestamp = new Date().toISOString();
 
     try {
-        // Invalidate team cache
-        CacheService.invalidateCache('team');
-
-        // Refresh team data
-        await RefreshService.refreshTeam();
+        // Invalidate and refresh team data, bypassing the refresh throttle.
+        await RefreshService.invalidateAndRefresh('team');
 
         res.status(200).json({
             success: true,
