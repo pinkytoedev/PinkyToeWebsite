@@ -240,6 +240,19 @@ export class RefreshService {
   private static async publishScheduledRelease(): Promise<void> {
     console.log('Scheduled release reached, refreshing article caches');
 
+    // refreshArticles re-arms the timer for whatever is next in the queue.
+    await this.forceRefreshArticleCaches();
+  }
+
+  /**
+   * Drop and rebuild every article cache right now.
+   *
+   * Used when the content is known to have changed (a publication webhook or a
+   * scheduled release), so it resets the MIN_REFRESH_INTERVAL throttle first.
+   * Without that, a refresh within the last 15 minutes made the refreshers
+   * return early: the caches were emptied but never rebuilt.
+   */
+  static async forceRefreshArticleCaches(): Promise<void> {
     this.lastRefreshTime.articles = 0;
     this.lastRefreshTime.featuredArticles = 0;
     this.lastRefreshTime.recentArticles = 0;
@@ -251,8 +264,6 @@ export class RefreshService {
     await this.refreshRecentArticles();
     await this.refreshFeaturedArticles();
     await this.refreshArticles();
-
-    // refreshArticles re-arms the timer for whatever is next in the queue.
   }
 
   private static releaseTimer: NodeJS.Timeout | null = null;
@@ -468,8 +479,12 @@ export class RefreshService {
    *
    * Shared by the admin router and the legacy /api/cache/refresh endpoint so
    * the entity list and the invalidate-then-refresh ordering live in one place.
+   *
+   * An explicit refresh bypasses the MIN_REFRESH_INTERVAL throttle; otherwise
+   * a refresh in the last 15 minutes would leave the cache emptied, not rebuilt.
    */
   static async invalidateAndRefresh(entity: RefreshableEntity): Promise<void> {
+    this.lastRefreshTime[entity] = 0;
     CacheService.invalidateCache(entity);
     await REFRESHERS[entity]();
   }
@@ -506,10 +521,17 @@ export class RefreshService {
       }
 
       this.lastRefreshTime.articles = now;
+      const generation = CacheService.getGeneration('articles');
 
       // Fetch the complete set. A partial batch would be cached as if it were
       // the whole collection, leaving every page past the batch empty.
       const result = await storage.getArticles(1, Number.MAX_SAFE_INTEGER);
+
+      // Invalidated mid-fetch: this data predates the change, so don't write it
+      // back. Whoever invalidated is responsible for the fresh copy.
+      if (CacheService.isStale('articles', generation)) {
+        return;
+      }
       CacheService.cacheArticles(result);
 
       // The set we just cached excludes anything still embargoed, so this is
@@ -535,8 +557,12 @@ export class RefreshService {
       }
 
       this.lastRefreshTime.featuredArticles = now;
+      const generation = CacheService.getGeneration('featuredArticles');
 
       const articles = await storage.getFeaturedArticles();
+      if (CacheService.isStale('featuredArticles', generation)) {
+        return;
+      }
       CacheService.cacheFeaturedArticles(articles);
 
       // Pre-cache images from featured articles to handle Airtable's expiring URLs
@@ -558,8 +584,12 @@ export class RefreshService {
       }
 
       this.lastRefreshTime.recentArticles = now;
+      const generation = CacheService.getGeneration('recentArticles');
 
       const articles = await storage.getRecentArticles(8); // Get more than default for cache
+      if (CacheService.isStale('recentArticles', generation)) {
+        return;
+      }
       CacheService.cacheRecentArticles(articles);
 
       // Pre-cache images from recent articles to handle Airtable's expiring URLs
@@ -581,8 +611,12 @@ export class RefreshService {
       }
 
       this.lastRefreshTime.team = now;
+      const generation = CacheService.getGeneration('team');
 
       const team = await storage.getTeamMembers();
+      if (CacheService.isStale('team', generation)) {
+        return;
+      }
       CacheService.cacheTeamMembers(team);
 
       // Pre-cache images from team members to handle Airtable's expiring URLs
@@ -604,8 +638,12 @@ export class RefreshService {
       }
 
       this.lastRefreshTime.quotes = now;
+      const generation = CacheService.getGeneration('quotes');
 
       const quotes = await storage.getQuotes();
+      if (CacheService.isStale('quotes', generation)) {
+        return;
+      }
       CacheService.cacheQuotes(quotes);
     } catch (error) {
       console.error('Error refreshing quotes:', error);

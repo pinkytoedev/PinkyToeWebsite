@@ -30,7 +30,6 @@ export default function Articles() {
   const { data, isLoading, isFetching } = useQuery({
     queryKey: [API_ROUTES.ARTICLES, page, search],
     queryFn: () => fetchArticles(page, search),
-    refetchOnWindowFocus: false,
   });
 
   const articles = data?.articles || [];

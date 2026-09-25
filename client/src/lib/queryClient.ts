@@ -46,8 +46,11 @@ export const queryClient = new QueryClient({
     queries: {
       queryFn: getQueryFn({ on401: "throw" }),
       refetchInterval: false,
-      refetchOnWindowFocus: false,
-      staleTime: Infinity,
+      // Content changes while the site is open (publish, republish, edits),
+      // so data must go stale. With staleTime: Infinity an open tab never
+      // refetched and kept showing the old article list until a full reload.
+      refetchOnWindowFocus: true,
+      staleTime: 2 * 60 * 1000,
       retry: false,
     },
     mutations: {

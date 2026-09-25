@@ -4,20 +4,33 @@
  * This module exposes admin functionality to be run from the browser's console.
  * Do not import these directly in your components - they are meant to be
  * attached to the window object and called from the console.
+ *
+ * The refresh endpoints require ADMIN_TOKEN in production, so pass it as the
+ * last argument; without it the server answers 401 Unauthorized.
  */
+
+/** Headers for an admin request, with the bearer token when one is given. */
+function adminHeaders(token?: string): Record<string, string> {
+  const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+  if (token) {
+    headers.Authorization = `Bearer ${token}`;
+  }
+  return headers;
+}
 
 /**
  * Refreshes all cached data by invalidating the cache and fetching fresh data from Airtable.
  * 
  * Usage in browser console: 
- * > refreshCachedData()
+ * > refreshCachedData(undefined, 'YOUR_ADMIN_TOKEN')
  * or to refresh a specific entity:
- * > refreshCachedData('articles')
+ * > refreshCachedData('articles', 'YOUR_ADMIN_TOKEN')
  * 
  * @param entity Optional entity name to refresh specific data ('articles', 'team', 'quotes', etc.). If not provided, all data will be refreshed.
+ * @param token The website's ADMIN_TOKEN. Required in production.
  * @returns Promise that resolves when the refresh is complete
  */
-export async function refreshCachedData(entity?: string): Promise<void> {
+export async function refreshCachedData(entity?: string, token?: string): Promise<void> {
   console.log('🔄 Refreshing cached data...');
 
   try {
@@ -28,9 +41,7 @@ export async function refreshCachedData(entity?: string): Promise<void> {
 
     const response = await fetch(endpoint, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      }
+      headers: adminHeaders(token)
     });
 
     if (!response.ok) {
@@ -50,22 +61,21 @@ export async function refreshCachedData(entity?: string): Promise<void> {
  * Triggers a cache refresh via API endpoint (same as refreshCachedData but via direct API call)
  * 
  * Usage in browser console:
- * > apiRefresh()
+ * > apiRefresh(undefined, 'YOUR_ADMIN_TOKEN')
  * or to refresh a specific entity:
- * > apiRefresh('articles')
+ * > apiRefresh('articles', 'YOUR_ADMIN_TOKEN')
  * 
  * @param entity Optional entity name to refresh specific data
+ * @param token The website's ADMIN_TOKEN. Required in production.
  * @returns Promise that resolves when the refresh is complete
  */
-export async function apiRefresh(entity?: string): Promise<void> {
+export async function apiRefresh(entity?: string, token?: string): Promise<void> {
   console.log('🔄 Triggering API cache refresh...');
 
   try {
     const response = await fetch('/api/cache/refresh', {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
+      headers: adminHeaders(token),
       body: entity ? JSON.stringify({ entity }) : undefined
     });
 

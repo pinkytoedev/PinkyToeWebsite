@@ -61,6 +61,7 @@ export class CachedStorage implements IStorage {
       }
 
       // Not in cache, or the cache doesn't hold this page - go to origin.
+      const generation = CacheService.getGeneration('articles');
       const result = await this.originalStorage.getArticles(page, limit, search);
 
       // Validate result before caching
@@ -71,7 +72,10 @@ export class CachedStorage implements IStorage {
       // Only cache a *complete* article set. Caching a single page here would
       // poison the cache: later requests would read those few articles back as
       // if they were the whole collection and every other page would be empty.
-      if (!search && result.articles.length >= result.total) {
+      // Skip the write if the cache was invalidated while we were fetching:
+      // this data may predate the change that triggered the invalidation.
+      if (!search && result.articles.length >= result.total
+          && !CacheService.isStale('articles', generation)) {
         CacheService.cacheArticles(result);
       }
 
@@ -112,6 +116,7 @@ export class CachedStorage implements IStorage {
       }
 
       // If not in cache, get from original storage
+      const generation = CacheService.getGeneration('featuredArticles');
       const articles = await this.originalStorage.getFeaturedArticles();
 
       // Validate before caching
@@ -120,7 +125,9 @@ export class CachedStorage implements IStorage {
       }
 
       // Cache the result for future use
-      CacheService.cacheFeaturedArticles(articles);
+      if (!CacheService.isStale('featuredArticles', generation)) {
+        CacheService.cacheFeaturedArticles(articles);
+      }
 
       return articles;
     } catch (error) {
@@ -163,6 +170,7 @@ export class CachedStorage implements IStorage {
       }
 
       // If not in cache, get from original storage
+      const generation = CacheService.getGeneration('recentArticles');
       const articles = await this.originalStorage.getRecentArticles(limit);
 
       // Validate before caching
@@ -172,7 +180,9 @@ export class CachedStorage implements IStorage {
       }
 
       // Cache the result for future use
-      CacheService.cacheRecentArticles(articles);
+      if (!CacheService.isStale('recentArticles', generation)) {
+        CacheService.cacheRecentArticles(articles);
+      }
 
       return articles;
     } catch (error) {
@@ -289,10 +299,13 @@ export class CachedStorage implements IStorage {
       }
 
       // If not in cache, get from original storage
+      const generation = CacheService.getGeneration('team');
       const team = await this.originalStorage.getTeamMembers();
 
       // Cache the result for future use
-      CacheService.cacheTeamMembers(team);
+      if (!CacheService.isStale('team', generation)) {
+        CacheService.cacheTeamMembers(team);
+      }
 
       return team;
     } catch (error) {
@@ -347,10 +360,13 @@ export class CachedStorage implements IStorage {
       }
 
       // If not in cache, get from original storage
+      const generation = CacheService.getGeneration('quotes');
       const quotes = await this.originalStorage.getQuotes();
 
       // Cache the result for future use
-      CacheService.cacheQuotes(quotes);
+      if (!CacheService.isStale('quotes', generation)) {
+        CacheService.cacheQuotes(quotes);
+      }
 
       return quotes;
     } catch (error) {
