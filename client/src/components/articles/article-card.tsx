@@ -40,14 +40,14 @@ export function ArticleCard({ article }: ArticleCardProps) {
           />
           <div className="article-overlay absolute inset-0 flex items-center justify-center bg-primary bg-opacity-40 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
             <div>
-              <Button className="font-quicksand rounded-full bg-white py-2 px-4 font-bold text-primary shadow-lg transition-colors hover:bg-pinky-dark hover:text-white">
+              <Button className="font-bodoni rounded-full bg-white py-2 px-4 font-bold text-primary shadow-lg transition-colors hover:bg-pinky-dark hover:text-white">
                 Read More
               </Button>
             </div>
           </div>
         </div>
         <div className="flex-grow p-4">
-          <h2 className="font-quicksand mb-2 min-h-[3rem] text-xl font-bold text-pinky-dark line-clamp-2">
+          <h2 className="font-bodoni mb-2 min-h-[3rem] text-xl font-bold text-pinky-dark line-clamp-2">
             {article.title}
           </h2>
           <p className="mb-4 min-h-[4rem] text-sm text-gray-600 line-clamp-3">

@@ -75,7 +75,7 @@ export function ArticleView({ article, authorHref, photoCreditHref, className }:
         <div className={cn("mt-5", !imageLed && "lg:mt-0")}>
           <h1
             className={cn(
-              "font-quicksand font-bold text-primary",
+              "font-bodoni font-bold text-pinky-dark",
               imageLed
                 ? "text-2xl sm:text-3xl lg:text-4xl"
                 // Half the width to work in once the masthead splits, so the

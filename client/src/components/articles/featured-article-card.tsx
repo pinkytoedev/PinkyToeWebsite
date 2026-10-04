@@ -42,7 +42,7 @@ export function FeaturedArticleCard({ article }: FeaturedArticleCardProps) {
           </div>
           <div className="p-5 sm:p-6 md:w-3/5">
             <div className="text-sm font-semibold uppercase tracking-wide text-primary">Featured</div>
-            <h2 className="font-quicksand mb-3 mt-2 text-xl font-bold text-pinky-dark sm:text-2xl">
+            <h2 className="font-bodoni mb-3 mt-2 text-xl font-bold text-pinky-dark sm:text-2xl">
               {article.title}
             </h2>
             <p className="mb-4 text-gray-600 line-clamp-4">
@@ -55,7 +55,7 @@ export function FeaturedArticleCard({ article }: FeaturedArticleCardProps) {
               </div>
             </div>
             <div className="mt-4">
-              <Button className="font-quicksand rounded bg-primary py-2 px-4 font-bold text-white transition-colors hover:bg-pinky-dark">
+              <Button className="font-bodoni rounded bg-primary py-2 px-4 font-bold text-white transition-colors hover:bg-pinky-dark">
                 Read More
               </Button>
             </div>

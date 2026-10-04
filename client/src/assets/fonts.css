@@ -15,20 +15,28 @@
   font-family: 'Pacifico', cursive;
 }
 
+.font-bodoni {
+  font-family: 'Bodoni 72', serif;
+}
+
+.font-tnr {
+  font-family: 'Times New Roman', serif;
+}
+
 /* Utility font styles */
 .text-primary {
-  color: #FF4D8D;
+  color: #F757A2;
 }
 
 .text-pinky-dark {
-  color: #D03D72;
+  color: #961C5B;
 }
 
 /* Additional styles for specific elements */
 h1, h2, h3, h4, h5, h6 {
-  font-family: 'Quicksand', sans-serif;
+  font-family: 'Bodoni-72', serif;
 }
 
 body {
-  font-family: 'Lato', sans-serif;
+  font-family: 'Times New Roman', serif;
 }

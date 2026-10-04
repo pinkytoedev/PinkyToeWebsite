@@ -106,7 +106,7 @@ export function ArticleDetail({ articleId, onClose }: ArticleDetailProps) {
             </div>
           ) : error || !article ? (
             <div className="p-6">
-              <h2 className="font-quicksand mb-2 text-2xl font-bold text-red-500">Error</h2>
+              <h2 className="font-bodoni mb-2 text-2xl font-bold text-red-500">Error</h2>
               <p className="text-gray-700">Failed to load article. Please try again later.</p>
             </div>
           ) : (

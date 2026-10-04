@@ -53,7 +53,7 @@ export function ImageLedArticleRow({ article }: ImageLedArticleRowProps) {
 
           <div className="flex flex-col justify-center p-5 sm:p-6 md:w-1/2 lg:w-[55%]">
             {/* No clamp: the headline is the post, so it runs to its length. */}
-            <h2 className="font-quicksand text-2xl font-bold text-pinky-dark sm:text-3xl">
+            <h2 className="font-bodoni text-2xl font-bold text-pinky-dark sm:text-3xl">
               {article.title}
             </h2>
 

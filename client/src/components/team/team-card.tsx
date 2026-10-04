@@ -32,7 +32,7 @@ export function TeamCard({ teamMember }: TeamCardProps) {
           <div>
             <Link href={`/team/${teamMember.id}`}>
               <Button
-                className="bg-white text-primary font-quicksand font-bold py-2 px-4 rounded-full shadow-lg transition-colors hover:bg-pinky-dark hover:text-white"
+                className="bg-white text-primary font-bodoni font-bold py-2 px-4 rounded-full shadow-lg transition-colors hover:bg-pinky-dark hover:text-white"
               >
                 View Profile
               </Button>
@@ -41,7 +41,7 @@ export function TeamCard({ teamMember }: TeamCardProps) {
         </div>
       </div>
       <div className="p-4">
-        <h2 className="font-quicksand font-bold text-xl text-pinky-dark">
+        <h2 className="font-bodoni font-bold text-xl text-pinky-dark">
           {teamMember.name}
         </h2>
         <p className="text-primary font-semibold">{teamMember.role}</p>

@@ -12,7 +12,7 @@
   
   body {
     @apply font-sans antialiased text-foreground;
-    font-family: 'lato', sans-serif;
+    font-family: 'Times New Roman', serif;
   }
   
   h1, h2, h3, h4, h5, h6 {
@@ -23,15 +23,15 @@
 
   /* Custom color classes */
   .text-pinky-dark {
-    color: #E93B81;
+    color: #F757A2;
   }
   
   .bg-pinky-dark {
-    background-color: #E93B81;
+    background-color: #F757A2;
   }
   
   .border-pink-200 {
-    border-color: #FFB6C1;
+    border-color: #F1D1DF;
   }
 }
 
@@ -264,7 +264,7 @@
   .article-prose {
     max-width: 62ch;
     margin-inline: auto;
-    color: #4a4145;
+    color: #34364B;
     font-size: 1.0625rem;
     line-height: 1.7;
     overflow-wrap: break-word;
@@ -295,7 +295,7 @@
    * running text it is louder than the headline it sits under.
    */
   .article-prose :is(h1, h2, h3, h4, h5, h6) {
-    font-family: 'Quicksand', sans-serif;
+    font-family: 'Bodoni 72', serif;
     font-weight: 700;
     line-height: 1.25;
     color: hsl(var(--primary));
@@ -321,7 +321,7 @@
   }
 
   .article-prose a:hover {
-    color: #E93B81;
+    color: #F757A2;
   }
 
   .article-prose strong {
@@ -351,8 +351,8 @@
   .article-prose blockquote {
     margin: 1.5em 0;
     padding: 0.25em 0 0.25em 1.1em;
-    border-left: 3px solid rgba(255, 77, 141, 0.45);
-    color: #6b5f63;
+    border-left: 3px solid #961C5B;
+    color: #34364B;
     font-style: italic;
   }
 

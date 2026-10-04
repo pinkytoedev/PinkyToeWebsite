@@ -15,7 +15,7 @@ export function Footer() {
                   <PinkyToeLogo className="h-12 w-auto" />
                 </div>
               </Link>
-              <p className="text-gray-600 ml-3 font-quicksand text-sm hidden md:block">{SITE_TAGLINE}</p>
+              <p className="text-gray-600 ml-3 font-bodoni text-sm hidden md:block">{SITE_TAGLINE}</p>
               <div className="ml-4 flex space-x-3">
                 <a
                   href={SOCIAL_LINKS.INSTAGRAM}
@@ -35,13 +35,13 @@ export function Footer() {
                 </a>
               </div>
             </div>
-            <p className="text-gray-600 mt-2 font-quicksand text-center text-sm md:hidden">{SITE_TAGLINE}</p>
+            <p className="text-gray-600 mt-2 font-bodoni text-center text-sm md:hidden">{SITE_TAGLINE}</p>
           </div>
 
           {/* Footer Navigation Links */}
           <div className="flex flex-wrap justify-center md:justify-end">
             <div className="mr-8">
-              <h3 className="font-quicksand font-bold text-primary mb-2 text-sm">Navigation</h3>
+              <h3 className="font-bodoni font-bold text-primary mb-2 text-sm">Navigation</h3>
               <ul className="flex space-x-4 md:space-x-6">
                 <li>
                   <Link href={ROUTES.HOME}>
