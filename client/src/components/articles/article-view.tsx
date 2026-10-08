@@ -60,27 +60,27 @@ export function ArticleView({ article, authorHref, photoCreditHref, className }:
         // Edge to edge on a phone. The page already sits inside the Layout
         // panel's padding, and spending another 48px of a 375px screen on a
         // second inset border costs more than the border is worth.
-        "-mx-6 overflow-hidden bg-pink-50 shadow-lg sm:mx-0 sm:rounded-2xl",
+        "-mx-6 overflow-hidden bg-white shadow-lg sm:mx-0",
         className,
       )}
     >
       <div
         className={cn(
           "p-4 sm:p-6 lg:p-8",
-          !imageLed && "lg:grid lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] lg:items-center lg:gap-10",
+          !imageLed && "lg:items-center lg:gap-3",
         )}
       >
         <ArticleHero src={imageSource} alt={article.title} imageLed={imageLed} />
 
-        <div className={cn("mt-5", !imageLed && "lg:mt-0")}>
+        <div className={cn("mt-5 items-center", !imageLed && "lg:mt-0")}>
           <h1
             className={cn(
-              "font-bodoni font-bold text-pinky-dark",
+              "font-bodoni font-bold text-pinky-dark text-align:center",
               imageLed
-                ? "text-2xl sm:text-3xl lg:text-4xl"
+                ? "text-2xl sm:text-3xl lg:text-4xl text-center" // Centered on a lead image, which is centered itself
                 // Half the width to work in once the masthead splits, so the
                 // display size steps back up only when there is room for it.
-                : "text-2xl sm:text-3xl lg:text-[2rem] lg:leading-[1.18] xl:text-[2.35rem]",
+                : "text-2xl sm:text-3xl lg:text-[2rem] lg:leading-[1.18] xl:text-[2.35rem], lg:text-center",
             )}
           >
             {article.title}
@@ -135,8 +135,7 @@ interface ArticleHeroProps {
  */
 export function ArticleHero({ src, alt, imageLed }: ArticleHeroProps) {
   return (
-    <figure className="article-hero relative flex items-center justify-center overflow-hidden rounded-xl bg-pink-100/60">
-      <img src={src} alt="" aria-hidden="true" className="article-hero__backdrop" />
+    <figure className="article-hero relative flex items-center justify-center overflow-hidden pinky-dark">
       <img
         src={src}
         alt={alt}

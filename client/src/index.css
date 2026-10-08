@@ -262,7 +262,8 @@
    * typography plugin decides a `<p>` should be next.
    */
   .article-prose {
-    max-width: 62ch;
+    max-width: 100ch;
+    text-align: justify;
     margin-inline: auto;
     color: #34364B;
     font-size: 1.0625rem;

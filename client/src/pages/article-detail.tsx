@@ -67,7 +67,7 @@ export default function ArticleDetail() {
           <ArticleSkeleton />
         ) : error ? (
           <div className="rounded-2xl bg-white p-6 shadow-lg">
-            <h2 className="font-quicksand text-2xl font-bold text-red-500 mb-4">Error</h2>
+            <h2 className="font-bodoni text-2xl font-bold text-red-500 mb-4">Error</h2>
             <p className="text-gray-700">Failed to load article. Please try again later.</p>
           </div>
         ) : article ? (
