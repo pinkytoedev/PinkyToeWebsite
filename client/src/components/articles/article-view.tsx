@@ -66,21 +66,17 @@ export function ArticleView({ article, authorHref, photoCreditHref, className }:
     >
       <div
         className={cn(
-          "p-4 sm:p-6 lg:p-8",
+          "p-4 sm:p-6 lg:p-4",
           !imageLed && "lg:items-center lg:gap-3",
         )}
       >
         <ArticleHero src={imageSource} alt={article.title} imageLed={imageLed} />
 
-        <div className={cn("mt-5 items-center", !imageLed && "lg:mt-0")}>
+        <div className={cn("mt-5 items-center")}>
           <h1
             className={cn(
               "font-bodoni font-bold text-pinky-dark text-align:center",
-              imageLed
-                ? "text-2xl sm:text-3xl lg:text-4xl text-center" // Centered on a lead image, which is centered itself
-                // Half the width to work in once the masthead splits, so the
-                // display size steps back up only when there is room for it.
-                : "text-2xl sm:text-3xl lg:text-[2rem] lg:leading-[1.18] xl:text-[2.35rem], lg:text-center",
+              "text-2xl sm:text-3xl lg:text-[2rem] lg:leading-[1.18] xl:text-[2.35rem], lg:text-center",
             )}
           >
             {article.title}
@@ -107,7 +103,7 @@ export function ArticleView({ article, authorHref, photoCreditHref, className }:
             the cache turns over, the second is the smaller loss.
           */}
           {!imageLed && article.description && article.descriptionIsExcerpt === false && (
-            <p className="mt-4 text-base text-gray-600 sm:text-lg">{article.description}</p>
+            <p className="center-byline mt-4 px-4 pb-8 sm:px-6 lg:px-8 text-base text-gray-600 text-sm">{article.description}</p>
           )}
         </div>
       </div>
@@ -140,7 +136,7 @@ export function ArticleHero({ src, alt, imageLed }: ArticleHeroProps) {
         src={src}
         alt={alt}
         className={cn(
-          "article-hero__media relative block h-auto w-auto max-w-full object-contain",
+          "article-hero__media relative flex h-auto w-auto max-w-full object-contain",
           imageLed && "article-hero__media--lead",
         )}
         onError={event => {
@@ -176,7 +172,7 @@ export function ArticleByline({
   photoCreditHref,
 }: ArticleBylineProps) {
   return (
-    <div className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-1 text-sm">
+    <div className="mt-3 flex center-byline text-align-center gap-x-4 gap-y-1 text-sm">
       {authorName &&
         (authorHref ? (
           <Link href={authorHref} className="font-semibold text-primary hover:underline">

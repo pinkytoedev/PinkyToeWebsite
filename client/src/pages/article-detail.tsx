@@ -55,8 +55,8 @@ export default function ArticleDetail() {
     <Layout>
       <div className="mx-auto w-full max-w-5xl">
         <Button
-          variant="ghost"
-          className="mb-4 flex items-center text-primary hover:text-pinky-dark"
+          variant="outline"
+          className="mb-4 flex items-center bg-white hover:bg-pinky-dark hover:text-white text-pinky-dark border-pinky-dark "
           onClick={goBack}
         >
           <ArrowLeft className="mr-2 h-4 w-4" />
@@ -85,7 +85,7 @@ export default function ArticleDetail() {
 /** Shaped like the article it stands in for, so nothing moves when it lands. */
 function ArticleSkeleton() {
   return (
-    <div className="-mx-6 overflow-hidden bg-pink-50 shadow-lg sm:mx-0 sm:rounded-2xl">
+    <div className="-mx-6 overflow-hidden bg-white shadow-lg sm:mx-0">
       <div className="p-4 sm:p-6 lg:grid lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] lg:items-center lg:gap-10 lg:p-8">
         <Skeleton className="h-56 w-full rounded-xl sm:h-72 lg:h-80" />
         <div className="mt-5 space-y-3 lg:mt-0">

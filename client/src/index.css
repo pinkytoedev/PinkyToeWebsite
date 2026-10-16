@@ -23,7 +23,7 @@
 
   /* Custom color classes */
   .text-pinky-dark {
-    color: #F757A2;
+    color: #961C5B;
   }
   
   .bg-pinky-dark {
@@ -32,6 +32,14 @@
   
   .border-pink-200 {
     border-color: #F1D1DF;
+  }
+
+  .border-pinky-dark{
+    border-color: #F757A2;
+  }
+
+  .bg-primary{
+    background-color: #F757A2;
   }
 }
 
@@ -73,7 +81,7 @@
   .hover-bounce:hover {
     animation: bounce 0.6s;
   }
-  
+
   .scale-in {
     transform: scale(0.95);
     opacity: 0;
@@ -134,8 +142,8 @@
   
   /* Custom button styles */
   .btn-pinky {
-    @apply bg-primary hover:bg-pinky-dark text-white font-quicksand font-bold py-2 px-4 rounded-lg 
-    transition-all duration-300 hover:shadow-lg transform hover:scale-105;
+    @apply bg-white text-pinky-dark hover:bg-pinky-dark font-bodoni font-bold py-2 px-4 rounded-lg 
+    border:bg-pinky-dark transition-all duration-300 hover:shadow-lg transform hover:scale-105;
   }
   
   /* Card styles */
@@ -143,6 +151,14 @@
     @apply bg-white/90 rounded-xl shadow-md hover:shadow-lg transition-all duration-300
     border border-pink-200/30 overflow-hidden;
   }
+
+   .center-byline {
+    display: flex;
+    text-align: center;
+    justify-content: center;
+    align-items: center;
+  }
+
 
   /*
    * Served from client/public/fonts. The previous src was

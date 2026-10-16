@@ -30,10 +30,10 @@ export function Layout({ children }: LayoutProps) {
       <Header />
       
       {/* Marquee Banner with solid color */}
-      <div className="bg-primary text-white py-3 overflow-hidden whitespace-nowrap shadow-md">
+      <div className="bg-pinky-dark text-white py-1 overflow-hidden whitespace-nowrap shadow-md">
         {isLoading ? (
           <div className="container mx-auto">
-            <Skeleton className="h-6 w-3/4 bg-primary-foreground/20" />
+            <Skeleton className="h-1 w-3/4 bg-primary-foreground/20" />
           </div>
         ) : error ? (
           <div className="container mx-auto text-center">
@@ -46,7 +46,7 @@ export function Layout({ children }: LayoutProps) {
               .map((quote: CarouselQuote) => (
                 <span
                   key={quote.id}
-                  className="text-2xl md:text-3xl font-semibold tracking-wide drop-shadow-[0_3px_6px_rgba(0,0,0,0.35)] text-white"
+                  className="text-2xl md:text-1xl font-semibold tracking-wide text-white"
                 >
                   {quote.quote}
                 </span>
@@ -70,10 +70,8 @@ export function Layout({ children }: LayoutProps) {
       </div>
       
       {/* Main content with improved styling */}
-      <main className="flex-grow container mx-auto px-4 py-8 md:py-12 relative z-10">
-        <div className="bg-[#fac8d2] backdrop-blur-sm rounded-xl shadow-lg p-6 md:p-8 scale-in border border-pink-200/30">
-          {children}
-        </div>
+      <main className="flex-grow container mx-auto px-1 py-1 md:py-4 relative z-4">
+        {children}
       </main>
       
       <Footer />
