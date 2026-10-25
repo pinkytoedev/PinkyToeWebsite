@@ -1,5 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Pacifico&family=Quicksand:wght@300;400;500;600;700&family=Lato:wght@300;400;700&display=swap');
 @import './bg-pattern.css';
+@import url("https://fonts.googleapis.com/css2?family=Butterfly+Kids&display=swap");
 
 @tailwind base;
 @tailwind components;
@@ -159,7 +160,7 @@
   
   /* Card styles */
   .card-pinky {
-    @apply bg-white/90 rounded-xl shadow-md hover:shadow-lg transition-all duration-300
+    @apply bg-white rounded-xl shadow-md hover:shadow-lg transition-all duration-300
     border border-pink-200/30 overflow-hidden;
   }
 

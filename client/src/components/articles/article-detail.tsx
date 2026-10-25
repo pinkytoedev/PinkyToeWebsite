@@ -82,7 +82,7 @@ export function ArticleDetail({ articleId, onClose }: ArticleDetailProps) {
         className="flex h-full w-full flex-col overflow-hidden bg-pink-50 shadow-2xl sm:h-auto sm:max-h-[92vh] sm:max-w-5xl sm:rounded-2xl"
         onClick={e => e.stopPropagation()}
       >
-        <div className="flex shrink-0 items-center justify-end border-b border-pink-200/60 bg-pink-50/95 px-3 py-2 backdrop-blur">
+        <div className="flex shrink-0 items-center justify-end border-b bg-pinky-light px-3 py-2 backdrop-blur">
           <button
             onClick={onClose}
             aria-label="Close article"

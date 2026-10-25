@@ -25,7 +25,7 @@ export function ArticleCard({ article }: ArticleCardProps) {
 
   return (
     <Link href={`/articles/${article.id}`} className="block h-full">
-      <div className="article-card group flex h-full cursor-pointer flex-col overflow-hidden rounded-lg bg-pink-50 shadow-lg transition-shadow hover:shadow-xl">
+      <div className="article-card group flex h-full cursor-pointer flex-col overflow-hidden rounded-lg bg-white shadow-lg transition-shadow hover:shadow-xl">
         <div className="relative">
           <img
             src={imageSource}

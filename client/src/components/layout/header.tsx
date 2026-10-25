@@ -36,7 +36,7 @@ export function Header() {
     <header className={`sticky top-0 z-50 bg-white/95 backdrop-blur-sm shadow-md transition-all duration-300 ${scrolled ? 'shadow-lg py-1' : 'py-2'}`}>
       <div className="container mx-auto px-4 py-2 flex justify-between items-center">
         {/* Responsive Logo - Small for mobile, large for desktop */}
-        <div className="flex items-center">
+        <div className="flex items-center gap-10">
           <Link href={ROUTES.HOME} onClick={closeMobileMenu}>
             <div className="hover-bounce transition-transform duration-300 hover:scale-105">
               {/* Mobile: Show the smaller logo */}
@@ -46,10 +46,13 @@ export function Header() {
               
               {/* Desktop: Show the full word logo with tagline */}
               <div className="hidden md:block">
-                <PinkyToeWordLogo className="h-14 lg:h-16 transition-transform duration-300" />
+                <PinkyToeLogo className="h-14 lg:h-16 transition-transform duration-300" />
               </div>
             </div>
           </Link>
+          <div className="butterfly-kids text-4xl text-pinky">
+            the pinky toe
+        </div>
         </div>
         
         {/* Desktop Navigation */}

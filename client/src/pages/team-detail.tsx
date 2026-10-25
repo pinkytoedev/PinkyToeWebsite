@@ -52,17 +52,15 @@ export default function TeamMemberDetail() {
   return (
     <Layout>
       <div className="max-w-6xl mx-auto">
-        <Button
-          variant="ghost"
-          className="mb-4 flex items-center text-primary hover:text-pinky-dark"
+        {teamLoading ? (
+          <div className="bg-white overflow-hidden">
+            <Button
+          variant="outline"
+          className="mt-4 mx-4 mb-4 items-center bg-white hover:bg-pinky-dark hover:text-pinky text-pinky-dark border-none "
           onClick={goBack}
         >
-          <ArrowLeft className="mr-2 h-4 w-4" />
-          Back to Team
+          <ArrowLeft className="h-2 w-2" />
         </Button>
-
-        {teamLoading ? (
-          <div className="bg-white rounded-lg shadow-lg overflow-hidden">
             <div className="p-6">
               <div className="md:flex">
                 <div className="md:w-1/2 mb-6 md:mb-0 md:pr-8">
@@ -99,19 +97,26 @@ export default function TeamMemberDetail() {
             </div>
           </div>
         ) : teamError ? (
-          <div className="bg-white rounded-lg shadow-lg p-6">
-            <h2 className="font-quicksand font-bold text-2xl text-red-500 mb-4">Error</h2>
+          <div className="bg-white p-6">
+            <h2 className="font-bodoni font-bold text-2xl text-red-500 mb-4">Error</h2>
             <p className="text-gray-700">Failed to load team member profile. Please try again later.</p>
           </div>
         ) : teamMember ? (
-          <div className="bg-white rounded-lg shadow-lg overflow-hidden">
+          <div className="bg-white overflow-hidden">
+            <Button
+          variant="outline"
+          className="mt-4 mx-4 items-center bg-white hover:bg-pinky-dark hover:text-pinky text-pinky-dark border-none "
+          onClick={goBack}
+        >
+          <ArrowLeft className="h-2 w-2" />
+        </Button>
             <div className="p-6">
               <div className="md:flex">
                 <div className="md:w-1/2 mb-6 md:mb-0 md:pr-8">
                   <img
                     src={memberImageUrl}
                     alt={`${teamMember.name} photo`}
-                    className="w-full rounded-lg"
+                    className="w-full"
                     onError={(e) => {
                       const target = e.target as HTMLImageElement;
                       console.error(`Failed to load team image: ${target.src}`);
@@ -120,7 +125,7 @@ export default function TeamMemberDetail() {
                   />
 
                   <div className="mt-4">
-                    <h3 className="font-quicksand font-bold text-xl text-pinky-dark">{teamMember.name}</h3>
+                    <h3 className="font-bodoni font-bold text-xl text-pinky-dark">{teamMember.name}</h3>
                     <p className="text-primary font-semibold">{teamMember.role}</p>
                   </div>
 
@@ -132,7 +137,7 @@ export default function TeamMemberDetail() {
                 <div className="md:w-1/2">
                   <div className="space-y-6">
                     <div>
-                      <h4 className="font-quicksand font-bold text-lg text-pinky-dark mb-3">Author Credits</h4>
+                      <h4 className="font-bodoni font-bold text-lg text-pinky-dark mb-3">Author Credits</h4>
                       {authoredLoading ? (
                         <div className="space-y-3">
                           <Skeleton className="h-16 w-full" />
@@ -153,7 +158,7 @@ export default function TeamMemberDetail() {
                                   />
                                   <div className="flex-1 min-w-0">
                                     <Link href={`/articles/${article.id}`}>
-                                      <div className="font-quicksand font-semibold text-sm md:text-sm sm:text-base text-pinky-dark hover:text-primary transition-colors cursor-pointer line-clamp-2 py-1 leading-relaxed">
+                                      <div className="font-bodoni font-semibold text-sm md:text-sm sm:text-base text-pinky-dark hover:text-primary transition-colors cursor-pointer line-clamp-2 py-1 leading-relaxed">
                                         {article.title}
                                       </div>
                                     </Link>
@@ -169,7 +174,7 @@ export default function TeamMemberDetail() {
                     </div>
 
                     <div>
-                      <h4 className="font-quicksand font-bold text-lg text-pinky-dark mb-3">Photo Credits</h4>
+                      <h4 className="font-bodoni font-bold text-lg text-pinky-dark mb-3">Photo Credits</h4>
                       {photoLoading ? (
                         <div className="space-y-3">
                           <Skeleton className="h-16 w-full" />
@@ -190,7 +195,7 @@ export default function TeamMemberDetail() {
                                   />
                                   <div className="flex-1 min-w-0">
                                     <Link href={`/articles/${article.id}`}>
-                                      <div className="font-quicksand font-semibold text-sm md:text-sm sm:text-base text-pinky-dark hover:text-primary transition-colors cursor-pointer line-clamp-2 py-1 leading-relaxed">
+                                      <div className="font-bodoni font-semibold text-sm md:text-sm sm:text-base text-pinky-dark hover:text-primary transition-colors cursor-pointer line-clamp-2 py-1 leading-relaxed">
                                         {article.title}
                                       </div>
                                     </Link>

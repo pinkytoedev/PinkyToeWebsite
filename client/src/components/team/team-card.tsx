@@ -15,7 +15,7 @@ export function TeamCard({ teamMember }: TeamCardProps) {
   console.log(`Team member ${teamMember.id} - Using imageUrl: ${teamMember.imageUrl || 'Not available, using placeholder'}`);
 
   return (
-    <div className="team-card bg-pink-50 rounded-lg shadow-lg overflow-hidden">
+    <div className="team-card bg-white rounded-lg shadow-lg overflow-hidden">
       <div className="relative">
         <img
           src={imageSource}

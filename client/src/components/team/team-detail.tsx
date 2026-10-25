@@ -71,7 +71,7 @@ export function TeamDetail({ teamMemberId, onClose }: TeamDetailProps) {
   if (teamLoading) {
     return (
       <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center" onClick={handleBackdropClick}>
-        <div className="bg-white rounded-lg max-w-6xl w-full max-h-screen overflow-y-auto mx-4" onClick={e => e.stopPropagation()}>
+        <div className="bg-white max-w-6xl w-full max-h-screen overflow-y-auto mx-4" onClick={e => e.stopPropagation()}>
           <div className="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 flex justify-between items-center">
             <Skeleton className="h-8 w-3/4" />
             <button onClick={onClose} className="text-pinky-dark hover:text-primary text-2xl">
@@ -122,7 +122,7 @@ export function TeamDetail({ teamMemberId, onClose }: TeamDetailProps) {
       <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center" onClick={handleBackdropClick}>
         <div className="bg-white rounded-lg max-w-6xl w-full mx-4 p-6" onClick={e => e.stopPropagation()}>
           <div className="flex justify-between items-center mb-4">
-            <h2 className="font-quicksand font-bold text-2xl text-red-500">Error</h2>
+            <h2 className="font-bodoni font-bold text-2xl text-red-500">Error</h2>
             <button onClick={onClose} className="text-pinky-dark hover:text-primary text-2xl">
               <X />
             </button>
@@ -140,9 +140,9 @@ export function TeamDetail({ teamMemberId, onClose }: TeamDetailProps) {
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center" onClick={handleBackdropClick}>
-      <div className="bg-white rounded-lg max-w-6xl w-full max-h-screen overflow-y-auto mx-4" onClick={e => e.stopPropagation()}>
+      <div className="bg-white max-w-6xl w-full max-h-screen overflow-y-auto mx-4" onClick={e => e.stopPropagation()}>
         <div className="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 flex justify-between items-center">
-          <h2 className="font-quicksand font-bold text-2xl text-primary">{teamMember.name}</h2>
+          <h2 className="font-bodoni font-bold text-2xl -primary">{teamMember.name}</h2>
           <button onClick={onClose} className="text-pinky-dark hover:text-primary text-2xl">
             <X />
           </button>
@@ -157,7 +157,7 @@ export function TeamDetail({ teamMemberId, onClose }: TeamDetailProps) {
               />
 
               <div className="mt-4">
-                <h3 className="font-quicksand font-bold text-xl text-pinky-dark">{teamMember.name}</h3>
+                <h3 className="font-bodoni font-bold text-xl text-pinky-dark">{teamMember.name}</h3>
                 <p className="text-primary font-semibold">{teamMember.role}</p>
               </div>
 
@@ -169,7 +169,7 @@ export function TeamDetail({ teamMemberId, onClose }: TeamDetailProps) {
             <div className="md:w-1/2">
               <div className="space-y-6">
                 <div>
-                  <h4 className="font-quicksand font-bold text-lg text-pinky-dark mb-3">Author Credits</h4>
+                  <h4 className="font-bodoni font-bold text-lg text-pinky-dark mb-3">Author Credits</h4>
                   {authoredLoading ? (
                     <div className="space-y-3">
                       <Skeleton className="h-16 w-full" />
@@ -192,7 +192,7 @@ export function TeamDetail({ teamMemberId, onClose }: TeamDetailProps) {
                                 <Link href={`/articles/${article.id}`}>
                                   <div
                                     onClick={onClose}
-                                    className="font-quicksand font-semibold text-sm md:text-sm sm:text-base text-pinky-dark hover:text-primary transition-colors cursor-pointer line-clamp-2 py-1 leading-relaxed"
+                                    className="font-bodoni font-semibold text-sm md:text-sm sm:text-base text-pinky-dark hover:text-primary transition-colors cursor-pointer line-clamp-2 py-1 leading-relaxed"
                                   >
                                     {article.title}
                                   </div>
@@ -209,7 +209,7 @@ export function TeamDetail({ teamMemberId, onClose }: TeamDetailProps) {
                 </div>
 
                 <div>
-                  <h4 className="font-quicksand font-bold text-lg text-pinky-dark mb-3">Photo Credits</h4>
+                  <h4 className="font-bodoni font-bold text-lg text-pinky-dark mb-3">Photo Credits</h4>
                   {photoLoading ? (
                     <div className="space-y-3">
                       <Skeleton className="h-16 w-full" />
@@ -232,7 +232,7 @@ export function TeamDetail({ teamMemberId, onClose }: TeamDetailProps) {
                                 <Link href={`/articles/${article.id}`}>
                                   <div
                                     onClick={onClose}
-                                    className="font-quicksand font-semibold text-sm md:text-sm sm:text-base text-pinky-dark hover:text-primary transition-colors cursor-pointer line-clamp-2 py-1 leading-relaxed"
+                                    className="font-bodoni font-semibold text-sm md:text-sm sm:text-base text-pinky-dark hover:text-primary transition-colors cursor-pointer line-clamp-2 py-1 leading-relaxed"
                                   >
                                     {article.title}
                                   </div>
