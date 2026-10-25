@@ -57,7 +57,7 @@ export default function Team() {
 
   return (
     <Layout>
-      <h1 className="font-quicksand font-bold text-3xl md:text-4xl text-primary mb-6">Meet Our Team</h1>
+      <h1 className="font-bold text-3xl md:text-4xl text-pinky mb-6">Meet Our Team</h1>
       
       <p className="text-gray-600 mb-4 text-lg max-w-3xl">
         The gays and gals that make up our beatutiful voice xoxo

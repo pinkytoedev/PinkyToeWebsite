@@ -13,7 +13,7 @@ export function RecentArticleCard({ article }: RecentArticleCardProps) {
   const imageSource = article.imageUrl ? getImageUrl(article.imageUrl) : getPhotoUrl(article.photo);
 
   return (
-    <div className="block pb-3 border-b border-gray-200 hover:bg-gray-50 transition-colors rounded p-1">
+    <div className="block pb-3 border-b border-gray-200 transition-colors rounded p-1">
       <Link href={`/articles/${article.id}`}>
         <div className="flex space-x-3 cursor-pointer">
           <img
@@ -27,7 +27,7 @@ export function RecentArticleCard({ article }: RecentArticleCardProps) {
             }}
           />
           <div>
-            <h3 className="font-bodoni font-bold text-sm text-gray-900">
+            <h3 className="font-bodoni font-bold text-sm text-pinky-dark">
               {article.title}
             </h3>
             <p className="text-xs text-gray-500 mt-1">

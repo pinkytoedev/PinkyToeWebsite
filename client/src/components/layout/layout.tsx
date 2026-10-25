@@ -30,7 +30,7 @@ export function Layout({ children }: LayoutProps) {
       <Header />
       
       {/* Marquee Banner with solid color */}
-      <div className="bg-pinky-dark text-white py-1 overflow-hidden whitespace-nowrap shadow-md">
+      <div className="bg-pinky text-white py-1 overflow-hidden whitespace-nowrap shadow-md">
         {isLoading ? (
           <div className="container mx-auto">
             <Skeleton className="h-1 w-3/4 bg-primary-foreground/20" />

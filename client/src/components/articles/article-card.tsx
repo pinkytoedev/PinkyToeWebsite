@@ -38,9 +38,9 @@ export function ArticleCard({ article }: ArticleCardProps) {
               target.src = PLACEHOLDER_IMAGE;
             }}
           />
-          <div className="article-overlay absolute inset-0 flex items-center justify-center bg-primary bg-opacity-40 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
+          <div className="article-overlay absolute inset-0 flex items-center justify-center bg-pinky bg-opacity-40 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
             <div>
-              <Button className="font-bodoni rounded-full bg-white py-2 px-4 font-bold text-primary shadow-lg transition-colors hover:bg-pinky-dark hover:text-white">
+              <Button className="font-bodoni rounded-full bg-white py-2 px-4 font-bold text-pinky shadow-lg transition-colors hover:bg-pinky-dark hover:text-pinky-dark">
                 Read More
               </Button>
             </div>

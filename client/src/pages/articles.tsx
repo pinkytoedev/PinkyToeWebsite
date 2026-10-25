@@ -57,7 +57,7 @@ export default function Articles() {
 
   return (
     <Layout>
-      <h1 className="font-quicksand font-bold text-3xl md:text-4xl text-primary mb-6">All Articles</h1>
+      <h1 className="font-bold text-3xl md:text-4xl text-pinky mb-6">All Articles</h1>
       
       {/* Search Bar */}
       <div className="bg-white rounded-lg shadow-lg p-4 mb-8">
@@ -65,14 +65,14 @@ export default function Articles() {
           <Input
             type="text"
             placeholder="Search articles by title..."
-            className="w-full p-3 pr-10 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary"
+            className="w-full p-3 pr-10 rounded-lg border border-gray-300 bg-white focus:outline-none focus:ring-2 focus:ring-primary"
             value={searchInput}
             onChange={(e) => setSearchInput(e.target.value)}
           />
           <Button 
             type="submit"
             variant="ghost"
-            className="absolute right-3 top-3 text-primary h-auto p-0"
+            className="absolute right-3 top-3 text-pinky h-auto p-0"
             aria-label="Search"
           >
             <i className="fas fa-search"></i>

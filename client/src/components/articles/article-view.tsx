@@ -5,6 +5,10 @@ import { cn, formatDate } from "@/lib/utils";
 import { getImageUrl, getPhotoUrl } from "@/lib/image-helper";
 import { isImageLedArticle } from "@/lib/article-content";
 import { prepareArticleHtml } from "@/lib/article-html";
+import { useParams, useLocation } from "wouter";
+import { Button } from "@/components/ui/button";
+import { ArrowLeft } from "lucide-react";
+
 
 /**
  * One article, rendered the same way wherever it appears.
@@ -50,6 +54,10 @@ export function ArticleView({ article, authorHref, photoCreditHref, className }:
       ? getPhotoUrl(article.photo)
       : PLACEHOLDER_IMAGE;
 
+  const [, setLocation] = useLocation();
+  const goBack = () => {
+    setLocation('/articles');
+  };
   const imageLed = isImageLedArticle(article);
   const authorName = firstValue(article.name);
   const photoCredit = firstValue(article.name_photo);
@@ -60,10 +68,17 @@ export function ArticleView({ article, authorHref, photoCreditHref, className }:
         // Edge to edge on a phone. The page already sits inside the Layout
         // panel's padding, and spending another 48px of a 375px screen on a
         // second inset border costs more than the border is worth.
-        "-mx-6 overflow-hidden bg-white shadow-lg sm:mx-0",
+        "-mx-6 overflow-hidden bg-white shadow-lg sm:mx-0 sm:px-20",
         className,
       )}
     >
+      <Button
+          variant="outline"
+          className="mt-4 mx-4 mb-4 items-center bg-white hover:bg-pinky-dark hover:text-pinky text-pinky-dark border-none "
+          onClick={goBack}
+        >
+          <ArrowLeft className="h-2 w-2" />
+        </Button>
       <div
         className={cn(
           "p-4 sm:p-6 lg:p-4",
@@ -76,7 +91,7 @@ export function ArticleView({ article, authorHref, photoCreditHref, className }:
           <h1
             className={cn(
               "font-bodoni font-bold text-pinky-dark text-align:center",
-              "text-2xl sm:text-3xl lg:text-[2rem] lg:leading-[1.18] xl:text-[2.35rem], lg:text-center",
+              "text-2xl sm:text-3xl lg:text-[2rem] lg:leading-[1.18] xl:text-[2.35rem], text-center",
             )}
           >
             {article.title}
@@ -103,7 +118,7 @@ export function ArticleView({ article, authorHref, photoCreditHref, className }:
             the cache turns over, the second is the smaller loss.
           */}
           {!imageLed && article.description && article.descriptionIsExcerpt === false && (
-            <p className="center-byline mt-4 px-4 pb-8 sm:px-6 lg:px-8 text-base text-gray-600 text-sm">{article.description}</p>
+            <p className="center-byline mt-4 px-4 pb-8 sm:px-6 lg:px-8 text-base text-gray-600 text-md">{article.description}</p>
           )}
         </div>
       </div>
@@ -172,29 +187,29 @@ export function ArticleByline({
   photoCreditHref,
 }: ArticleBylineProps) {
   return (
-    <div className="mt-3 flex center-byline text-align-center gap-x-4 gap-y-1 text-sm">
+    <div className="mt-3 flex center-byline gap-x-3 text-align-center text-md">
       {authorName &&
         (authorHref ? (
-          <Link href={authorHref} className="font-semibold text-primary hover:underline">
+          <Link href={authorHref} className="font-semibold text-primary hover:text-pinky-dark">
             {authorName}
           </Link>
         ) : (
           <span className="font-semibold text-primary">{authorName}</span>
         ))}
 
-      {authorName && <span aria-hidden="true" className="text-gray-400">&middot;</span>}
+      {authorName && <span aria-hidden="true" className="text-gray-400 text-lg">&middot;</span>}
 
       <span className="text-gray-500">{formatDate(publishedAt)}</span>
 
       {photoCredit && (
         <>
-          <span aria-hidden="true" className="text-gray-400">&middot;</span>
+          <span aria-hidden="true" className="text-gray-400 text-lg">&middot;</span>
           {photoCreditHref ? (
-            <Link href={photoCreditHref} className="text-xs text-gray-500 hover:underline">
+            <Link href={photoCreditHref} className="text-md text-gray-500 hover:text-pinky-dark">
               Photo: {photoCredit}
             </Link>
           ) : (
-            <span className="text-xs text-gray-500">Photo: {photoCredit}</span>
+            <span className="text-md text-gray-500">Photo: {photoCredit}</span>
           )}
         </>
       )}
@@ -212,7 +227,7 @@ export function ArticleBody({ article }: { article: Article }) {
   if (isImageLedArticle(article)) return null;
 
   return (
-    <div className="px-4 pb-8 sm:px-6 lg:px-8 lg:pb-12">
+    <div className="px-6 pb-8 lg:pb-12">
       {article.contentFormat === "html" ? (
         <div
           className="article-prose"

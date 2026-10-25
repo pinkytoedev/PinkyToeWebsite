@@ -25,11 +25,22 @@
   .text-pinky-dark {
     color: #961C5B;
   }
+
+  .text-pinky {
+    color: #F757A2;
+  }
   
-  .bg-pinky-dark {
+  .bg-pinky {
     background-color: #F757A2;
   }
   
+  .bg-dark {
+    background-color: #961C5B;
+  }
+
+  .bg-light {
+    background-color: #F1D1DF;
+  }
   .border-pink-200 {
     border-color: #F1D1DF;
   }
@@ -157,6 +168,7 @@
     text-align: center;
     justify-content: center;
     align-items: center;
+    gap: 20;
   }
 
 

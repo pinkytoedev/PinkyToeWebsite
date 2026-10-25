@@ -132,7 +132,7 @@ export default function Home() {
         {/* Sidebar Column (30%) */}
         <div className="lg:col-span-4">
           {/* Recent Articles Section */}
-          <div className="bg-pink-50 rounded-lg shadow-lg overflow-hidden mb-8">
+          <div className="bg-white rounded-lg shadow-lg overflow-hidden mb-8">
             <div className="bg-primary text-white py-3 px-4">
               <h2 className="font-bodoni font-bold text-xl text-white">Recent Articles</h2>
             </div>
@@ -166,7 +166,7 @@ export default function Home() {
 
           {/* Quotes Carousel Section */}
           <div className="bg-pink-50 rounded-lg shadow-lg overflow-hidden">
-            <div className="bg-primary text-white py-3 px-4">
+            <div className="bg-pinky text-white py-3 px-4">
               <h2 className="font-bodoni font-bold text-xl">Quotes</h2>
             </div>
             <div className="p-6" style={{ backgroundImage: `url("${getAssetPath("/attached_assets/background for pinky website.png")}")`, backgroundSize: '400px' }}>

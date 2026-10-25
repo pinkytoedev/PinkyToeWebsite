@@ -28,11 +28,11 @@ export function TeamCard({ teamMember }: TeamCardProps) {
             target.src = PLACEHOLDER_IMAGE;
           }}
         />
-        <div className="team-overlay absolute inset-0 bg-primary bg-opacity-40 opacity-0 flex items-center justify-center transition-opacity duration-300">
+        <div className="team-overlay absolute inset-0 bg-pinky bg-opacity-40 opacity-0 flex items-center justify-center transition-opacity duration-300">
           <div>
             <Link href={`/team/${teamMember.id}`}>
               <Button
-                className="bg-white text-primary font-bodoni font-bold py-2 px-4 rounded-full shadow-lg transition-colors hover:bg-pinky-dark hover:text-white"
+                className="bg-white text-pinky-dark font-bodoni font-bold py-2 px-4 rounded-full shadow-lg transition-colors hover:text-pinky-dark hover:bg-white"
               >
                 View Profile
               </Button>

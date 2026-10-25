@@ -54,13 +54,13 @@ export function Header() {
         
         {/* Desktop Navigation */}
         <nav className="hidden md:flex items-center space-x-8">
-          <Link href={ROUTES.HOME} className={`font-bodoni font-bold text-lg ${isActive(ROUTES.HOME) ? 'text-pinky-dark' : 'text-primary hover:text-pinky-dark'} transition-colors`}>
+          <Link href={ROUTES.HOME} className={`font-bodoni font-bold text-xl ${isActive(ROUTES.HOME) ? 'text-pinky-dark' : 'text-primary hover:text-pinky-dark'} transition-colors`}>
             Home
           </Link>
-          <Link href={ROUTES.ARTICLES} className={`font-bodoni font-bold text-lg ${isActive(ROUTES.ARTICLES) ? 'text-pinky-dark' : 'text-primary hover:text-pinky-dark'} transition-colors`}>
+          <Link href={ROUTES.ARTICLES} className={`font-bodoni font-bold text-xl ${isActive(ROUTES.ARTICLES) ? 'text-pinky-dark' : 'text-primary hover:text-pinky-dark'} transition-colors`}>
             Articles
           </Link>
-          <Link href={ROUTES.TEAM} className={`font-bodoni font-bold text-lg ${isActive(ROUTES.TEAM) ? 'text-pinky-dark' : 'text-primary hover:text-pinky-dark'} transition-colors`}>
+          <Link href={ROUTES.TEAM} className={`font-bodoni font-bold text-xl ${isActive(ROUTES.TEAM) ? 'text-pinky-dark' : 'text-primary hover:text-pinky-dark'} transition-colors`}>
             Team
           </Link>
           <a 

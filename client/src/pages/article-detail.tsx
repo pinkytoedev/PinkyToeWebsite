@@ -5,8 +5,6 @@ import { Article, Team } from "@shared/schema";
 import { Layout } from "@/components/layout/layout";
 import { API_ROUTES } from "@/lib/constants";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Button } from "@/components/ui/button";
-import { ArrowLeft } from "lucide-react";
 import { fetchTeamMembers, fetchArticleById } from "@/lib/api";
 import { ArticleView } from "@/components/articles/article-view";
 import { findTeamMemberByName } from "@/lib/team-matching";
@@ -53,15 +51,7 @@ export default function ArticleDetail() {
 
   return (
     <Layout>
-      <div className="mx-auto w-full max-w-5xl">
-        <Button
-          variant="outline"
-          className="mb-4 flex items-center bg-white hover:bg-pinky-dark hover:text-white text-pinky-dark border-pinky-dark "
-          onClick={goBack}
-        >
-          <ArrowLeft className="mr-2 h-4 w-4" />
-          Back to Articles
-        </Button>
+      <div className="mx-auto">
 
         {isLoading ? (
           <ArticleSkeleton />
@@ -85,7 +75,7 @@ export default function ArticleDetail() {
 /** Shaped like the article it stands in for, so nothing moves when it lands. */
 function ArticleSkeleton() {
   return (
-    <div className="-mx-6 overflow-hidden bg-white shadow-lg sm:mx-0">
+    <div className="overflow-hidden bg-white shadow-lg sm:mx-0">
       <div className="p-4 sm:p-6 lg:grid lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] lg:items-center lg:gap-10 lg:p-8">
         <Skeleton className="h-56 w-full rounded-xl sm:h-72 lg:h-80" />
         <div className="mt-5 space-y-3 lg:mt-0">
