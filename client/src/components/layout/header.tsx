@@ -93,7 +93,7 @@ export function Header() {
           <div className="flex flex-col space-y-4">
             <Link 
               href={ROUTES.HOME}
-              className={`font-quicksand font-bold text-lg ${isActive(ROUTES.HOME) ? 'text-pinky-dark' : 'text-primary hover:text-pinky-dark'} transition-colors`}
+              className={`font-bodoni font-bold text-lg ${isActive(ROUTES.HOME) ? 'text-pinky-dark' : 'text-primary hover:text-pinky-dark'} transition-colors`}
               onClick={closeMobileMenu}
             >
               <div className="flex items-center py-1">
@@ -102,7 +102,7 @@ export function Header() {
             </Link>
             <Link 
               href={ROUTES.ARTICLES}
-              className={`font-quicksand font-bold text-lg ${isActive(ROUTES.ARTICLES) ? 'text-pinky-dark' : 'text-primary hover:text-pinky-dark'} transition-colors`}
+              className={`font-bodoni font-bold text-lg ${isActive(ROUTES.ARTICLES) ? 'text-pinky-dark' : 'text-primary hover:text-pinky-dark'} transition-colors`}
               onClick={closeMobileMenu}
             >
               <div className="flex items-center py-1">
@@ -111,7 +111,7 @@ export function Header() {
             </Link>
             <Link 
               href={ROUTES.TEAM}
-              className={`font-quicksand font-bold text-lg ${isActive(ROUTES.TEAM) ? 'text-pinky-dark' : 'text-primary hover:text-pinky-dark'} transition-colors`}
+              className={`font-bodoni font-bold text-lg ${isActive(ROUTES.TEAM) ? 'text-pinky-dark' : 'text-primary hover:text-pinky-dark'} transition-colors`}
               onClick={closeMobileMenu}
             >
               <div className="flex items-center py-1">
@@ -122,7 +122,7 @@ export function Header() {
               href={SOCIAL_LINKS.INSTAGRAM} 
               target="_blank" 
               rel="noopener noreferrer"
-              className="font-quicksand font-bold text-lg text-primary hover:text-pinky-dark transition-colors"
+              className="font-bodoni font-bold text-lg text-primary hover:text-pinky-dark transition-colors"
               onClick={closeMobileMenu}
             >
               <div className="flex items-center py-1">

@@ -57,29 +57,29 @@ export default function Articles() {
 
   return (
     <Layout>
-      <h1 className="font-bold text-3xl md:text-4xl text-pinky mb-6">All Articles</h1>
-      
+      <div className="bg-white p-4 mb-8 rounded-lg shadow-lg">
+        <h1 className="butterfly-kids text-3xl md:text-5xl text-pinky mb-6 text-center">all articles</h1>
       {/* Search Bar */}
-      <div className="bg-white rounded-lg shadow-lg p-4 mb-8">
-        <form onSubmit={handleSearch} className="relative">
+      <div className="bg-pinky rounded-3xl shadow-lg p-4">
+        <form onSubmit={handleSearch} className="relative text-pinky-dark">
           <Input
             type="text"
             placeholder="Search articles by title..."
-            className="w-full p-3 pr-10 rounded-lg border border-gray-300 bg-white focus:outline-none focus:ring-2 focus:ring-primary"
+            className="w-full p-3 pr-10 rounded-lg border border-gray-300 text-pinky-dark bg-white focus:outline-none focus:ring-2 focus:ring-primary"
             value={searchInput}
             onChange={(e) => setSearchInput(e.target.value)}
           />
           <Button 
             type="submit"
             variant="ghost"
-            className="absolute right-3 top-3 text-pinky h-auto p-0"
+            className="absolute right-3 top-3 text-pinky h-auto p-0 hover:bg-white"
             aria-label="Search"
           >
             <i className="fas fa-search"></i>
           </Button>
         </form>
       </div>
-      
+      </div>
       {/* Articles Grid */}
       {isLoading ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
@@ -102,7 +102,7 @@ export default function Articles() {
         </div>
       ) : articles.length === 0 ? (
         <div className="bg-white rounded-lg shadow-lg p-8 text-center mb-8">
-          <h2 className="font-quicksand font-bold text-xl text-pinky-dark mb-2">No Articles Found</h2>
+          <h2 className="font-bodoni font-bold text-xl text-pinky-dark mb-2">No Articles Found</h2>
           <p className="text-gray-600">
             {search ? `No articles match "${search}". Try a different search term.` : "There are no articles available at this time."}
           </p>
@@ -157,8 +157,8 @@ export default function Articles() {
                     variant={page === 1 ? "default" : "ghost"}
                     className={
                       page === 1 
-                        ? "font-quicksand font-bold h-8 w-8 rounded-full bg-primary text-white"
-                        : "font-quicksand font-bold h-8 w-8 rounded-full text-primary hover:bg-gray-100 mx-1"
+                        ? "font-bodoni font-bold h-8 w-8 rounded-full bg-primary text-white"
+                        : "font-bodoni font-bold h-8 w-8 rounded-full text-primary hover:bg-gray-100 mx-1"
                     }
                     onClick={() => setPage(1)}
                     disabled={isFetching}
@@ -183,8 +183,8 @@ export default function Articles() {
                     variant={page === i ? "default" : "ghost"}
                     className={
                       page === i 
-                        ? "font-quicksand font-bold h-8 w-8 rounded-full bg-primary text-white"
-                        : "font-quicksand font-bold h-8 w-8 rounded-full text-primary hover:bg-gray-100 mx-1"
+                        ? "font-bodoni font-bold h-8 w-8 rounded-full bg-primary text-white"
+                        : "font-bodoni font-bold h-8 w-8 rounded-full text-primary hover:bg-gray-100 mx-1"
                     }
                     onClick={() => setPage(i)}
                     disabled={isFetching}
@@ -209,8 +209,8 @@ export default function Articles() {
                     variant={page === totalPages ? "default" : "ghost"}
                     className={
                       page === totalPages 
-                        ? "font-quicksand font-bold h-8 w-8 rounded-full bg-primary text-white"
-                        : "font-quicksand font-bold h-8 w-8 rounded-full text-primary hover:bg-gray-100 mx-1"
+                        ? "font-bodoni font-bold h-8 w-8 rounded-full bg-primary text-white"
+                        : "font-bodoni font-bold h-8 w-8 rounded-full text-primary hover:bg-gray-100 mx-1"
                     }
                     onClick={() => setPage(totalPages)}
                     disabled={isFetching}

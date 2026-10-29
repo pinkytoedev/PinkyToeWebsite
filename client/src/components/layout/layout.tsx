@@ -37,7 +37,7 @@ export function Layout({ children }: LayoutProps) {
           </div>
         ) : error ? (
           <div className="container mx-auto text-center">
-            <span className="font-pacifico text-lg">Welcome to The Pinky Toe!</span>
+            <span className="font-bodoni text-lg">Welcome to The Pinky Toe!</span>
           </div>
         ) : (
           <Marquee speed={35} pauseOnHover={true}>

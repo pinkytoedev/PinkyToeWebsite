@@ -57,18 +57,17 @@ export default function Team() {
 
   return (
     <Layout>
-      <h1 className="font-bold text-3xl md:text-4xl text-pinky mb-6">Meet Our Team</h1>
-      
-      <p className="text-gray-600 mb-4 text-lg max-w-3xl">
-        The gays and gals that make up our beatutiful voice xoxo
+    <div className="bg-white p-4 mb-8 rounded-lg shadow-lg">
+      <h1 className="butterfly-kids text-4xl md:text-5xl text-pinky mb-2 text-center">meet our team</h1>
+      <p className="text-gray-600 mb-4 text-md text-center">
+        The gays and gals that make up our beautiful voice xoxo
       </p>
-      
       {/* Role Filter UI */}
       {!isLoading && !error && teamMembers && teamMembers.length > 0 && (
-        <div className="mb-8">
-          <div className="flex flex-col gap-2">
+        <div className="mb-4">
+          <div className="flex flex-col gap-2 items-center">
             <h3 className="text-sm font-medium text-gray-700">Filter by role:</h3>
-            <div className="flex flex-wrap gap-2">
+            <div className="flex flex-wrap gap-2 ">
               <Button 
                 variant={selectedRole === null ? "default" : "outline"} 
                 size="sm"
@@ -111,6 +110,7 @@ export default function Team() {
           </div>
         </div>
       )}
+      </div>
       
       {/* Team Grid */}
       {isLoading ? (

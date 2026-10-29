@@ -85,8 +85,6 @@ export default function Home() {
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
         {/* Main Content Column (70%) */}
         <div className="lg:col-span-8">
-          <h1 className="font-bodoni font-bold text-3xl md:text-4xl text-primary mb-6">Featured Articles</h1>
-
           {featuredLoading ? (
             <div className="space-y-8">
               <div className="bg-white rounded-lg shadow-lg overflow-hidden">
@@ -170,7 +168,7 @@ export default function Home() {
               <h2 className="font-bodoni font-bold text-xl">Quotes</h2>
             </div>
             <div className="p-6" style={{ backgroundImage: `url("${getAssetPath("/attached_assets/background for pinky website.png")}")`, backgroundSize: '400px' }}>
-              <div className="bg-pink-50 bg-opacity-85 p-5 rounded-lg">
+              <div className="bg-white bg-opacity-70 p-5 rounded-lg">
                 {quotesLoading ? (
                   <div className="space-y-3">
                     <Skeleton className="h-5 w-full" />
@@ -201,11 +199,11 @@ export default function Home() {
                           {philoQuotes.map((quote: CarouselQuote) => (
                             <CarouselItem key={quote.id} className="pt-1 md:basis-full">
                               <div className="py-2">
-                                <blockquote className="italic text-lg font-pacifico text-pinky-dark min-h-[6rem] flex items-center">
+                                <blockquote className="text-2xl butterfly-kids font-semibold text-center text-pinky-dark min-h-[6rem] flex items-center text-center">
                                   "{quote.quote}"
                                 </blockquote>
-                                <div className="mt-3 text-right text-primary font-quicksand font-semibold">
-                                  - The Pinky Toe Team
+                                <div className="mt-3 text-right text-2xl text-primary buttefly-kids font-semibold">
+                                  - the pinky toe team
                                 </div>
                               </div>
                             </CarouselItem>
@@ -220,11 +218,11 @@ export default function Home() {
                   </>
                 ) : (
                   <>
-                    <blockquote className="italic text-lg font-pacifico text-pinky-dark">
+                    <blockquote className="text-2xl butterfly-kids font-semibold text-pinky-dark text-center">
                       "Philosophy is the art of questioning everything, including why your pinky toe always finds the furniture."
                     </blockquote>
-                    <div className="mt-3 text-right text-primary font-quicksand font-semibold">
-                      - The Pinky Toe Team
+                    <div className="mt-3 text-right text-primary text-2xl butterfly-kids font-semibold">
+                      - the pinky toe team
                     </div>
                   </>
                 )}

@@ -78,7 +78,7 @@ export function ArticleView({ article, authorHref, photoCreditHref, className }:
           onClick={goBack}
         >
           <ArrowLeft className="h-2 w-2" />
-        </Button>
+      </Button>
       <div
         className={cn(
           "p-4 sm:p-6 lg:p-4",
