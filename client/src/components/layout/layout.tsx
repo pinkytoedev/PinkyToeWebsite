@@ -46,7 +46,7 @@ export function Layout({ children }: LayoutProps) {
               .map((quote: CarouselQuote) => (
                 <span
                   key={quote.id}
-                  className="text-2xl md:text-1xl font-semibold tracking-wide text-white"
+                  className="text-md md:text-lg font-semibold tracking-wide text-white"
                 >
                   {quote.quote}
                 </span>

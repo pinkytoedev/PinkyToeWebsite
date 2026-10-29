@@ -168,7 +168,7 @@ export default function Home() {
               <h2 className="font-bodoni font-bold text-xl">Quotes</h2>
             </div>
             <div className="p-6" style={{ backgroundImage: `url("${getAssetPath("/attached_assets/background for pinky website.png")}")`, backgroundSize: '400px' }}>
-              <div className="bg-white bg-opacity-70 p-5 rounded-lg">
+              <div className="bg-white p-5 rounded-lg">
                 {quotesLoading ? (
                   <div className="space-y-3">
                     <Skeleton className="h-5 w-full" />
@@ -199,10 +199,10 @@ export default function Home() {
                           {philoQuotes.map((quote: CarouselQuote) => (
                             <CarouselItem key={quote.id} className="pt-1 md:basis-full">
                               <div className="py-2">
-                                <blockquote className="text-2xl butterfly-kids font-semibold text-center text-pinky-dark min-h-[6rem] flex items-center text-center">
+                                <blockquote className="text-xl font-bodoni text-center text-pinky-dark min-h-[6rem] flex items-center text-center">
                                   "{quote.quote}"
                                 </blockquote>
-                                <div className="mt-3 text-right text-2xl text-primary buttefly-kids font-semibold">
+                                <div className="mt-1 text-right text-2xl text-primary buttefly-kids">
                                   - the pinky toe team
                                 </div>
                               </div>
@@ -218,10 +218,10 @@ export default function Home() {
                   </>
                 ) : (
                   <>
-                    <blockquote className="text-2xl butterfly-kids font-semibold text-pinky-dark text-center">
+                    <blockquote className="text-lg font-bodoni text-pinky-dark text-center">
                       "Philosophy is the art of questioning everything, including why your pinky toe always finds the furniture."
                     </blockquote>
-                    <div className="mt-3 text-right text-primary text-2xl butterfly-kids font-semibold">
+                    <div className="mt-1 text-right text-pinky-dark text-2xl butterfly-kids">
                       - the pinky toe team
                     </div>
                   </>

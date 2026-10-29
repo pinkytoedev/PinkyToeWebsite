@@ -68,7 +68,7 @@ export function ArticleView({ article, authorHref, photoCreditHref, className }:
         // Edge to edge on a phone. The page already sits inside the Layout
         // panel's padding, and spending another 48px of a 375px screen on a
         // second inset border costs more than the border is worth.
-        "-mx-6 overflow-hidden bg-white shadow-lg sm:mx-0 sm:px-20",
+        "mx-8 overflow-hidden bg-white shadow-lg max-md:mx-4 sm:px-20",
         className,
       )}
     >
@@ -118,7 +118,7 @@ export function ArticleView({ article, authorHref, photoCreditHref, className }:
             the cache turns over, the second is the smaller loss.
           */}
           {!imageLed && article.description && article.descriptionIsExcerpt === false && (
-            <p className="center-byline mt-4 px-4 pb-8 sm:px-6 lg:px-8 text-base text-gray-600 text-md">{article.description}</p>
+            <p className=" mt-4 px-4 pb-8 sm:px-6 lg:px-8 text-base text-gray-600 text-md text-center">{article.description}</p>
           )}
         </div>
       </div>
@@ -187,7 +187,7 @@ export function ArticleByline({
   photoCreditHref,
 }: ArticleBylineProps) {
   return (
-    <div className="mt-3 flex center-byline gap-x-3 text-align-center text-md">
+    <div className="mt-3 lg:flex center-byline max-md:grid max-md:grid-cols-1 gap-x-3 text-align-center text-md">
       {authorName &&
         (authorHref ? (
           <Link href={authorHref} className="font-semibold text-primary hover:text-pinky-dark">
@@ -197,13 +197,13 @@ export function ArticleByline({
           <span className="font-semibold text-primary">{authorName}</span>
         ))}
 
-      {authorName && <span aria-hidden="true" className="text-gray-400 text-lg">&middot;</span>}
+      {authorName && <span aria-hidden="true" className="text-gray-400 text-lg max-md:hidden">&middot;</span>}
 
       <span className="text-gray-500">{formatDate(publishedAt)}</span>
 
       {photoCredit && (
         <>
-          <span aria-hidden="true" className="text-gray-400 text-lg">&middot;</span>
+          <span aria-hidden="true" className="text-gray-400 text-lg max-md:hidden">&middot;</span>
           {photoCreditHref ? (
             <Link href={photoCreditHref} className="text-md text-gray-500 hover:text-pinky-dark">
               Photo: {photoCredit}
