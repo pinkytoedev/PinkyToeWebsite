@@ -34,29 +34,29 @@ export function Header() {
 
   return (
     <header className={`sticky top-0 z-50 bg-white backdrop-blur-sm shadow-md transition-all duration-300 ${scrolled ? 'shadow-lg py-1' : 'py-1'}`}>
-      <div className="container mx-auto px-4 py-1 flex justify-between items-center">
+      <div className="w-full px-4 md:px-6 py-1 flex justify-between items-center">
         {/* Responsive Logo - Small for mobile, large for desktop */}
         <div className="flex items-center gap-5">
           <Link href={ROUTES.HOME} onClick={closeMobileMenu}>
             <div className="hover-bounce transition-transform duration-300 hover:scale-105">
-              {/* Mobile: Show the smaller logo */}
-              <div className="block md:hidden">
-                <PinkyToeLogo className="h-12 w-auto transition-transform duration-300" />
+              {/* Mobile: Show the smaller logo (enlarged visually via negative margin, same footprint as before) */}
+              <div className="block md:hidden -my-2">
+                <PinkyToeLogo className="h-16 w-auto transition-transform duration-300" />
               </div>
-              
-              {/* Desktop: Show the full word logo with tagline */}
-              <div className="hidden md:block">
-                <PinkyToeLogo className="pt-1 h-12 lg:h-14 transition-transform duration-300" />
+
+              {/* Desktop: Show the full word logo with tagline (enlarged visually via negative margin, same footprint as before) */}
+              <div className="hidden md:block -my-2 lg:-my-3">
+                <PinkyToeLogo className="h-16 lg:h-20 transition-transform duration-300" />
               </div>
             </div>
           </Link>
           <Link href={ROUTES.HOME} onClick={closeMobileMenu}>
-            <div className="butterfly-kids text-3xl text-pinky lg:text-4xl">
+            <div className="butterfly-kids text-4xl text-pinky lg:text-5xl">
               the pinky toe
             </div>
         </Link>
         </div>
-        <div className="butterfly-kids text-3xl text-pinky-dark max-lg:hidden">
+        <div className="butterfly-kids text-4xl text-pinky-dark max-lg:hidden">
               feminist humor, right at your feet
           </div>
         {/* Desktop Navigation */}
