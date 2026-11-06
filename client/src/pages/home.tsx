@@ -202,7 +202,7 @@ export default function Home() {
                                 <blockquote className="text-xl font-bodoni text-center text-pinky-dark min-h-[6rem] flex items-center text-center">
                                   "{quote.quote}"
                                 </blockquote>
-                                <div className="mt-1 text-right text-2xl text-primary buttefly-kids">
+                                <div className="mt-1 text-right text-2xl text-primary butterfly-kids">
                                   - the pinky toe team
                                 </div>
                               </div>
