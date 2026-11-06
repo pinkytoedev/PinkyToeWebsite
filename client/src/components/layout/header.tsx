@@ -36,7 +36,7 @@ export function Header() {
     <header className={`sticky top-0 z-50 bg-white backdrop-blur-sm shadow-md transition-all duration-300 ${scrolled ? 'shadow-lg py-1' : 'py-1'}`}>
       <div className="container mx-auto px-4 py-1 flex justify-between items-center">
         {/* Responsive Logo - Small for mobile, large for desktop */}
-        <div className="flex items-center gap-5">
+        <div className="flex items-center gap-5 max-md:gap-2">
           <Link href={ROUTES.HOME} onClick={closeMobileMenu}>
             <div className="hover-bounce transition-transform duration-300 hover:scale-105">
               {/* Mobile: Show the smaller logo */}
@@ -51,10 +51,10 @@ export function Header() {
             </div>
           </Link>
           <Link href={ROUTES.HOME} onClick={closeMobileMenu}>
-            <div className="butterfly-kids text-3xl text-pinky lg:text-4xl">
+            <div className="butterfly-kids text-3xl text-pinky lg:text-4xl max-sm:hidden">
               the pinky toe
             </div>
-        </Link>
+          </Link>
         </div>
         <div className="butterfly-kids text-3xl text-pinky-dark max-lg:hidden">
               feminist humor, right at your feet
