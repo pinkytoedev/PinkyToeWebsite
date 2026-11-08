@@ -6,6 +6,7 @@ vi.mock('wouter', () => ({
   Link: ({ href, children, className }: any) => (
     <a href={href} className={className}>{children}</a>
   ),
+  useLocation: () => ['/'],
 }))
 
 vi.mock('../../../client/src/lib/image-helper', () => ({

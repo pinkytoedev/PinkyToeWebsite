@@ -1,5 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Pacifico&family=Quicksand:wght@300;400;500;600;700&family=Lato:wght@300;400;700&display=swap');
 @import './bg-pattern.css';
+@import url("https://fonts.googleapis.com/css2?family=Butterfly+Kids&display=swap");
 
 @tailwind base;
 @tailwind components;
@@ -12,7 +13,7 @@
   
   body {
     @apply font-sans antialiased text-foreground;
-    font-family: 'lato', sans-serif;
+    font-family: 'Times New Roman', serif;
   }
   
   h1, h2, h3, h4, h5, h6 {
@@ -23,15 +24,34 @@
 
   /* Custom color classes */
   .text-pinky-dark {
-    color: #E93B81;
+    color: #961C5B;
+  }
+
+  .text-pinky {
+    color: #F757A2;
   }
   
-  .bg-pinky-dark {
-    background-color: #E93B81;
+  .bg-pinky {
+    background-color: #F757A2;
   }
   
+  .bg-dark {
+    background-color: #961C5B;
+  }
+
+  .bg-light {
+    background-color: #F1D1DF;
+  }
   .border-pink-200 {
-    border-color: #FFB6C1;
+    border-color: #F1D1DF;
+  }
+
+  .border-pinky-dark{
+    border-color: #F757A2;
+  }
+
+  .bg-primary{
+    background-color: #F757A2;
   }
 }
 
@@ -73,7 +93,7 @@
   .hover-bounce:hover {
     animation: bounce 0.6s;
   }
-  
+
   .scale-in {
     transform: scale(0.95);
     opacity: 0;
@@ -134,15 +154,24 @@
   
   /* Custom button styles */
   .btn-pinky {
-    @apply bg-primary hover:bg-pinky-dark text-white font-quicksand font-bold py-2 px-4 rounded-lg 
-    transition-all duration-300 hover:shadow-lg transform hover:scale-105;
+    @apply bg-white text-pinky-dark hover:bg-pinky-dark font-bodoni font-bold py-2 px-4 rounded-lg 
+    border:bg-pinky-dark transition-all duration-300 hover:shadow-lg transform hover:scale-105;
   }
   
   /* Card styles */
   .card-pinky {
-    @apply bg-white/90 rounded-xl shadow-md hover:shadow-lg transition-all duration-300
+    @apply bg-white rounded-xl shadow-md hover:shadow-lg transition-all duration-300
     border border-pink-200/30 overflow-hidden;
   }
+
+   .center-byline {
+    display: flex;
+    text-align: center;
+    justify-content: center;
+    align-items: center;
+    gap: 20;
+  }
+
 
   /*
    * Served from client/public/fonts. The previous src was
@@ -262,9 +291,10 @@
    * typography plugin decides a `<p>` should be next.
    */
   .article-prose {
-    max-width: 62ch;
+    max-width: 100ch;
+    text-align: justify;
     margin-inline: auto;
-    color: #4a4145;
+    color: #34364B;
     font-size: 1.0625rem;
     line-height: 1.7;
     overflow-wrap: break-word;
@@ -295,7 +325,7 @@
    * running text it is louder than the headline it sits under.
    */
   .article-prose :is(h1, h2, h3, h4, h5, h6) {
-    font-family: 'Quicksand', sans-serif;
+    font-family: 'Bodoni 72', serif;
     font-weight: 700;
     line-height: 1.25;
     color: hsl(var(--primary));
@@ -321,7 +351,7 @@
   }
 
   .article-prose a:hover {
-    color: #E93B81;
+    color: #F757A2;
   }
 
   .article-prose strong {
@@ -351,8 +381,8 @@
   .article-prose blockquote {
     margin: 1.5em 0;
     padding: 0.25em 0 0.25em 1.1em;
-    border-left: 3px solid rgba(255, 77, 141, 0.45);
-    color: #6b5f63;
+    border-left: 3px solid #961C5B;
+    color: #34364B;
     font-style: italic;
   }
 
