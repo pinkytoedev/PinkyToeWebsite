@@ -196,6 +196,30 @@ npm start
 
 ## 🔍 Key Features
 
+### Games Desk
+- Editors can prepare and publish the daily Toedle answer, Pinky Pairs groups,
+  Patriarchy Bingo squares, Headline Roulette prompts, and Which Toe quiz at
+  `/games/editor`. Editors must sign in with `GAMES_EDITOR_USERNAME` and
+  `GAMES_EDITOR_PASSWORD`, configured privately on the server. Credentials are
+  kept in memory in the editor tab and are never saved in browser storage.
+- For local development, set both variables in `.env` and restart `npm run dev`.
+  For production, set them in the hosting provider's private environment
+  settings. Use a unique password and serve the site over HTTPS.
+- Published daily games remain public to play; the editorial tools and
+  unpublished drafts require editor sign-in.
+- Public game pages only use content published for that date. If an editor has
+  not published a daily set yet, the game says so rather than choosing an
+  arbitrary answer. Game dates roll over at midnight **UTC** for all players;
+  future published sets are not exposed through the public API until their
+  UTC date begins.
+- Game content is stored as JSON at `GAMES_DATA_FILE` (defaults to
+  `data/games.json` in development). In production this must be an absolute
+  path on a persistent mounted volume; the games API fails closed if it is
+  unset or relative. Mount a Railway volume, for example at `/data`, and set
+  `GAMES_DATA_FILE=/data/games.json`. The hosting configuration must actually
+  mount the volume: an absolute path alone does not ensure persistence. Run
+  one server instance with this file-based store, and back up the volume.
+
 ### Content Management
 - **Dynamic articles** with rich text content
 - **Team member profiles** with photos and bios

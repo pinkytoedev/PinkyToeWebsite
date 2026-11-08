@@ -60,6 +60,9 @@ export function Header() {
           <Link href={ROUTES.ARTICLES} className={`font-quicksand font-bold text-lg ${isActive(ROUTES.ARTICLES) ? 'text-pinky-dark' : 'text-primary hover:text-pinky-dark'} transition-colors`}>
             Articles
           </Link>
+          <Link href={ROUTES.GAMES} className={`font-quicksand font-bold text-lg ${isActive(ROUTES.GAMES) ? 'text-pinky-dark' : 'text-primary hover:text-pinky-dark'} transition-colors`}>
+            Games
+          </Link>
           <Link href={ROUTES.TEAM} className={`font-quicksand font-bold text-lg ${isActive(ROUTES.TEAM) ? 'text-pinky-dark' : 'text-primary hover:text-pinky-dark'} transition-colors`}>
             Team
           </Link>
@@ -104,6 +107,15 @@ export function Header() {
             >
               <div className="flex items-center py-1">
                 <span className="text-primary mr-2">›</span> Articles
+              </div>
+            </Link>
+            <Link
+              href={ROUTES.GAMES}
+              className={`font-quicksand font-bold text-lg ${isActive(ROUTES.GAMES) ? 'text-pinky-dark' : 'text-primary hover:text-pinky-dark'} transition-colors`}
+              onClick={closeMobileMenu}
+            >
+              <div className="flex items-center py-1">
+                <span className="text-primary mr-2">›</span> Games
               </div>
             </Link>
             <Link 
