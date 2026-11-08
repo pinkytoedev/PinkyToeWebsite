@@ -5,7 +5,7 @@ import { Header } from '../../../client/src/components/layout/header'
 // Mock wouter router
 vi.mock('wouter', () => ({
   Link: ({ href, children, onClick }: any) => (
-    <a href={href} onClick={onClick} data-testid="link">
+    <a href={href} onClick={(event) => { event.preventDefault(); onClick?.(event) }} data-testid="link">
       {children}
     </a>
   ),
@@ -22,11 +22,12 @@ vi.mock('../../../client/src/lib/constants', () => ({
   ROUTES: {
     HOME: '/',
     ARTICLES: '/articles',
+    GAMES: '/games',
     TEAM: '/team'
   },
   SITE_NAME: 'The Pinky Toe',
   SOCIAL_LINKS: {
-    instagram: 'https://instagram.com/pinkytoepaper'
+    INSTAGRAM: 'https://instagram.com/pinkytoepaper'
   }
 }))
 
@@ -48,7 +49,9 @@ describe('Header Component', () => {
     expect(screen.getByRole('banner')).toBeInTheDocument()
     
     // Check for logo
-    expect(screen.getByTestId('word-logo')).toBeInTheDocument()
+    expect(screen.getAllByTestId('toe-logo')).toHaveLength(2)
+    expect(screen.getByText('the pinky toe')).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: 'Games' })).toHaveAttribute('href', '/games')
     
     // Check for navigation links (they should be in the DOM)
     const links = screen.getAllByTestId('link')
@@ -61,15 +64,22 @@ describe('Header Component', () => {
     const header = screen.getByRole('banner')
     expect(header).toBeInTheDocument()
     
-    // Initially should have py-2 class
-    expect(header).toHaveClass('py-2')
+    expect(header).toHaveClass('py-1')
     
     // Simulate scroll event
     Object.defineProperty(window, 'scrollY', { value: 100, writable: true })
     fireEvent.scroll(window)
-    
-    // Note: The component might need additional testing for scroll behavior
-    // depending on how the scroll listener is implemented
+    expect(header).toHaveClass('shadow-lg')
+  })
+
+  it('shows the Games link in the mobile menu and closes the menu on navigation', () => {
+    render(<Header />)
+    fireEvent.click(screen.getByRole('button', { name: 'Toggle mobile menu' }))
+    const gamesLinks = screen.getAllByRole('link', { name: /Games/ })
+    expect(gamesLinks).toHaveLength(2)
+    expect(gamesLinks[1]).toHaveAttribute('href', '/games')
+    fireEvent.click(gamesLinks[1])
+    expect(screen.getAllByRole('link', { name: /Games/ })).toHaveLength(1)
   })
 
   it('should render without crashing', () => {

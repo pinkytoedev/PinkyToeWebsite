@@ -12,6 +12,7 @@ import {
 import { CacheService } from "./services/cache-service";
 import { PublicationScheduler } from "./services/publication-scheduler";
 import { requireAdmin } from "./middleware/auth";
+import { adminGamesRouter, publicGamesRouter } from "./routes/games";
 import { z } from "zod";
 
 /** Query contract for GET /api/articles. */
@@ -29,7 +30,9 @@ const recentArticlesQuerySchema = z.object({
 export async function registerRoutes(app: Express): Promise<Server> {
   // Register the routers
   app.use('/api/images', imagesRouter);
+  app.use('/api/admin/games', adminGamesRouter);
   app.use('/api/admin', adminRouter);
+  app.use('/api/games', publicGamesRouter);
   app.use('/api/webhooks', webhooksRouter);
 
   // Legacy alias for POST /api/admin/refresh[/:entity]. Kept because it is

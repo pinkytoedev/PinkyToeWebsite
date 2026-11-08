@@ -6,6 +6,7 @@ export const ROUTES = {
   ARTICLES: "/articles",
   ARTICLE_DETAIL: "/articles/:id",
   TEAM: "/team",
+  GAMES: "/games",
   TEAM_MEMBER: "/team/:id",
   PRIVACY_POLICY: "/privacy-policy",
 };
@@ -20,6 +21,7 @@ export const API_ROUTES = {
   ARTICLES_BY_TEAM_MEMBER: (id: string) => `/api/team/${id}/articles`,
   QUOTES: "/api/quotes",
   QUOTE_OF_DAY: "/api/quotes/daily",
+  GAMES_DAILY: (date: string) => `/api/games/${date}`,
 };
 
 export const ITEMS_PER_PAGE = 6;

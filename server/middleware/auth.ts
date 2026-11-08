@@ -20,6 +20,21 @@ function safeEqual(a: string, b: string): boolean {
   return crypto.timingSafeEqual(aHash, bHash);
 }
 
+function extractBasicCredentials(req: Request): { username: string; password: string } | null {
+  const header = req.get('authorization');
+  const match = header?.match(/^Basic\s+([A-Za-z0-9+/]+={0,2})$/i);
+  if (!match) return null;
+
+  const decoded = Buffer.from(match[1], 'base64').toString('utf8');
+  const separator = decoded.indexOf(':');
+  if (separator < 0) return null;
+
+  return {
+    username: decoded.slice(0, separator),
+    password: decoded.slice(separator + 1),
+  };
+}
+
 /** Pull the presented token from either an Authorization header or X-Admin-Token. */
 function extractToken(req: Request): string | null {
   const authHeader = req.get('authorization');
@@ -92,6 +107,32 @@ export function requireAdmin(req: Request, res: Response, next: NextFunction): v
   const presented = extractToken(req);
   if (!presented || !safeEqual(presented, expected)) {
     res.status(401).json({ success: false, message: 'Unauthorized' });
+    return;
+  }
+
+  next();
+}
+
+export function requireGameEditor(req: Request, res: Response, next: NextFunction): void {
+  const expectedUsername = process.env.GAMES_EDITOR_USERNAME;
+  const expectedPassword = process.env.GAMES_EDITOR_PASSWORD;
+
+  if (!expectedUsername || !expectedPassword) {
+    console.error('Game editor credentials are not configured; refusing editor request');
+    res.status(503).json({
+      success: false,
+      message: 'Game editor login is not configured',
+    });
+    return;
+  }
+
+  const presented = extractBasicCredentials(req);
+  if (
+    !presented ||
+    !safeEqual(presented.username, expectedUsername) ||
+    !safeEqual(presented.password, expectedPassword)
+  ) {
+    res.status(401).json({ success: false, message: 'Invalid editor username or password' });
     return;
   }
 
