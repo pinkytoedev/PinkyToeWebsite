@@ -61,7 +61,7 @@ describe('Header Component', () => {
     const header = screen.getByRole('banner')
     expect(header).toBeInTheDocument()
     
-    expect(header).toHaveClass("py-2")
+    expect(header).toHaveClass("py-1")
     
     // Simulate scroll event
     Object.defineProperty(window, 'scrollY', { value: 100, writable: true })
