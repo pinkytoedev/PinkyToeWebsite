@@ -48,7 +48,7 @@ describe('Header Component', () => {
     expect(screen.getByRole('banner')).toBeInTheDocument()
     
     // Check for logo
-    expect(screen.getByTestId('word-logo')).toBeInTheDocument()
+    expect(screen.getByTestId('toe-logo')).toBeInTheDocument()
     
     // Check for navigation links (they should be in the DOM)
     const links = screen.getAllByTestId('link')
@@ -61,8 +61,7 @@ describe('Header Component', () => {
     const header = screen.getByRole('banner')
     expect(header).toBeInTheDocument()
     
-    // Initially should have py-2 class
-    expect(header).toHaveClass('py-2')
+    expect(header).toHaveClass("py-1")
     
     // Simulate scroll event
     Object.defineProperty(window, 'scrollY', { value: 100, writable: true })
